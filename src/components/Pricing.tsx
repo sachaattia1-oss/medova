@@ -20,12 +20,12 @@ const plans = [
   {
     name: "Annuel",
     description: "Le meilleur rapport qualité-prix",
-    price: "199",
+    price: "999",
     period: "/an",
-    originalPrice: "348",
+    originalPrice: "1680",
     features: [
       "Tout le plan Mensuel",
-      "Économise 43%",
+      "Économise 41%",
       "Accès prioritaire aux nouveautés",
       "Sessions de révision en groupe",
       "Support prioritaire",
@@ -36,7 +36,7 @@ const plans = [
   {
     name: "Accès à vie",
     description: "Un seul paiement, accès illimité",
-    price: "399",
+    price: "1499",
     period: "",
     features: [
       "Tout le plan Annuel",
@@ -99,7 +99,7 @@ const Pricing = () => {
                 {plan.originalPrice && (
                   <div className="text-sm text-muted-foreground mt-1">
                     <span className="line-through">{plan.originalPrice}€</span>
-                    <span className="text-accent ml-2 font-medium">-43%</span>
+                    <span className="text-accent ml-2 font-medium">-41%</span>
                   </div>
                 )}
               </div>
