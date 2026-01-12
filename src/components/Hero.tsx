@@ -52,7 +52,7 @@ const Hero = () => {
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-gradient">1000+</div>
-              <div className="text-sm text-muted-foreground mt-1">CCM corrigés</div>
+              <div className="text-sm text-muted-foreground mt-1">QCM corrigés</div>
             </div>
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-gradient">95%</div>

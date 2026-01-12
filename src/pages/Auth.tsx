@@ -217,7 +217,7 @@ const Auth = () => {
               </p>
               <ul className="space-y-2 text-sm">
                 {[
-                  "500+ CCM commentés",
+                  "500+ QCM commentés",
                   "QCM interactifs illimités",
                   "Suivi de progression personnalisé",
                 ].map((feature) => (
