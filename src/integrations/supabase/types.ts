@@ -14,16 +14,350 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          is_read_by_admin: boolean | null
+          is_read_by_user: boolean | null
+          subject: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read_by_admin?: boolean | null
+          is_read_by_user?: boolean | null
+          subject?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read_by_admin?: boolean | null
+          is_read_by_user?: boolean | null
+          subject?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_free: boolean | null
+          order_index: number | null
+          pdf_url: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_free?: boolean | null
+          order_index?: number | null
+          pdf_url?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_free?: boolean | null
+          order_index?: number | null
+          pdf_url?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_from_admin: boolean | null
+          sender_id: string | null
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_from_admin?: boolean | null
+          sender_id?: string | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_from_admin?: boolean | null
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          is_subscribed: boolean | null
+          last_seen_at: string | null
+          subscription_expires_at: string | null
+          subscription_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          is_subscribed?: boolean | null
+          last_seen_at?: string | null
+          subscription_expires_at?: string | null
+          subscription_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          is_subscribed?: boolean | null
+          last_seen_at?: string | null
+          subscription_expires_at?: string | null
+          subscription_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quiz_answers: {
+        Row: {
+          answer_text: string
+          id: string
+          is_correct: boolean | null
+          order_index: number | null
+          question_id: string
+        }
+        Insert: {
+          answer_text: string
+          id?: string
+          is_correct?: boolean | null
+          order_index?: number | null
+          question_id: string
+        }
+        Update: {
+          answer_text?: string
+          id?: string
+          is_correct?: boolean | null
+          order_index?: number | null
+          question_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_attempts: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          quiz_id: string
+          score: number | null
+          time_spent_seconds: number | null
+          total_questions: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          quiz_id: string
+          score?: number | null
+          time_spent_seconds?: number | null
+          total_questions?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          quiz_id?: string
+          score?: number | null
+          time_spent_seconds?: number | null
+          total_questions?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          created_at: string
+          explanation: string | null
+          id: string
+          order_index: number | null
+          question_text: string
+          quiz_id: string
+        }
+        Insert: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          order_index?: number | null
+          question_text: string
+          quiz_id: string
+        }
+        Update: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          order_index?: number | null
+          question_text?: string
+          quiz_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_free: boolean | null
+          order_index: number | null
+          time_limit_minutes: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_free?: boolean | null
+          order_index?: number | null
+          time_limit_minutes?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_free?: boolean | null
+          order_index?: number | null
+          time_limit_minutes?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_activity: {
+        Row: {
+          id: string
+          is_online: boolean | null
+          last_active_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_online?: boolean | null
+          last_active_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_online?: boolean | null
+          last_active_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +484,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
