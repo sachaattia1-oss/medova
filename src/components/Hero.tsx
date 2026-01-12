@@ -1,9 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, Stethoscope } from "lucide-react";
-
 const Hero = () => {
-  return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
+  return <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-accent/20 rounded-full blur-3xl animate-float" />
@@ -24,17 +22,15 @@ const Hero = () => {
 
           {/* Main heading */}
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up">
-            <span className="text-foreground">Réussis ta </span>
-            <span className="text-gradient">médecine</span>
+            <span className="text-foreground">Réussis ton </span>
+            <span className="text-gradient">concours</span>
             <br />
             <span className="text-foreground">avec </span>
             <span className="text-gradient">GOPASS</span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 animate-fade-in-up animation-delay-200">
-            Accède à des cours complets, des cas cliniques commentés (CCM) et des ressources pédagogiques conçues par des professionnels pour maximiser tes chances de succès.
-          </p>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 animate-fade-in-up animation-delay-200">Accède à des cours complets, des QCM détaillés et commentés et des ressources pédagogiques conçues par des professionnels pour maximiser tes chances de succès.</p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animation-delay-400">
@@ -65,8 +61,6 @@ const Hero = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
