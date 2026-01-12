@@ -5,7 +5,7 @@ const plans = [
   {
     name: "Mensuel",
     description: "Idéal pour tester la plateforme",
-    price: "29",
+    price: "140",
     period: "/mois",
     features: [
       "Accès à tous les cours",
