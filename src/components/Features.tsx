@@ -37,7 +37,18 @@ const Features = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => {})}
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              className="group p-6 rounded-2xl bg-card border border-border/50 hover:border-accent/30 transition-all duration-300"
+            >
+              <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
+                <feature.icon className="w-6 h-6 text-accent" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-muted-foreground">{feature.description}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>;
