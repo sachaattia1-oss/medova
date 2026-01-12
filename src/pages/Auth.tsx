@@ -47,7 +47,7 @@ const Auth = () => {
           toast.error(error.message);
         } else {
           toast.success("Compte créé avec succès ! Bienvenue sur GOPASS.");
-          navigate("/");
+          navigate("/dashboard");
         }
       } else {
         const validation = signInSchema.safeParse({ email, password });
@@ -62,7 +62,7 @@ const Auth = () => {
           toast.error("Email ou mot de passe incorrect");
         } else {
           toast.success("Connexion réussie !");
-          navigate("/");
+          navigate("/dashboard");
         }
       }
     } catch {
