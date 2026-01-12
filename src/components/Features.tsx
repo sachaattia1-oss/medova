@@ -5,8 +5,8 @@ const features = [{
   description: "Des cours complets couvrant tout le programme médical, organisés par modules et niveaux."
 }, {
   icon: FileText,
-  title: "CCM Commentés",
-  description: "Des cas cliniques médicaux avec corrections détaillées pour maîtriser le raisonnement clinique."
+  title: "QCM Commentés",
+  description: "Des questions à choix multiples avec corrections détaillées pour maîtriser le raisonnement clinique."
 }, {
   icon: Brain,
   title: "QCM Interactifs",

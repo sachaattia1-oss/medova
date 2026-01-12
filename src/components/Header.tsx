@@ -27,8 +27,8 @@ const Header = () => {
             <a href="#cours" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Cours
             </a>
-            <a href="#ccm" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              CCM
+            <a href="#qcm" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              QCM
             </a>
             <a href="#tarifs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Tarifs
@@ -77,8 +77,8 @@ const Header = () => {
               <a href="#cours" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Cours
               </a>
-              <a href="#ccm" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                CCM
+              <a href="#qcm" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                QCM
               </a>
               <a href="#tarifs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Tarifs

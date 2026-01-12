@@ -9,7 +9,7 @@ const plans = [
     period: "/mois",
     features: [
       "Accès à tous les cours",
-      "500+ CCM commentés",
+      "500+ QCM commentés",
       "QCM illimités",
       "Suivi de progression",
       "Support par email",

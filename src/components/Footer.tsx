@@ -36,7 +36,6 @@ const Footer = () => {
             <h4 className="font-semibold mb-4">Plateforme</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><a href="#" className="hover:text-foreground transition-colors">Cours</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">CCM</a></li>
               <li><a href="#" className="hover:text-foreground transition-colors">QCM</a></li>
               <li><a href="#" className="hover:text-foreground transition-colors">Tarifs</a></li>
             </ul>
