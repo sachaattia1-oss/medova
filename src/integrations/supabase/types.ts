@@ -344,6 +344,9 @@ export type Database = {
           description: string | null
           end_time: string
           id: string
+          recurrence_end_date: string | null
+          recurrence_type: string | null
+          start_date: string
           start_time: string
           title: string
           updated_at: string
@@ -356,6 +359,9 @@ export type Database = {
           description?: string | null
           end_time: string
           id?: string
+          recurrence_end_date?: string | null
+          recurrence_type?: string | null
+          start_date?: string
           start_time: string
           title: string
           updated_at?: string
@@ -368,6 +374,9 @@ export type Database = {
           description?: string | null
           end_time?: string
           id?: string
+          recurrence_end_date?: string | null
+          recurrence_type?: string | null
+          start_date?: string
           start_time?: string
           title?: string
           updated_at?: string

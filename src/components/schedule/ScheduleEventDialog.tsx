@@ -5,6 +5,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import {
   Select,
@@ -41,6 +43,13 @@ const DAYS = [
   { value: "6", label: "Dimanche" },
 ];
 
+const RECURRENCE_OPTIONS = [
+  { value: "none", label: "Pas de répétition" },
+  { value: "weekly", label: "Chaque semaine" },
+  { value: "biweekly", label: "Toutes les 2 semaines" },
+  { value: "monthly", label: "Chaque mois (même jour)" },
+];
+
 const COLORS = [
   { value: "#3b82f6", label: "Bleu" },
   { value: "#22c55e", label: "Vert" },
@@ -59,6 +68,9 @@ const formSchema = z.object({
   start_time: z.string().min(1, "L'heure de début est requise"),
   end_time: z.string().min(1, "L'heure de fin est requise"),
   color: z.string(),
+  start_date: z.string().min(1, "La date de début est requise"),
+  recurrence_type: z.string(),
+  recurrence_end_date: z.string().optional(),
 }).refine((data) => {
   const start = data.start_time;
   const end = data.end_time;
@@ -75,6 +87,7 @@ interface ScheduleEventDialogProps {
   onOpenChange: (open: boolean) => void;
   event: ScheduleEvent | null;
   onEventSaved: () => void;
+  defaultDate?: Date;
 }
 
 const ScheduleEventDialog = ({
@@ -82,6 +95,7 @@ const ScheduleEventDialog = ({
   onOpenChange,
   event,
   onEventSaved,
+  defaultDate = new Date(),
 }: ScheduleEventDialogProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -95,8 +109,13 @@ const ScheduleEventDialog = ({
       start_time: "09:00",
       end_time: "10:00",
       color: "#3b82f6",
+      start_date: format(new Date(), "yyyy-MM-dd"),
+      recurrence_type: "none",
+      recurrence_end_date: "",
     },
   });
+
+  const watchRecurrenceType = form.watch("recurrence_type");
 
   useEffect(() => {
     if (event) {
@@ -107,18 +126,25 @@ const ScheduleEventDialog = ({
         start_time: event.start_time.slice(0, 5),
         end_time: event.end_time.slice(0, 5),
         color: event.color,
+        start_date: event.start_date,
+        recurrence_type: event.recurrence_type || "none",
+        recurrence_end_date: event.recurrence_end_date || "",
       });
     } else {
+      const dayOfWeek = (defaultDate.getDay() + 6) % 7; // Convert to Monday = 0
       form.reset({
         title: "",
         description: "",
-        day_of_week: "0",
+        day_of_week: dayOfWeek.toString(),
         start_time: "09:00",
         end_time: "10:00",
         color: "#3b82f6",
+        start_date: format(defaultDate, "yyyy-MM-dd"),
+        recurrence_type: "none",
+        recurrence_end_date: "",
       });
     }
-  }, [event, open, form]);
+  }, [event, open, form, defaultDate]);
 
   const onSubmit = async (data: FormData) => {
     if (!user) return;
@@ -132,6 +158,9 @@ const ScheduleEventDialog = ({
         start_time: data.start_time,
         end_time: data.end_time,
         color: data.color,
+        start_date: data.start_date,
+        recurrence_type: data.recurrence_type,
+        recurrence_end_date: data.recurrence_end_date || null,
       };
 
       if (event) {
@@ -172,7 +201,7 @@ const ScheduleEventDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {event ? "Modifier l'événement" : "Nouvel événement"}
@@ -212,34 +241,50 @@ const ScheduleEventDialog = ({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="day_of_week"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Jour</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    value={field.value}
-                  >
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="start_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date de début</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionnez un jour" />
-                      </SelectTrigger>
+                      <Input type="date" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {DAYS.map((day) => (
-                        <SelectItem key={day.value} value={day.value}>
-                          {day.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="day_of_week"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jour</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionnez un jour" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {DAYS.map((day) => (
+                          <SelectItem key={day.value} value={day.value}>
+                            {day.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -247,7 +292,7 @@ const ScheduleEventDialog = ({
                 name="start_time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Début</FormLabel>
+                    <FormLabel>Heure de début</FormLabel>
                     <FormControl>
                       <Input type="time" {...field} />
                     </FormControl>
@@ -261,7 +306,7 @@ const ScheduleEventDialog = ({
                 name="end_time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Fin</FormLabel>
+                    <FormLabel>Heure de fin</FormLabel>
                     <FormControl>
                       <Input type="time" {...field} />
                     </FormControl>
@@ -270,6 +315,57 @@ const ScheduleEventDialog = ({
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="recurrence_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Répétition</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez une option" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {RECURRENCE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Choisissez si l'événement doit se répéter
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {watchRecurrenceType !== "none" && (
+              <FormField
+                control={form.control}
+                name="recurrence_end_date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fin de la répétition (optionnel)</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Laissez vide pour une répétition sans fin
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
