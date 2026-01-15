@@ -1,6 +1,6 @@
 import { ScheduleEvent } from "@/pages/DashboardSchedule";
 import { cn } from "@/lib/utils";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -10,8 +10,10 @@ import {
 
 interface WeeklyScheduleProps {
   events: ScheduleEvent[];
+  getEventsForDay: (dayIndex: number) => ScheduleEvent[];
   onEditEvent: (event: ScheduleEvent) => void;
   onDeleteEvent: (eventId: string) => void;
+  onDayClick: (dayIndex: number) => void;
 }
 
 const DAYS = [
@@ -37,8 +39,10 @@ const formatTime = (timeStr: string): string => {
 
 const WeeklySchedule = ({
   events,
+  getEventsForDay,
   onEditEvent,
   onDeleteEvent,
+  onDayClick,
 }: WeeklyScheduleProps) => {
   const getEventPosition = (event: ScheduleEvent) => {
     const startHour = parseTime(event.start_time);
@@ -49,10 +53,6 @@ const WeeklySchedule = ({
     const height = duration * 60;
 
     return { top, height };
-  };
-
-  const getEventsForDay = (dayIndex: number) => {
-    return events.filter((e) => e.day_of_week === dayIndex);
   };
 
   return (
@@ -66,9 +66,10 @@ const WeeklySchedule = ({
           <div
             key={day.label}
             className={cn(
-              "p-4 text-center text-sm font-medium",
+              "p-4 text-center text-sm font-medium cursor-pointer hover:bg-muted/50 transition-colors",
               index < DAYS.length - 1 && "border-r border-border/50"
             )}
+            onClick={() => onDayClick(index)}
           >
             <span className="hidden md:inline">{day.label}</span>
             <span className="md:hidden">{day.short}</span>
@@ -110,8 +111,9 @@ const WeeklySchedule = ({
             {/* Events */}
             {getEventsForDay(dayIndex).map((event) => {
               const { top, height } = getEventPosition(event);
+              const isRecurring = event.recurrence_type !== "none";
               return (
-                <Tooltip key={event.id}>
+                <Tooltip key={`${event.id}-${dayIndex}`}>
                   <TooltipTrigger asChild>
                     <div
                       className="absolute left-1 right-1 rounded-lg px-2 py-1 overflow-hidden cursor-pointer group transition-all hover:ring-2 hover:ring-primary/50"
@@ -121,8 +123,13 @@ const WeeklySchedule = ({
                         backgroundColor: event.color || "#3b82f6",
                       }}
                     >
-                      <div className="text-white text-xs font-medium truncate">
-                        {event.title}
+                      <div className="flex items-center gap-1">
+                        {isRecurring && (
+                          <RotateCw className="w-3 h-3 text-white/80 flex-shrink-0" />
+                        )}
+                        <span className="text-white text-xs font-medium truncate">
+                          {event.title}
+                        </span>
                       </div>
                       {height > 40 && (
                         <div className="text-white/80 text-[10px]">
@@ -163,6 +170,13 @@ const WeeklySchedule = ({
                       <p className="text-xs text-muted-foreground">
                         {formatTime(event.start_time)} - {formatTime(event.end_time)}
                       </p>
+                      {isRecurring && (
+                        <p className="text-xs text-accent">
+                          {event.recurrence_type === "weekly" && "Chaque semaine"}
+                          {event.recurrence_type === "biweekly" && "Toutes les 2 semaines"}
+                          {event.recurrence_type === "monthly" && "Chaque mois"}
+                        </p>
+                      )}
                       {event.description && (
                         <p className="text-xs max-w-[200px]">{event.description}</p>
                       )}
