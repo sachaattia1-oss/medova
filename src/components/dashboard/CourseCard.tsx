@@ -1,6 +1,7 @@
 import { BookOpen, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import PdfThumbnail from "@/components/PdfThumbnail";
 
 interface CourseCardProps {
   title: string;
@@ -9,6 +10,7 @@ interface CourseCardProps {
   isFree?: boolean;
   progress?: number;
   thumbnailUrl?: string;
+  pdfUrl?: string;
   onClick?: () => void;
 }
 
@@ -19,13 +21,16 @@ const CourseCard = ({
   isFree = false, 
   progress = 0,
   thumbnailUrl,
+  pdfUrl,
   onClick 
 }: CourseCardProps) => {
   return (
     <div className="group p-4 rounded-2xl bg-card border border-border/50 hover:border-accent/30 hover:shadow-card-hover transition-all">
       {/* Thumbnail */}
       <div className="relative aspect-video rounded-xl bg-muted overflow-hidden mb-4">
-        {thumbnailUrl ? (
+        {pdfUrl ? (
+          <PdfThumbnail pdfUrl={pdfUrl} className="w-full h-full" />
+        ) : thumbnailUrl ? (
           <img 
             src={thumbnailUrl} 
             alt={title} 
