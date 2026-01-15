@@ -7,7 +7,8 @@ import {
   BarChart3, 
   Settings,
   LogOut,
-  Shield
+  Shield,
+  Calendar
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Tableau de bord", href: "/dashboard" },
   { icon: BookOpen, label: "Cours", href: "/dashboard/cours" },
   { icon: GraduationCap, label: "QCM", href: "/dashboard/qcm" },
+  { icon: Calendar, label: "Emploi du temps", href: "/dashboard/emploi-du-temps" },
   { icon: BarChart3, label: "Progression", href: "/dashboard/progression" },
   { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
 ];
