@@ -6,10 +6,13 @@ import {
   GraduationCap, 
   BarChart3, 
   Settings,
-  LogOut
+  LogOut,
+  Shield
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Tableau de bord", href: "/dashboard" },
@@ -19,9 +22,28 @@ const navItems = [
   { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
 ];
 
+const adminItems = [
+  { icon: Shield, label: "Gestion des cours", href: "/admin/cours" },
+];
+
 const DashboardSidebar = () => {
   const location = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      setIsAdmin(!!data);
+    };
+    checkAdmin();
+  }, [user]);
 
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border/50 flex flex-col">
@@ -57,6 +79,35 @@ const DashboardSidebar = () => {
             </Link>
           );
         })}
+
+        {/* Admin Section */}
+        {isAdmin && (
+          <>
+            <div className="pt-4 pb-2">
+              <span className="px-4 text-xs font-semibold uppercase text-muted-foreground/60">
+                Administration
+              </span>
+            </div>
+            {adminItems.map((item) => {
+              const isActive = location.pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
+                    isActive
+                      ? "bg-accent/10 text-accent"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="w-5 h-5" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </>
+        )}
       </nav>
 
       {/* Logout */}
