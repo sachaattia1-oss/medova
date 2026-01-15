@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Trash2, FolderOpen } from "lucide-react";
+import { Plus, Pencil, Trash2, FolderOpen, Upload, Loader2, FileText, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface Course {
@@ -59,6 +59,8 @@ const AdminCourses = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -131,6 +133,43 @@ const AdminCourses = () => {
       is_free: false,
     });
     setEditingCourse(null);
+    setPdfFile(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type !== "application/pdf") {
+        toast.error("Seuls les fichiers PDF sont acceptés");
+        return;
+      }
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error("Le fichier ne doit pas dépasser 50 Mo");
+        return;
+      }
+      setPdfFile(file);
+    }
+  };
+
+  const uploadPdf = async (file: File): Promise<string | null> => {
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = fileName;
+
+    const { error: uploadError } = await supabase.storage
+      .from("course-pdfs")
+      .upload(filePath, file);
+
+    if (uploadError) {
+      console.error("Upload error:", uploadError);
+      throw uploadError;
+    }
+
+    const { data } = supabase.storage
+      .from("course-pdfs")
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
   };
 
   const handleOpenDialog = (course?: Course) => {
@@ -151,16 +190,27 @@ const AdminCourses = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const courseData = {
-      title: formData.title,
-      description: formData.description || null,
-      category_id: formData.category_id || null,
-      pdf_url: formData.pdf_url || null,
-      is_free: formData.is_free,
-    };
+    setUploading(true);
 
     try {
+      let pdfUrl = formData.pdf_url;
+
+      // Upload new PDF if selected
+      if (pdfFile) {
+        const uploadedUrl = await uploadPdf(pdfFile);
+        if (uploadedUrl) {
+          pdfUrl = uploadedUrl;
+        }
+      }
+
+      const courseData = {
+        title: formData.title,
+        description: formData.description || null,
+        category_id: formData.category_id || null,
+        pdf_url: pdfUrl || null,
+        is_free: formData.is_free,
+      };
+
       if (editingCourse) {
         const { error } = await supabase
           .from("courses")
@@ -188,6 +238,8 @@ const AdminCourses = () => {
     } catch (error) {
       console.error("Error saving course:", error);
       toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -290,15 +342,49 @@ const AdminCourses = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="pdf_url">URL du PDF</Label>
-                  <Input
-                    id="pdf_url"
-                    value={formData.pdf_url}
-                    onChange={(e) =>
-                      setFormData({ ...formData, pdf_url: e.target.value })
-                    }
-                    placeholder="/course-pdfs/mon-cours.pdf"
-                  />
+                  <Label>Fichier PDF</Label>
+                  {formData.pdf_url && !pdfFile ? (
+                    <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                      <FileText className="w-4 h-4 text-accent" />
+                      <span className="text-sm flex-1 truncate">PDF actuel</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => setFormData({ ...formData, pdf_url: "" })}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : pdfFile ? (
+                    <div className="flex items-center gap-2 p-3 bg-accent/10 rounded-lg">
+                      <FileText className="w-4 h-4 text-accent" />
+                      <span className="text-sm flex-1 truncate">{pdfFile.name}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => setPdfFile(null)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Upload className="w-6 h-6 text-muted-foreground mb-1" />
+                      <span className="text-sm text-muted-foreground">
+                        Cliquer pour sélectionner un PDF
+                      </span>
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -319,11 +405,21 @@ const AdminCourses = () => {
                     type="button"
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
+                    disabled={uploading}
                   >
                     Annuler
                   </Button>
-                  <Button type="submit">
-                    {editingCourse ? "Mettre à jour" : "Créer"}
+                  <Button type="submit" disabled={uploading}>
+                    {uploading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Upload...
+                      </>
+                    ) : editingCourse ? (
+                      "Mettre à jour"
+                    ) : (
+                      "Créer"
+                    )}
                   </Button>
                 </div>
               </form>
