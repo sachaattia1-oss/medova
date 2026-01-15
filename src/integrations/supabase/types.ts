@@ -336,6 +336,45 @@ export type Database = {
         }
         Relationships: []
       }
+      schedule_events: {
+        Row: {
+          color: string | null
+          created_at: string
+          day_of_week: number
+          description: string | null
+          end_time: string
+          id: string
+          start_time: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          day_of_week: number
+          description?: string | null
+          end_time: string
+          id?: string
+          start_time: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          day_of_week?: number
+          description?: string | null
+          end_time?: string
+          id?: string
+          start_time?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_activity: {
         Row: {
           id: string

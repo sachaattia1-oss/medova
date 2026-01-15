@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import DashboardCourses from "./pages/DashboardCourses";
 import CategoryCourses from "./pages/CategoryCourses";
 import DashboardProgress from "./pages/DashboardProgress";
+import DashboardSchedule from "./pages/DashboardSchedule";
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
 import NotFound from "./pages/NotFound";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/dashboard/cours/categorie/:categoryId" element={<CategoryCourses />} />
             <Route path="/dashboard/cours/:id" element={<CourseDetail />} />
             <Route path="/dashboard/progression" element={<DashboardProgress />} />
+            <Route path="/dashboard/emploi-du-temps" element={<DashboardSchedule />} />
             <Route path="/admin/cours" element={<AdminCourses />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
