@@ -17,6 +17,7 @@ interface Course {
   category_id: string | null;
   is_free: boolean | null;
   thumbnail_url: string | null;
+  pdf_url: string | null;
 }
 
 interface Category {
@@ -144,6 +145,7 @@ const CategoryCourses = () => {
                 category={category?.name}
                 isFree={course.is_free || false}
                 thumbnailUrl={course.thumbnail_url || undefined}
+                pdfUrl={course.pdf_url || undefined}
                 onClick={() => navigate(`/dashboard/cours/${course.id}`)}
               />
             ))}
