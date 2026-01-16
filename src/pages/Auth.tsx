@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Sparkles, GraduationCap, Users } from "lucide-react";
 import { z } from "zod";
+import { cn } from "@/lib/utils";
 
 const signUpSchema = z.object({
   fullName: z.string().trim().min(2, "Le nom doit contenir au moins 2 caractères").max(100),
@@ -19,11 +20,14 @@ const signInSchema = z.object({
   password: z.string().min(1, "Mot de passe requis").max(72),
 });
 
+type SignUpRole = "user" | "tutor";
+
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [selectedRole, setSelectedRole] = useState<SignUpRole>("user");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -42,12 +46,16 @@ const Auth = () => {
           return;
         }
 
-        const { error } = await signUp(email, password, fullName);
+        const { error } = await signUp(email, password, fullName, selectedRole);
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success("Compte créé avec succès ! Bienvenue sur GOPASS.");
-          navigate("/dashboard");
+          if (selectedRole === "tutor") {
+            toast.success("Compte tuteur créé ! Votre demande est en attente de validation par un administrateur.");
+          } else {
+            toast.success("Compte créé avec succès ! Bienvenue sur GOPASS.");
+          }
+          navigate(selectedRole === "tutor" ? "/tutor" : "/dashboard");
         }
       } else {
         const validation = signInSchema.safeParse({ email, password });
@@ -62,6 +70,7 @@ const Auth = () => {
           toast.error("Email ou mot de passe incorrect");
         } else {
           toast.success("Connexion réussie !");
+          // Navigation will be handled by the dashboard based on role
           navigate("/dashboard");
         }
       }
@@ -70,6 +79,13 @@ const Auth = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setEmail("");
+    setPassword("");
+    setFullName("");
+    setSelectedRole("user");
   };
 
   return (
@@ -108,6 +124,56 @@ const Auth = () => {
           {/* Auth Form */}
           <div className="bg-card border border-border/50 rounded-2xl p-6 shadow-card">
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Role Selection - only for signup */}
+              {isSignUp && (
+                <div className="space-y-3">
+                  <Label>Je suis...</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole("user")}
+                      className={cn(
+                        "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                        selectedRole === "user"
+                          ? "border-accent bg-accent/10 text-accent"
+                          : "border-border hover:border-accent/50 hover:bg-muted/50"
+                      )}
+                    >
+                      <GraduationCap className="w-8 h-8" />
+                      <div className="text-center">
+                        <div className="font-medium text-sm">Étudiant PASS</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          Accès aux cours et QCM
+                        </div>
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRole("tutor")}
+                      className={cn(
+                        "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                        selectedRole === "tutor"
+                          ? "border-accent bg-accent/10 text-accent"
+                          : "border-border hover:border-accent/50 hover:bg-muted/50"
+                      )}
+                    >
+                      <Users className="w-8 h-8" />
+                      <div className="text-center">
+                        <div className="font-medium text-sm">Tuteur</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          Accompagner les étudiants
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                  {selectedRole === "tutor" && (
+                    <p className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 p-2 rounded-lg">
+                      ⚠️ Les comptes tuteurs nécessitent une validation par un administrateur avant d'être activés.
+                    </p>
+                  )}
+                </div>
+              )}
+
               {isSignUp && (
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Nom complet</Label>
@@ -184,7 +250,9 @@ const Auth = () => {
                 {loading
                   ? "Chargement..."
                   : isSignUp
-                  ? "Créer mon compte"
+                  ? selectedRole === "tutor"
+                    ? "Demander un compte tuteur"
+                    : "Créer mon compte"
                   : "Se connecter"}
               </Button>
             </form>
@@ -197,9 +265,7 @@ const Auth = () => {
                   type="button"
                   onClick={() => {
                     setIsSignUp(!isSignUp);
-                    setEmail("");
-                    setPassword("");
-                    setFullName("");
+                    resetForm();
                   }}
                   className="ml-1 text-accent hover:underline font-medium"
                 >
@@ -213,19 +279,38 @@ const Auth = () => {
           {isSignUp && (
             <div className="mt-6 space-y-3">
               <p className="text-sm text-muted-foreground text-center">
-                En créant un compte, tu accèdes à :
+                {selectedRole === "tutor" 
+                  ? "En tant que tuteur, tu pourras :"
+                  : "En créant un compte, tu accèdes à :"}
               </p>
               <ul className="space-y-2 text-sm">
-                {[
-                  "500+ QCM commentés",
-                  "QCM interactifs illimités",
-                  "Suivi de progression personnalisé",
-                ].map((feature) => (
-                  <li key={feature} className="flex items-center gap-2 text-muted-foreground">
-                    <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-                    {feature}
-                  </li>
-                ))}
+                {selectedRole === "tutor" ? (
+                  <>
+                    {[
+                      "Suivre la progression des étudiants",
+                      "Créer et gérer des cours et QCM",
+                      "Échanger avec les étudiants via la messagerie",
+                    ].map((feature) => (
+                      <li key={feature} className="flex items-center gap-2 text-muted-foreground">
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                        {feature}
+                      </li>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {[
+                      "500+ QCM commentés",
+                      "QCM interactifs illimités",
+                      "Suivi de progression personnalisé",
+                    ].map((feature) => (
+                      <li key={feature} className="flex items-center gap-2 text-muted-foreground">
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                        {feature}
+                      </li>
+                    ))}
+                  </>
+                )}
               </ul>
             </div>
           )}

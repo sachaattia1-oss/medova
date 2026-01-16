@@ -160,9 +160,13 @@ export type Database = {
           full_name: string | null
           id: string
           is_subscribed: boolean | null
+          is_tutor_approved: boolean | null
           last_seen_at: string | null
           subscription_expires_at: string | null
           subscription_type: string | null
+          tutor_approved_at: string | null
+          tutor_approved_by: string | null
+          tutor_requested_at: string | null
           updated_at: string
           user_id: string
         }
@@ -172,9 +176,13 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_subscribed?: boolean | null
+          is_tutor_approved?: boolean | null
           last_seen_at?: string | null
           subscription_expires_at?: string | null
           subscription_type?: string | null
+          tutor_approved_at?: string | null
+          tutor_approved_by?: string | null
+          tutor_requested_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -184,9 +192,13 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_subscribed?: boolean | null
+          is_tutor_approved?: boolean | null
           last_seen_at?: string | null
           subscription_expires_at?: string | null
           subscription_type?: string | null
+          tutor_approved_at?: string | null
+          tutor_approved_by?: string | null
+          tutor_requested_at?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -438,6 +450,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_approved_tutor: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user" | "tutor"
