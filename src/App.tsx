@@ -13,6 +13,7 @@ import DashboardProgress from "./pages/DashboardProgress";
 import DashboardSchedule from "./pages/DashboardSchedule";
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
+import AdminTutors from "./pages/AdminTutors";
 import TutorDashboard from "./pages/TutorDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/dashboard/progression" element={<DashboardProgress />} />
             <Route path="/dashboard/emploi-du-temps" element={<DashboardSchedule />} />
             <Route path="/admin/cours" element={<AdminCourses />} />
+            <Route path="/admin/tuteurs" element={<AdminTutors />} />
             <Route path="/tutor" element={<TutorDashboard />} />
             <Route path="/tutor/*" element={<TutorDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
