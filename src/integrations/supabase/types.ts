@@ -396,6 +396,51 @@ export type Database = {
         }
         Relationships: []
       }
+      tutor_earnings: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          description: string
+          earning_type: string
+          id: string
+          paid_at: string | null
+          payment_reference: string | null
+          reference_id: string | null
+          status: string
+          tutor_user_id: string
+        }
+        Insert: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          description: string
+          earning_type?: string
+          id?: string
+          paid_at?: string | null
+          payment_reference?: string | null
+          reference_id?: string | null
+          status?: string
+          tutor_user_id: string
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          description?: string
+          earning_type?: string
+          id?: string
+          paid_at?: string | null
+          payment_reference?: string | null
+          reference_id?: string | null
+          status?: string
+          tutor_user_id?: string
+        }
+        Relationships: []
+      }
       user_activity: {
         Row: {
           id: string
