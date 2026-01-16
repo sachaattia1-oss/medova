@@ -174,6 +174,38 @@ const DashboardSchedule = () => {
     }
   };
 
+  const handleEventUpdate = async (eventId: string, updates: { 
+    day_of_week?: number; 
+    start_time?: string; 
+    end_time?: string 
+  }) => {
+    try {
+      const { error } = await supabase
+        .from("schedule_events")
+        .update(updates)
+        .eq("id", eventId);
+
+      if (error) throw error;
+
+      // Update local state
+      setEvents(events.map((e) => 
+        e.id === eventId ? { ...e, ...updates } : e
+      ));
+      
+      toast({
+        title: "Événement modifié",
+        description: "L'horaire a été mis à jour",
+      });
+    } catch (error) {
+      console.error("Error updating event:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de modifier l'événement",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleEventSaved = () => {
     fetchEvents();
     setDialogOpen(false);
@@ -231,6 +263,7 @@ const DashboardSchedule = () => {
               onEditEvent={handleEditEvent}
               onDeleteEvent={handleDeleteEvent}
               onDayClick={handleDayClick}
+              onEventUpdate={handleEventUpdate}
             />
           ) : (
             <DailySchedule
@@ -238,6 +271,7 @@ const DashboardSchedule = () => {
               currentDate={currentDate}
               onEditEvent={handleEditEvent}
               onDeleteEvent={handleDeleteEvent}
+              onEventUpdate={handleEventUpdate}
             />
           )}
 
