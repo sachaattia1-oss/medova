@@ -6,7 +6,8 @@ import {
   FileQuestion,
   MessageSquare,
   GraduationCap,
-  LogOut
+  LogOut,
+  Wallet
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -15,6 +16,7 @@ const navItems = [
   { label: "Mes cours", icon: BookOpen, path: "/tutor/cours" },
   { label: "Mes quiz", icon: FileQuestion, path: "/tutor/quiz" },
   { label: "Messages", icon: MessageSquare, path: "/tutor/messages" },
+  { label: "Rémunération", icon: Wallet, path: "/tutor/remuneration" },
 ];
 
 const TutorSidebar = () => {
