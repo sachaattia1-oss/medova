@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -27,6 +28,7 @@ interface QuizAttempt {
 
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
+  const { isApprovedTutor, isAdmin, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[]>([]);
@@ -37,6 +39,15 @@ const Dashboard = () => {
       navigate("/auth");
     }
   }, [user, authLoading, navigate]);
+
+  // Redirect tutors to their dashboard
+  useEffect(() => {
+    if (!authLoading && !roleLoading && user) {
+      if (isApprovedTutor && !isAdmin) {
+        navigate("/tutor");
+      }
+    }
+  }, [user, authLoading, roleLoading, isApprovedTutor, isAdmin, navigate]);
 
   useEffect(() => {
     const fetchData = async () => {
