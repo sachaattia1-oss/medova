@@ -60,11 +60,15 @@ const AdminTutors = () => {
 
   const fetchTutorRequests = async () => {
     try {
+      console.log("Fetching tutor requests...");
+      
       // Get all users with tutor role
       const { data: tutorRoles, error: rolesError } = await supabase
         .from("user_roles")
         .select("user_id")
         .eq("role", "tutor");
+
+      console.log("Tutor roles result:", { tutorRoles, rolesError });
 
       if (rolesError) throw rolesError;
 
@@ -75,6 +79,7 @@ const AdminTutors = () => {
       }
 
       const tutorUserIds = tutorRoles.map((r) => r.user_id);
+      console.log("Tutor user IDs:", tutorUserIds);
 
       // Get their profiles
       const { data: profiles, error: profilesError } = await supabase
@@ -82,6 +87,8 @@ const AdminTutors = () => {
         .select("id, user_id, full_name, avatar_url, tutor_requested_at, is_tutor_approved, tutor_approved_at, created_at")
         .in("user_id", tutorUserIds)
         .order("tutor_requested_at", { ascending: false });
+
+      console.log("Profiles result:", { profiles, profilesError });
 
       if (profilesError) throw profilesError;
 
