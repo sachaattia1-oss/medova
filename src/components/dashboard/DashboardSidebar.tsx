@@ -8,7 +8,8 @@ import {
   Settings,
   LogOut,
   Shield,
-  Calendar
+  Calendar,
+  Users
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ const navItems = [
 
 const adminItems = [
   { icon: Shield, label: "Gestion des cours", href: "/admin/cours" },
+  { icon: Users, label: "Gestion des tuteurs", href: "/admin/tuteurs" },
 ];
 
 const DashboardSidebar = () => {
