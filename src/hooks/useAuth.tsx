@@ -2,11 +2,13 @@ import { useState, useEffect, createContext, useContext, ReactNode } from "react
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+type SignUpRole = "user" | "tutor";
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, role?: SignUpRole) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
@@ -38,9 +40,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, role: SignUpRole = "user") => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -50,7 +52,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           },
         },
       });
-      return { error: error as Error | null };
+      
+      if (error) return { error: error as Error };
+      
+      // If signup successful and user wants to be a tutor, update their role
+      if (data.user && role === "tutor") {
+        // Update the role from 'user' to 'tutor'
+        const { error: roleError } = await supabase
+          .from("user_roles")
+          .update({ role: "tutor" })
+          .eq("user_id", data.user.id);
+          
+        if (roleError) {
+          console.error("Error updating role to tutor:", roleError);
+        }
+        
+        // Set tutor_requested_at timestamp
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({ tutor_requested_at: new Date().toISOString() })
+          .eq("user_id", data.user.id);
+          
+        if (profileError) {
+          console.error("Error updating tutor request timestamp:", profileError);
+        }
+      }
+      
+      return { error: null };
     } catch (error) {
       return { error: error as Error };
     }
