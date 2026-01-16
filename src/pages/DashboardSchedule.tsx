@@ -79,20 +79,33 @@ const DashboardSchedule = () => {
     // Check if it's the right day of the week
     if (eventDayOfWeek !== dateDayOfWeek) return false;
 
-    // Check if the date is before the event start date
-    if (isBefore(date, eventStartDate)) return false;
-
-    // Check recurrence
+    // For non-recurring events, just check if it's the same week and day
     if (event.recurrence_type === "none") {
-      return isSameDay(date, eventStartDate);
+      // Get the start of both weeks (Monday)
+      const eventWeekStart = startOfWeek(eventStartDate, { weekStartsOn: 1 });
+      const dateWeekStart = startOfWeek(date, { weekStartsOn: 1 });
+      return isSameDay(eventWeekStart, dateWeekStart);
     }
+
+    // For recurring events, check if the date is on or after the first occurrence
+    // The first occurrence is the first day_of_week on or after start_date
+    const eventStartWeekStart = startOfWeek(eventStartDate, { weekStartsOn: 1 });
+    const firstOccurrence = addDays(eventStartWeekStart, eventDayOfWeek);
+    
+    // If start_date is after the day_of_week in that week, first occurrence is next week
+    const actualFirstOccurrence = isBefore(firstOccurrence, eventStartDate) 
+      ? addDays(firstOccurrence, 7) 
+      : firstOccurrence;
+
+    // Check if the date is before the first occurrence
+    if (isBefore(date, actualFirstOccurrence)) return false;
 
     // Check if past recurrence end date
     if (event.recurrence_end_date && isAfter(date, new Date(event.recurrence_end_date))) {
       return false;
     }
 
-    const weeksDiff = differenceInWeeks(date, eventStartDate);
+    const weeksDiff = Math.round((date.getTime() - actualFirstOccurrence.getTime()) / (7 * 24 * 60 * 60 * 1000));
 
     switch (event.recurrence_type) {
       case "weekly":
@@ -101,9 +114,9 @@ const DashboardSchedule = () => {
         return weeksDiff >= 0 && weeksDiff % 2 === 0;
       case "monthly":
         // Check if it's the same week number in the month
-        const eventWeekOfMonth = Math.floor((eventStartDate.getDate() - 1) / 7);
+        const eventWeekOfMonth = Math.floor((actualFirstOccurrence.getDate() - 1) / 7);
         const dateWeekOfMonth = Math.floor((date.getDate() - 1) / 7);
-        return eventWeekOfMonth === dateWeekOfMonth;
+        return dateWeekOfMonth === eventWeekOfMonth && !isBefore(date, actualFirstOccurrence);
       default:
         return false;
     }
