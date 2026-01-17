@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import DashboardCourses from "./pages/DashboardCourses";
+import DashboardQCM from "./pages/DashboardQCM";
+import TakeQuiz from "./pages/TakeQuiz";
 import CategoryCourses from "./pages/CategoryCourses";
 import DashboardProgress from "./pages/DashboardProgress";
 import DashboardSchedule from "./pages/DashboardSchedule";
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/dashboard/cours" element={<DashboardCourses />} />
             <Route path="/dashboard/cours/categorie/:categoryId" element={<CategoryCourses />} />
             <Route path="/dashboard/cours/:id" element={<CourseDetail />} />
+            <Route path="/dashboard/qcm" element={<DashboardQCM />} />
+            <Route path="/dashboard/qcm/:quizId" element={<TakeQuiz />} />
             <Route path="/dashboard/progression" element={<DashboardProgress />} />
             <Route path="/dashboard/emploi-du-temps" element={<DashboardSchedule />} />
             <Route path="/admin/cours" element={<AdminCourses />} />
