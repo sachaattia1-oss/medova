@@ -14,14 +14,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Plus, 
   Trash2, 
   Loader2, 
   ArrowLeft, 
   CheckCircle2, 
-  Circle,
-  GripVertical 
+  GripVertical,
+  AlertCircle
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -56,13 +57,14 @@ const TutorQuizEditor = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // New question form
+  // New question form - 5 propositions for medical QCM
   const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
   const [newQuestion, setNewQuestion] = useState({
     question_text: "",
     explanation: "",
     answers: [
-      { text: "", is_correct: true },
+      { text: "", is_correct: false },
+      { text: "", is_correct: false },
       { text: "", is_correct: false },
       { text: "", is_correct: false },
       { text: "", is_correct: false },
@@ -128,6 +130,21 @@ const TutorQuizEditor = () => {
 
   const handleAddQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate that at least one answer is marked as correct
+    const hasCorrectAnswer = newQuestion.answers.some((a) => a.is_correct);
+    if (!hasCorrectAnswer) {
+      toast.error("Vous devez sélectionner au moins une bonne réponse");
+      return;
+    }
+
+    // Validate that all 5 propositions are filled
+    const allFilled = newQuestion.answers.every((a) => a.text.trim());
+    if (!allFilled) {
+      toast.error("Veuillez remplir les 5 propositions");
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -145,23 +162,19 @@ const TutorQuizEditor = () => {
 
       if (questionError) throw questionError;
 
-      // Create answers
-      const answersToInsert = newQuestion.answers
-        .filter((a) => a.text.trim())
-        .map((a, index) => ({
-          question_id: questionData.id,
-          answer_text: a.text,
-          is_correct: a.is_correct,
-          order_index: index,
-        }));
+      // Create answers (all 5)
+      const answersToInsert = newQuestion.answers.map((a, index) => ({
+        question_id: questionData.id,
+        answer_text: a.text,
+        is_correct: a.is_correct,
+        order_index: index,
+      }));
 
-      if (answersToInsert.length > 0) {
-        const { error: answersError } = await supabase
-          .from("quiz_answers")
-          .insert(answersToInsert);
+      const { error: answersError } = await supabase
+        .from("quiz_answers")
+        .insert(answersToInsert);
 
-        if (answersError) throw answersError;
-      }
+      if (answersError) throw answersError;
 
       toast.success("Question ajoutée");
       setIsQuestionDialogOpen(false);
@@ -169,7 +182,8 @@ const TutorQuizEditor = () => {
         question_text: "",
         explanation: "",
         answers: [
-          { text: "", is_correct: true },
+          { text: "", is_correct: false },
+          { text: "", is_correct: false },
           { text: "", is_correct: false },
           { text: "", is_correct: false },
           { text: "", is_correct: false },
@@ -213,13 +227,14 @@ const TutorQuizEditor = () => {
     setNewQuestion({ ...newQuestion, answers: updated });
   };
 
-  const setCorrectAnswer = (index: number) => {
-    const updated = newQuestion.answers.map((a, i) => ({
-      ...a,
-      is_correct: i === index,
-    }));
+  const toggleCorrectAnswer = (index: number) => {
+    const updated = [...newQuestion.answers];
+    updated[index].is_correct = !updated[index].is_correct;
     setNewQuestion({ ...newQuestion, answers: updated });
   };
+
+  // Count correct answers for display
+  const correctAnswersCount = newQuestion.answers.filter((a) => a.is_correct).length;
 
   if (loading) {
     return (
@@ -260,50 +275,63 @@ const TutorQuizEditor = () => {
               Ajouter une question
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Nouvelle question</DialogTitle>
+              <DialogTitle>Nouvelle question QCM médical</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleAddQuestion} className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label htmlFor="question">Question *</Label>
+                <Label htmlFor="question">Énoncé de la question *</Label>
                 <Textarea
                   id="question"
                   value={newQuestion.question_text}
                   onChange={(e) =>
                     setNewQuestion({ ...newQuestion, question_text: e.target.value })
                   }
-                  rows={2}
+                  rows={3}
                   required
+                  placeholder="Concernant le métabolisme du glucose, quelle(s) proposition(s) est(sont) exacte(s) ?"
                 />
               </div>
 
               <div className="space-y-3">
-                <Label>Réponses (cliquez pour marquer la bonne réponse)</Label>
-                {newQuestion.answers.map((answer, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setCorrectAnswer(index)}
-                      className="flex-shrink-0"
-                    >
-                      {answer.is_correct ? (
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      ) : (
-                        <Circle className="w-5 h-5 text-muted-foreground" />
-                      )}
-                    </button>
-                    <Input
-                      value={answer.text}
-                      onChange={(e) => updateAnswerText(index, e.target.value)}
-                      placeholder={`Réponse ${index + 1}`}
-                    />
-                  </div>
-                ))}
+                <div className="flex items-center justify-between">
+                  <Label>5 Propositions (cochez les bonnes réponses)</Label>
+                  <Badge variant={correctAnswersCount > 0 ? "default" : "destructive"}>
+                    {correctAnswersCount} bonne{correctAnswersCount > 1 ? "s" : ""} réponse{correctAnswersCount > 1 ? "s" : ""}
+                  </Badge>
+                </div>
+                
+                <div className="p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>
+                    Barème médical : 1pt (0 faute), 0.5pt (1 faute), 0.2pt (2 fautes), 0pt (&gt;2 fautes)
+                  </span>
+                </div>
+
+                {newQuestion.answers.map((answer, index) => {
+                  const letter = String.fromCharCode(65 + index); // A, B, C, D, E
+                  return (
+                    <div key={index} className="flex items-center gap-3">
+                      <Checkbox
+                        checked={answer.is_correct}
+                        onCheckedChange={() => toggleCorrectAnswer(index)}
+                        className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                      />
+                      <span className="font-medium text-muted-foreground w-6">{letter}.</span>
+                      <Input
+                        value={answer.text}
+                        onChange={(e) => updateAnswerText(index, e.target.value)}
+                        placeholder={`Proposition ${letter}`}
+                        className={answer.is_correct ? "border-green-500/50" : ""}
+                      />
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="explanation">Explication (optionnel)</Label>
+                <Label htmlFor="explanation">Explication (affichée après validation)</Label>
                 <Textarea
                   id="explanation"
                   value={newQuestion.explanation}
@@ -311,7 +339,7 @@ const TutorQuizEditor = () => {
                     setNewQuestion({ ...newQuestion, explanation: e.target.value })
                   }
                   rows={2}
-                  placeholder="Explication affichée après la réponse"
+                  placeholder="Le glucose est phosphorylé par l'hexokinase en glucose-6-phosphate..."
                 />
               </div>
 
@@ -345,7 +373,7 @@ const TutorQuizEditor = () => {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <p className="text-muted-foreground mb-4">
-              Aucune question dans ce quiz
+              Aucune question dans ce QCM
             </p>
             <Button onClick={() => setIsQuestionDialogOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -355,54 +383,73 @@ const TutorQuizEditor = () => {
         </Card>
       ) : (
         <div className="space-y-4">
-          {questions.map((question, index) => (
-            <Card key={question.id}>
-              <CardHeader className="pb-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <GripVertical className="w-4 h-4" />
-                    <Badge variant="secondary">{index + 1}</Badge>
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-base font-medium">
-                      {question.question_text}
-                    </CardTitle>
-                    {question.explanation && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        💡 {question.explanation}
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDeleteQuestion(question.id)}
-                  >
-                    <Trash2 className="w-4 h-4 text-destructive" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-2">
-                  {(answers[question.id] || []).map((answer) => (
-                    <div
-                      key={answer.id}
-                      className={`px-3 py-2 rounded-lg text-sm ${
-                        answer.is_correct
-                          ? "bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/30"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {answer.is_correct && (
-                        <CheckCircle2 className="w-4 h-4 inline mr-2" />
-                      )}
-                      {answer.answer_text}
+          {questions.map((question, index) => {
+            const questionAnswers = answers[question.id] || [];
+            const correctCount = questionAnswers.filter((a) => a.is_correct).length;
+
+            return (
+              <Card key={question.id}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start gap-3">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <GripVertical className="w-4 h-4" />
+                      <Badge variant="secondary">{index + 1}</Badge>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                    <div className="flex-1">
+                      <CardTitle className="text-base font-medium">
+                        {question.question_text}
+                      </CardTitle>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant="outline" className="text-xs">
+                          {correctCount} bonne{correctCount > 1 ? "s" : ""} réponse{correctCount > 1 ? "s" : ""}
+                        </Badge>
+                        {question.explanation && (
+                          <Badge variant="secondary" className="text-xs">
+                            💡 Explication incluse
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteQuestion(question.id)}
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-2">
+                    {questionAnswers.map((answer, answerIndex) => {
+                      const letter = String.fromCharCode(65 + answerIndex);
+                      return (
+                        <div
+                          key={answer.id}
+                          className={`px-3 py-2 rounded-lg text-sm flex items-center gap-2 ${
+                            answer.is_correct
+                              ? "bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/30"
+                              : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {answer.is_correct && (
+                            <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                          )}
+                          <span className="font-medium">{letter}.</span>
+                          <span>{answer.answer_text}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {question.explanation && (
+                    <div className="mt-3 p-3 bg-accent/10 rounded-lg">
+                      <p className="text-sm">💡 {question.explanation}</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

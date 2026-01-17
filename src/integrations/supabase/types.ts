@@ -238,6 +238,7 @@ export type Database = {
       }
       quiz_attempts: {
         Row: {
+          answers_data: Json | null
           completed_at: string | null
           created_at: string
           id: string
@@ -248,6 +249,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          answers_data?: Json | null
           completed_at?: string | null
           created_at?: string
           id?: string
@@ -258,6 +260,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          answers_data?: Json | null
           completed_at?: string | null
           created_at?: string
           id?: string
@@ -315,6 +318,7 @@ export type Database = {
       quizzes: {
         Row: {
           category: string | null
+          course_id: string | null
           created_at: string
           description: string | null
           id: string
@@ -326,6 +330,7 @@ export type Database = {
         }
         Insert: {
           category?: string | null
+          course_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -337,6 +342,7 @@ export type Database = {
         }
         Update: {
           category?: string | null
+          course_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -346,7 +352,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "quizzes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       schedule_events: {
         Row: {
