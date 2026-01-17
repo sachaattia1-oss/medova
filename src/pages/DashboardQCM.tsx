@@ -122,16 +122,18 @@ const DashboardQCM = () => {
 
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
 
-  const getQCMCountForCategory = (categoryId: string) => {
+  const getSeriesCountForCategory = (categoryId: string) => {
     const coursesInCategory = courses.filter((c) => c.category_id === categoryId);
     const courseIds = coursesInCategory.map((c) => c.id);
     const quizIdsInCategory = quizzes.filter((q) => q.course_id && courseIds.includes(q.course_id)).map(q => q.id);
-    return questions.filter((q) => quizIdsInCategory.includes(q.quiz_id)).length;
+    const qcmCount = questions.filter((q) => quizIdsInCategory.includes(q.quiz_id)).length;
+    return Math.floor(qcmCount / 5); // 1 série = 5 QCM
   };
 
-  const getQCMCountForCourse = (courseId: string) => {
+  const getSeriesCountForCourse = (courseId: string) => {
     const quizIdsForCourse = quizzes.filter((q) => q.course_id === courseId).map(q => q.id);
-    return questions.filter((q) => quizIdsForCourse.includes(q.quiz_id)).length;
+    const qcmCount = questions.filter((q) => quizIdsForCourse.includes(q.quiz_id)).length;
+    return Math.floor(qcmCount / 5); // 1 série = 5 QCM
   };
 
   const startSeries = (courseId: string) => {
@@ -189,7 +191,7 @@ const DashboardQCM = () => {
             {categories.length > 0 ? categories.map((category) => {
               const Icon = categoryIcons[category.name] || BookOpen;
               const colorClass = categoryColors[category.name] || "from-gray-500 to-gray-600";
-              const qcmCount = getQCMCountForCategory(category.id);
+              const seriesCount = getSeriesCountForCategory(category.id);
               return (
                 <button
                   key={category.id}
@@ -201,7 +203,7 @@ const DashboardQCM = () => {
                   </div>
                   <h3 className="text-xl font-bold mb-1">{category.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {qcmCount} QCM disponible{qcmCount > 1 ? "s" : ""}
+                    {seriesCount} série{seriesCount > 1 ? "s" : ""} disponible{seriesCount > 1 ? "s" : ""}
                   </p>
                 </button>
               );
@@ -222,9 +224,9 @@ const DashboardQCM = () => {
             </div>
 
             {filteredCourses.length > 0 ? filteredCourses.map((course) => {
-              const qcmCount = getQCMCountForCourse(course.id);
+              const seriesCount = getSeriesCountForCourse(course.id);
               const isStarting = startingQuiz === course.id;
-              const canStart = qcmCount >= 1;
+              const canStart = seriesCount >= 1;
               
               return (
                 <Card 
@@ -240,7 +242,7 @@ const DashboardQCM = () => {
                       <div>
                         <h3 className="font-medium">{course.title}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {qcmCount} QCM disponible{qcmCount > 1 ? "s" : ""}
+                          {seriesCount} série{seriesCount > 1 ? "s" : ""} disponible{seriesCount > 1 ? "s" : ""}
                         </p>
                       </div>
                     </div>
