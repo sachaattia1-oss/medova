@@ -5,8 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
   BookOpen, 
@@ -19,9 +18,11 @@ import {
   FlaskConical,
   FileQuestion,
   ChevronRight,
-  Clock,
-  Play
+  Play,
+  Shuffle,
+  Loader2
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Category {
   id: string;
@@ -74,8 +75,8 @@ const DashboardQCM = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [startingQuiz, setStartingQuiz] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -124,20 +125,40 @@ const DashboardQCM = () => {
     ? courses.filter((c) => c.category_id === selectedCategoryId)
     : [];
 
-  // Filter quizzes by selected course
-  const filteredQuizzes = selectedCourseId
-    ? quizzes.filter((q) => q.course_id === selectedCourseId)
-    : [];
-
   // Get category name
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
-  const selectedCourse = courses.find((c) => c.id === selectedCourseId);
 
   // Count quizzes per category
   const getQuizCountForCategory = (categoryId: string) => {
     const coursesInCategory = courses.filter((c) => c.category_id === categoryId);
     const courseIds = coursesInCategory.map((c) => c.id);
     return quizzes.filter((q) => q.course_id && courseIds.includes(q.course_id)).length;
+  };
+
+  // Get quiz count for a course
+  const getQuizCountForCourse = (courseId: string) => {
+    return quizzes.filter((q) => q.course_id === courseId).length;
+  };
+
+  // Start a random quiz from a course
+  const startRandomQuiz = (courseId: string) => {
+    const courseQuizzes = quizzes.filter((q) => q.course_id === courseId);
+    
+    if (courseQuizzes.length === 0) {
+      toast.error("Aucun QCM disponible pour ce cours");
+      return;
+    }
+
+    setStartingQuiz(courseId);
+
+    // Pick a random quiz
+    const randomIndex = Math.floor(Math.random() * courseQuizzes.length);
+    const randomQuiz = courseQuizzes[randomIndex];
+
+    // Small delay for UX
+    setTimeout(() => {
+      navigate(`/dashboard/qcm/${randomQuiz.id}`);
+    }, 500);
   };
 
   if (authLoading) {
@@ -157,14 +178,14 @@ const DashboardQCM = () => {
       <main className="ml-64 p-8">
         <DashboardHeader 
           title="QCM" 
-          description="Entraîne-toi avec les QCM par matière et par cours"
+          description="Sélectionne un cours pour lancer un QCM aléatoire"
         />
 
         {/* Breadcrumb */}
-        {(selectedCategoryId || selectedCourseId) && (
+        {selectedCategoryId && (
           <div className="flex items-center gap-2 mb-6 text-sm">
             <button 
-              onClick={() => { setSelectedCategoryId(null); setSelectedCourseId(null); }}
+              onClick={() => setSelectedCategoryId(null)}
               className="text-accent hover:underline"
             >
               Matières
@@ -172,18 +193,7 @@ const DashboardQCM = () => {
             {selectedCategory && (
               <>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                <button 
-                  onClick={() => setSelectedCourseId(null)}
-                  className={selectedCourseId ? "text-accent hover:underline" : "text-foreground"}
-                >
-                  {selectedCategory.name}
-                </button>
-              </>
-            )}
-            {selectedCourse && (
-              <>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                <span className="text-foreground">{selectedCourse.title}</span>
+                <span className="text-foreground">{selectedCategory.name}</span>
               </>
             )}
           </div>
@@ -218,7 +228,7 @@ const DashboardQCM = () => {
                   </div>
                   <h3 className="text-xl font-bold mb-1">{category.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {quizCount} {quizCount > 1 ? "QCM" : "QCM"} disponible{quizCount > 1 ? "s" : ""}
+                    {quizCount} QCM disponible{quizCount > 1 ? "s" : ""}
                   </p>
                 </button>
               );
@@ -232,17 +242,29 @@ const DashboardQCM = () => {
               </div>
             )}
           </div>
-        ) : !selectedCourseId ? (
-          // Show courses in selected category
+        ) : (
+          // Show courses in selected category - click to start random quiz
           <div className="space-y-4">
+            <div className="p-4 bg-accent/10 rounded-lg border border-accent/20 flex items-center gap-3 mb-6">
+              <Shuffle className="w-5 h-5 text-accent" />
+              <p className="text-sm">
+                <span className="font-medium">Mode aléatoire :</span> Clique sur un cours pour lancer un QCM au hasard
+              </p>
+            </div>
+
             {filteredCourses.length > 0 ? filteredCourses.map((course) => {
-              const courseQuizCount = quizzes.filter((q) => q.course_id === course.id).length;
+              const courseQuizCount = getQuizCountForCourse(course.id);
+              const isStarting = startingQuiz === course.id;
               
               return (
                 <Card 
                   key={course.id}
-                  className="cursor-pointer hover:border-accent/50 transition-colors"
-                  onClick={() => setSelectedCourseId(course.id)}
+                  className={`transition-all ${
+                    courseQuizCount > 0 
+                      ? "cursor-pointer hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5" 
+                      : "opacity-50 cursor-not-allowed"
+                  }`}
+                  onClick={() => courseQuizCount > 0 && !isStarting && startRandomQuiz(course.id)}
                 >
                   <CardContent className="flex items-center justify-between p-4">
                     <div className="flex items-center gap-4">
@@ -252,11 +274,28 @@ const DashboardQCM = () => {
                       <div>
                         <h3 className="font-medium">{course.title}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {courseQuizCount} {courseQuizCount > 1 ? "QCM" : "QCM"} disponible{courseQuizCount > 1 ? "s" : ""}
+                          {courseQuizCount > 0 
+                            ? `${courseQuizCount} QCM disponible${courseQuizCount > 1 ? "s" : ""}`
+                            : "Aucun QCM disponible"
+                          }
                         </p>
                       </div>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                    {courseQuizCount > 0 && (
+                      <Button disabled={isStarting}>
+                        {isStarting ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Chargement...
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4 mr-2" />
+                            Lancer un QCM
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               );
@@ -266,50 +305,6 @@ const DashboardQCM = () => {
                 <h3 className="font-medium mb-2">Aucun cours dans cette matière</h3>
                 <p className="text-sm text-muted-foreground">
                   Les cours seront bientôt disponibles.
-                </p>
-              </div>
-            )}
-          </div>
-        ) : (
-          // Show quizzes for selected course
-          <div className="space-y-4">
-            {filteredQuizzes.length > 0 ? filteredQuizzes.map((quiz) => (
-              <Card key={quiz.id} className="hover:border-accent/50 transition-colors">
-                <CardContent className="flex items-center justify-between p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
-                      <FileQuestion className="w-6 h-6 text-accent" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-medium">{quiz.title}</h3>
-                        {quiz.is_free && (
-                          <Badge variant="secondary">Gratuit</Badge>
-                        )}
-                      </div>
-                      {quiz.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-1">
-                          {quiz.description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                        <Clock className="w-3 h-3" />
-                        <span>{quiz.time_limit_minutes || 30} min</span>
-                      </div>
-                    </div>
-                  </div>
-                  <Button onClick={() => navigate(`/dashboard/qcm/${quiz.id}`)}>
-                    <Play className="w-4 h-4 mr-2" />
-                    Commencer
-                  </Button>
-                </CardContent>
-              </Card>
-            )) : (
-              <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
-                <FileQuestion className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="font-medium mb-2">Aucun QCM pour ce cours</h3>
-                <p className="text-sm text-muted-foreground">
-                  Les QCM seront bientôt disponibles.
                 </p>
               </div>
             )}
