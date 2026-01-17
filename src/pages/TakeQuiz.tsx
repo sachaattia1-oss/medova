@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -17,9 +17,11 @@ import {
   XCircle,
   AlertCircle,
   Trophy,
-  Shuffle
+  Play
 } from "lucide-react";
 import { toast } from "sonner";
+
+const SERIES_SIZE = 5;
 
 interface Quiz {
   id: string;
@@ -36,17 +38,11 @@ interface Question {
   order_index: number | null;
 }
 
-// Answer without is_correct (secure view)
 interface Answer {
   id: string;
   question_id: string;
   answer_text: string;
   order_index: number | null;
-}
-
-// Answer with is_correct (returned by edge function after submission)
-interface AnswerWithCorrect extends Answer {
-  is_correct?: boolean;
 }
 
 interface UserAnswer {
@@ -70,10 +66,24 @@ interface SubmitResponse {
   results: QuestionResult[];
 }
 
+interface SeriesResult {
+  quizId: string;
+  quizTitle: string;
+  score: number;
+  totalQuestions: number;
+}
+
 const TakeQuiz = () => {
   const { quizId } = useParams<{ quizId: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+
+  // Series tracking from URL params
+  const seriesIndex = parseInt(searchParams.get("series") || "1");
+  const seriesDataParam = searchParams.get("seriesData");
+  const seriesResults: SeriesResult[] = seriesDataParam ? JSON.parse(decodeURIComponent(seriesDataParam)) : [];
+  const completedQuizIds = searchParams.get("completed")?.split(",").filter(Boolean) || [];
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -82,16 +92,16 @@ const TakeQuiz = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
-  const [startTime] = useState(Date.now());
+  const [startTime, setStartTime] = useState(Date.now());
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [results, setResults] = useState<QuestionResult[]>([]);
   const [totalScore, setTotalScore] = useState(0);
   const [saving, setSaving] = useState(false);
-  // Store correct answers after submission (from edge function)
   const [correctAnswersMap, setCorrectAnswersMap] = useState<Record<string, string[]>>({});
-  // Next random quiz
-  const [nextQuiz, setNextQuiz] = useState<{ id: string; title: string } | null>(null);
-  const [loadingNextQuiz, setLoadingNextQuiz] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [nextQuizId, setNextQuizId] = useState<string | null>(null);
+  const [isSeriesComplete, setIsSeriesComplete] = useState(false);
+  const [finalSeriesResults, setFinalSeriesResults] = useState<SeriesResult[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -234,11 +244,25 @@ const TakeQuiz = () => {
       setCorrectAnswersMap(correctMap);
       
       setIsSubmitted(true);
-      toast.success("QCM terminé !");
+      toast.success(`QCM ${seriesIndex}/${SERIES_SIZE} terminé !`);
 
-      // Fetch next random quiz from same course
-      if (quiz?.course_id) {
-        fetchNextRandomQuiz(quiz.course_id, quizId!);
+      // Handle series logic
+      const newResult: SeriesResult = {
+        quizId: quizId!,
+        quizTitle: quiz?.title || "",
+        score: response.totalScore,
+        totalQuestions: response.totalQuestions,
+      };
+      const updatedResults = [...seriesResults, newResult];
+      const updatedCompleted = [...completedQuizIds, quizId!];
+
+      if (seriesIndex >= SERIES_SIZE) {
+        // Series complete - show final summary
+        setFinalSeriesResults(updatedResults);
+        setIsSeriesComplete(true);
+      } else {
+        // Fetch next quiz and start countdown
+        await fetchAndStartNextQuiz(quiz?.course_id, updatedCompleted, updatedResults);
       }
     } catch (error) {
       console.error("Error submitting quiz:", error);
@@ -248,23 +272,50 @@ const TakeQuiz = () => {
     }
   };
 
-  const fetchNextRandomQuiz = async (courseId: string, currentQuizId: string) => {
-    setLoadingNextQuiz(true);
+  const fetchAndStartNextQuiz = async (
+    courseId: string | null | undefined, 
+    completedIds: string[],
+    currentResults: SeriesResult[]
+  ) => {
+    if (!courseId) return;
+
     try {
       const { data: quizzesData } = await supabase
         .from("quizzes")
         .select("id, title")
-        .eq("course_id", courseId)
-        .neq("id", currentQuizId);
+        .eq("course_id", courseId);
 
       if (quizzesData && quizzesData.length > 0) {
-        const randomIndex = Math.floor(Math.random() * quizzesData.length);
-        setNextQuiz(quizzesData[randomIndex]);
+        // Filter out completed quizzes
+        let availableQuizzes = quizzesData.filter(q => !completedIds.includes(q.id));
+        
+        // If all quizzes done, allow repeats
+        if (availableQuizzes.length === 0) {
+          availableQuizzes = quizzesData;
+        }
+
+        const randomIndex = Math.floor(Math.random() * availableQuizzes.length);
+        const nextQuiz = availableQuizzes[randomIndex];
+        setNextQuizId(nextQuiz.id);
+
+        // Start 3 second countdown then auto-navigate
+        setCountdown(3);
+        const countdownInterval = setInterval(() => {
+          setCountdown(prev => {
+            if (prev === null || prev <= 1) {
+              clearInterval(countdownInterval);
+              // Navigate to next quiz with series data
+              const seriesData = encodeURIComponent(JSON.stringify(currentResults));
+              const completed = completedIds.join(",");
+              navigate(`/dashboard/qcm/${nextQuiz.id}?series=${seriesIndex + 1}&seriesData=${seriesData}&completed=${completed}`);
+              return null;
+            }
+            return prev - 1;
+          });
+        }, 1000);
       }
     } catch (error) {
       console.error("Error fetching next quiz:", error);
-    } finally {
-      setLoadingNextQuiz(false);
     }
   };
 
@@ -309,7 +360,66 @@ const TakeQuiz = () => {
     );
   }
 
-  // Results view
+  // Final series summary
+  if (isSeriesComplete) {
+    const totalSeriesScore = finalSeriesResults.reduce((sum, r) => sum + r.score, 0);
+    const totalSeriesQuestions = finalSeriesResults.reduce((sum, r) => sum + r.totalQuestions, 0);
+    const seriesPercentage = totalSeriesQuestions > 0 ? (totalSeriesScore / totalSeriesQuestions) * 100 : 0;
+
+    return (
+      <div className="min-h-screen bg-background">
+        <DashboardSidebar />
+        <main className="ml-64 p-8">
+          <div className="max-w-4xl mx-auto">
+            <Card className="mb-8">
+              <CardHeader className="text-center">
+                <Trophy className="w-20 h-20 mx-auto text-accent mb-4" />
+                <CardTitle className="text-3xl">Série de {SERIES_SIZE} QCM Terminée ! 🎉</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <div className="text-6xl font-bold text-accent mb-2">
+                  {totalSeriesScore.toFixed(1)} / {totalSeriesQuestions}
+                </div>
+                <p className="text-xl text-muted-foreground mb-6">
+                  Score global : {seriesPercentage.toFixed(0)}%
+                </p>
+                
+                {/* Individual quiz results */}
+                <div className="space-y-3 mt-8">
+                  <h3 className="text-lg font-semibold mb-4">Détail par QCM</h3>
+                  {finalSeriesResults.map((result, index) => (
+                    <div 
+                      key={result.quizId} 
+                      className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Badge variant="secondary">{index + 1}</Badge>
+                        <span className="font-medium">{result.quizTitle}</span>
+                      </div>
+                      <Badge variant={result.score / result.totalQuestions >= 0.6 ? "default" : "destructive"}>
+                        {result.score.toFixed(1)} / {result.totalQuestions}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex justify-center gap-4">
+              <Button variant="outline" onClick={() => navigate("/dashboard/qcm")}>
+                Retour aux QCM
+              </Button>
+              <Button onClick={() => navigate("/dashboard/progression")}>
+                Voir ma progression
+              </Button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Results view with countdown to next quiz
   if (isSubmitted) {
     const percentage = (totalScore / questions.length) * 100;
 
@@ -318,11 +428,29 @@ const TakeQuiz = () => {
         <DashboardSidebar />
         <main className="ml-64 p-8">
           <div className="max-w-4xl mx-auto">
+            {/* Progress indicator */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              {Array.from({ length: SERIES_SIZE }).map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                    i < seriesIndex
+                      ? "bg-accent text-accent-foreground"
+                      : i === seriesIndex
+                        ? "bg-accent/20 text-accent border-2 border-accent"
+                        : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {i + 1}
+                </div>
+              ))}
+            </div>
+
             {/* Summary Card */}
             <Card className="mb-8">
               <CardHeader className="text-center">
                 <Trophy className="w-16 h-16 mx-auto text-accent mb-4" />
-                <CardTitle className="text-2xl">QCM Terminé !</CardTitle>
+                <CardTitle className="text-2xl">QCM {seriesIndex}/{SERIES_SIZE} Terminé !</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <div className="text-5xl font-bold text-accent mb-2">
@@ -345,6 +473,19 @@ const TakeQuiz = () => {
                     <span>{results.filter((r) => r.errors > 2).length} incorrect</span>
                   </div>
                 </div>
+
+                {/* Countdown to next quiz */}
+                {countdown !== null && seriesIndex < SERIES_SIZE && (
+                  <div className="mt-6 p-4 bg-accent/10 rounded-lg border border-accent/30">
+                    <p className="text-lg font-medium">
+                      Prochain QCM dans <span className="text-2xl font-bold text-accent">{countdown}</span> seconde{countdown > 1 ? "s" : ""}...
+                    </p>
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                      <span className="text-sm text-muted-foreground">Préparation du QCM suivant</span>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -377,7 +518,6 @@ const TakeQuiz = () => {
                     <CardContent>
                       <div className="space-y-2">
                         {questionAnswers.map((answer) => {
-                          // Use correctAnswersMap from edge function response
                           const correctIds = correctAnswersMap[question.id] || [];
                           const isCorrect = correctIds.includes(answer.id);
                           const isSelected = userAnswer?.selectedAnswerIds.includes(answer.id);
@@ -419,37 +559,10 @@ const TakeQuiz = () => {
               })}
             </div>
 
-            <div className="flex flex-col items-center gap-4">
-              {/* Next Quiz Button */}
-              {nextQuiz && (
-                <Button 
-                  size="lg" 
-                  onClick={() => navigate(`/dashboard/qcm/${nextQuiz.id}`)}
-                  className="w-full max-w-md"
-                >
-                  <Shuffle className="w-4 h-4 mr-2" />
-                  QCM suivant : {nextQuiz.title}
-                </Button>
-              )}
-              {loadingNextQuiz && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Chargement du prochain QCM...</span>
-                </div>
-              )}
-              {!nextQuiz && !loadingNextQuiz && (
-                <p className="text-sm text-muted-foreground">
-                  Aucun autre QCM disponible pour ce cours
-                </p>
-              )}
-              <div className="flex gap-4">
-                <Button variant="outline" onClick={() => navigate("/dashboard/qcm")}>
-                  Retour aux QCM
-                </Button>
-                <Button variant="secondary" onClick={() => navigate("/dashboard/progression")}>
-                  Voir ma progression
-                </Button>
-              </div>
+            <div className="flex justify-center gap-4">
+              <Button variant="outline" onClick={() => navigate("/dashboard/qcm")}>
+                Quitter la série
+              </Button>
             </div>
           </div>
         </main>
@@ -463,6 +576,24 @@ const TakeQuiz = () => {
       <DashboardSidebar />
       <main className="ml-64 p-8">
         <div className="max-w-3xl mx-auto">
+          {/* Series progress indicator */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            {Array.from({ length: SERIES_SIZE }).map((_, i) => (
+              <div
+                key={i}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                  i < seriesIndex - 1
+                    ? "bg-accent text-accent-foreground"
+                    : i === seriesIndex - 1
+                      ? "bg-accent/20 text-accent border-2 border-accent"
+                      : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {i + 1}
+              </div>
+            ))}
+          </div>
+
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <Button variant="ghost" onClick={() => navigate("/dashboard/qcm")}>
@@ -470,6 +601,7 @@ const TakeQuiz = () => {
               Quitter
             </Button>
             <div className="flex items-center gap-4">
+              <Badge variant="outline">QCM {seriesIndex}/{SERIES_SIZE}</Badge>
               <Badge variant="secondary">
                 Question {currentQuestionIndex + 1} / {questions.length}
               </Badge>
