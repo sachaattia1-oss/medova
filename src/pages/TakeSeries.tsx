@@ -491,6 +491,25 @@ const TakeSeries = () => {
           {/* Question Card */}
           <Card>
             <CardHeader>
+              {/* Score display above question text */}
+              {isQuestionValidated && currentResult && (
+                <div className={`mb-3 text-center font-bold text-lg ${
+                  currentResult.score === 1 
+                    ? "text-green-500" 
+                    : currentResult.score >= 0.2 
+                      ? "text-yellow-500"
+                      : "text-red-500"
+                }`}>
+                  {currentResult.score === 1 
+                    ? "✓ 1 point" 
+                    : currentResult.score === 0.5 
+                      ? "⚠ 0.5 point (1 erreur)"
+                      : currentResult.score === 0.2
+                        ? "⚠ 0.2 point (2 erreurs)"
+                        : "✗ 0 point (plus de 2 erreurs)"
+                  }
+                </div>
+              )}
               <CardTitle className="text-lg">{currentQuestion?.question_text}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -498,44 +517,6 @@ const TakeSeries = () => {
                 <p className="text-sm text-muted-foreground mb-4">
                   Sélectionnez toutes les réponses correctes
                 </p>
-              )}
-              
-              {isQuestionValidated && currentResult && (
-                <div className={`mb-4 p-4 rounded-lg border ${
-                  currentResult.score === 1 
-                    ? "bg-green-500/10 border-green-500/30" 
-                    : currentResult.score >= 0.2 
-                      ? "bg-yellow-500/10 border-yellow-500/30"
-                      : "bg-red-500/10 border-red-500/30"
-                }`}>
-                  <div className="flex items-center gap-3">
-                    {currentResult.score === 1 ? (
-                      <CheckCircle2 className="w-8 h-8 text-green-500" />
-                    ) : currentResult.score >= 0.2 ? (
-                      <AlertCircle className="w-8 h-8 text-yellow-500" />
-                    ) : (
-                      <XCircle className="w-8 h-8 text-red-500" />
-                    )}
-                    <div>
-                      <p className="font-bold text-lg">
-                        {currentResult.score === 1 
-                          ? "Parfait ! 1 point" 
-                          : currentResult.score === 0.5 
-                            ? "0.5 point (1 erreur)"
-                            : currentResult.score === 0.2
-                              ? "0.2 point (2 erreurs)"
-                              : "0 point (plus de 2 erreurs)"
-                        }
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {currentResult.errors === 0 
-                          ? "Toutes les bonnes réponses !" 
-                          : `${currentResult.errors} erreur${currentResult.errors > 1 ? "s" : ""}`
-                        }
-                      </p>
-                    </div>
-                  </div>
-                </div>
               )}
 
               <div className="space-y-3">
