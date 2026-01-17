@@ -225,17 +225,6 @@ const TakeSeries = () => {
       setCurrentResult(result);
       setIsQuestionValidated(true);
 
-      // Show score feedback
-      if (result.score === 1) {
-        toast.success("Parfait ! 1 point 🎉");
-      } else if (result.score === 0.5) {
-        toast("0.5 point - 1 erreur", { icon: "⚠️" });
-      } else if (result.score === 0.2) {
-        toast("0.2 point - 2 erreurs", { icon: "⚠️" });
-      } else {
-        toast.error("0 point - Plus de 2 erreurs");
-      }
-
     } catch (error) {
       console.error("Error validating question:", error);
       toast.error("Erreur lors de la validation");
