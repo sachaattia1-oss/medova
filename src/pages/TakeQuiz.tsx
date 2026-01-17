@@ -240,15 +240,15 @@ const TakeQuiz = () => {
       const timeSpent = Math.floor((Date.now() - startTime) / 1000);
       
       if (user?.id && quizId) {
-        await supabase.from("quiz_attempts").insert({
+        await supabase.from("quiz_attempts").insert([{
           user_id: user.id,
           quiz_id: quizId,
           score: total,
           total_questions: questions.length,
           time_spent_seconds: timeSpent,
           completed_at: new Date().toISOString(),
-          answers_data: userAnswers as unknown as Record<string, unknown>,
-        });
+          answers_data: JSON.parse(JSON.stringify(userAnswers)),
+        }]);
       }
 
       toast.success("QCM terminé !");
