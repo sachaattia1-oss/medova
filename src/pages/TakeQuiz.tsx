@@ -34,12 +34,17 @@ interface Question {
   order_index: number | null;
 }
 
+// Answer without is_correct (secure view)
 interface Answer {
   id: string;
   question_id: string;
   answer_text: string;
-  is_correct: boolean | null;
   order_index: number | null;
+}
+
+// Answer with is_correct (returned by edge function after submission)
+interface AnswerWithCorrect extends Answer {
+  is_correct?: boolean;
 }
 
 interface UserAnswer {
@@ -50,8 +55,17 @@ interface UserAnswer {
 interface QuestionResult {
   questionId: string;
   score: number;
-  isCorrect: boolean;
   errors: number;
+  correctAnswerIds: string[];
+  selectedAnswerIds: string[];
+}
+
+interface SubmitResponse {
+  success: boolean;
+  totalScore: number;
+  totalQuestions: number;
+  percentage: number;
+  results: QuestionResult[];
 }
 
 const TakeQuiz = () => {
@@ -71,6 +85,8 @@ const TakeQuiz = () => {
   const [results, setResults] = useState<QuestionResult[]>([]);
   const [totalScore, setTotalScore] = useState(0);
   const [saving, setSaving] = useState(false);
+  // Store correct answers after submission (from edge function)
+  const [correctAnswersMap, setCorrectAnswersMap] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -131,11 +147,11 @@ const TakeQuiz = () => {
         }))
       );
 
-      // Fetch answers for all questions
+      // Fetch answers from secure view (no is_correct field)
       if (questionsData && questionsData.length > 0) {
         const questionIds = questionsData.map((q) => q.id);
         const { data: answersData, error: answersError } = await supabase
-          .from("quiz_answers")
+          .from("quiz_answers_public")
           .select("*")
           .in("question_id", questionIds)
           .order("order_index", { ascending: true });
@@ -144,7 +160,7 @@ const TakeQuiz = () => {
 
         // Group answers by question
         const answersByQuestion: Record<string, Answer[]> = {};
-        (answersData || []).forEach((answer) => {
+        (answersData || []).forEach((answer: Answer) => {
           if (!answersByQuestion[answer.question_id]) {
             answersByQuestion[answer.question_id] = [];
           }
@@ -177,83 +193,46 @@ const TakeQuiz = () => {
     );
   };
 
-  const calculateScore = useCallback(() => {
-    const questionResults: QuestionResult[] = [];
-    let total = 0;
-
-    questions.forEach((question) => {
-      const userAnswer = userAnswers.find((ua) => ua.questionId === question.id);
-      const questionAnswers = answers[question.id] || [];
-      
-      // Get correct answer IDs
-      const correctAnswerIds = questionAnswers
-        .filter((a) => a.is_correct)
-        .map((a) => a.id);
-      
-      // Get user selected answer IDs
-      const selectedIds = userAnswer?.selectedAnswerIds || [];
-
-      // Calculate errors:
-      // - Missing correct answers
-      // - Extra incorrect answers
-      const missingCorrect = correctAnswerIds.filter((id) => !selectedIds.includes(id)).length;
-      const extraIncorrect = selectedIds.filter((id) => !correctAnswerIds.includes(id)).length;
-      const errors = missingCorrect + extraIncorrect;
-
-      // Medical scoring:
-      // 0 errors = 1 point
-      // 1 error = 0.5 points
-      // 2 errors = 0.2 points
-      // 3+ errors = 0 points
-      let score = 0;
-      if (errors === 0) {
-        score = 1;
-      } else if (errors === 1) {
-        score = 0.5;
-      } else if (errors === 2) {
-        score = 0.2;
-      }
-
-      total += score;
-      questionResults.push({
-        questionId: question.id,
-        score,
-        isCorrect: errors === 0,
-        errors,
-      });
-    });
-
-    return { results: questionResults, total };
-  }, [questions, userAnswers, answers]);
-
   const handleSubmit = async () => {
     if (saving) return;
     setSaving(true);
 
-    const { results: questionResults, total } = calculateScore();
-    setResults(questionResults);
-    setTotalScore(total);
-    setIsSubmitted(true);
-
-    // Save attempt to database
     try {
       const timeSpent = Math.floor((Date.now() - startTime) / 1000);
       
-      if (user?.id && quizId) {
-        await supabase.from("quiz_attempts").insert([{
-          user_id: user.id,
-          quiz_id: quizId,
-          score: total,
-          total_questions: questions.length,
-          time_spent_seconds: timeSpent,
-          completed_at: new Date().toISOString(),
-          answers_data: JSON.parse(JSON.stringify(userAnswers)),
-        }]);
+      // Call edge function to validate and save quiz attempt
+      const { data, error } = await supabase.functions.invoke('submit-quiz', {
+        body: {
+          quizId,
+          userAnswers,
+          timeSpentSeconds: timeSpent,
+        },
+      });
+
+      if (error) throw error;
+
+      const response = data as SubmitResponse;
+      
+      if (!response.success) {
+        throw new Error('Erreur lors de la validation');
       }
 
+      // Store results from server
+      setResults(response.results);
+      setTotalScore(response.totalScore);
+      
+      // Build correct answers map for display
+      const correctMap: Record<string, string[]> = {};
+      response.results.forEach((r) => {
+        correctMap[r.questionId] = r.correctAnswerIds;
+      });
+      setCorrectAnswersMap(correctMap);
+      
+      setIsSubmitted(true);
       toast.success("QCM terminé !");
     } catch (error) {
-      console.error("Error saving attempt:", error);
+      console.error("Error submitting quiz:", error);
+      toast.error("Erreur lors de la validation du QCM");
     } finally {
       setSaving(false);
     }
@@ -368,7 +347,9 @@ const TakeQuiz = () => {
                     <CardContent>
                       <div className="space-y-2">
                         {questionAnswers.map((answer) => {
-                          const isCorrect = answer.is_correct;
+                          // Use correctAnswersMap from edge function response
+                          const correctIds = correctAnswersMap[question.id] || [];
+                          const isCorrect = correctIds.includes(answer.id);
                           const isSelected = userAnswer?.selectedAnswerIds.includes(answer.id);
 
                           return (
