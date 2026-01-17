@@ -16,7 +16,8 @@ import {
   CheckCircle2,
   XCircle,
   AlertCircle,
-  Trophy
+  Trophy,
+  Shuffle
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,6 +26,7 @@ interface Quiz {
   title: string;
   description: string | null;
   time_limit_minutes: number | null;
+  course_id: string | null;
 }
 
 interface Question {
@@ -87,6 +89,9 @@ const TakeQuiz = () => {
   const [saving, setSaving] = useState(false);
   // Store correct answers after submission (from edge function)
   const [correctAnswersMap, setCorrectAnswersMap] = useState<Record<string, string[]>>({});
+  // Next random quiz
+  const [nextQuiz, setNextQuiz] = useState<{ id: string; title: string } | null>(null);
+  const [loadingNextQuiz, setLoadingNextQuiz] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -121,7 +126,7 @@ const TakeQuiz = () => {
       // Fetch quiz
       const { data: quizData, error: quizError } = await supabase
         .from("quizzes")
-        .select("id, title, description, time_limit_minutes")
+        .select("id, title, description, time_limit_minutes, course_id")
         .eq("id", quizId)
         .single();
 
@@ -230,11 +235,36 @@ const TakeQuiz = () => {
       
       setIsSubmitted(true);
       toast.success("QCM terminé !");
+
+      // Fetch next random quiz from same course
+      if (quiz?.course_id) {
+        fetchNextRandomQuiz(quiz.course_id, quizId!);
+      }
     } catch (error) {
       console.error("Error submitting quiz:", error);
       toast.error("Erreur lors de la validation du QCM");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const fetchNextRandomQuiz = async (courseId: string, currentQuizId: string) => {
+    setLoadingNextQuiz(true);
+    try {
+      const { data: quizzesData } = await supabase
+        .from("quizzes")
+        .select("id, title")
+        .eq("course_id", courseId)
+        .neq("id", currentQuizId);
+
+      if (quizzesData && quizzesData.length > 0) {
+        const randomIndex = Math.floor(Math.random() * quizzesData.length);
+        setNextQuiz(quizzesData[randomIndex]);
+      }
+    } catch (error) {
+      console.error("Error fetching next quiz:", error);
+    } finally {
+      setLoadingNextQuiz(false);
     }
   };
 
@@ -389,13 +419,37 @@ const TakeQuiz = () => {
               })}
             </div>
 
-            <div className="flex justify-center gap-4">
-              <Button variant="outline" onClick={() => navigate("/dashboard/qcm")}>
-                Retour aux QCM
-              </Button>
-              <Button onClick={() => navigate("/dashboard/progression")}>
-                Voir ma progression
-              </Button>
+            <div className="flex flex-col items-center gap-4">
+              {/* Next Quiz Button */}
+              {nextQuiz && (
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate(`/dashboard/qcm/${nextQuiz.id}`)}
+                  className="w-full max-w-md"
+                >
+                  <Shuffle className="w-4 h-4 mr-2" />
+                  QCM suivant : {nextQuiz.title}
+                </Button>
+              )}
+              {loadingNextQuiz && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Chargement du prochain QCM...</span>
+                </div>
+              )}
+              {!nextQuiz && !loadingNextQuiz && (
+                <p className="text-sm text-muted-foreground">
+                  Aucun autre QCM disponible pour ce cours
+                </p>
+              )}
+              <div className="flex gap-4">
+                <Button variant="outline" onClick={() => navigate("/dashboard/qcm")}>
+                  Retour aux QCM
+                </Button>
+                <Button variant="secondary" onClick={() => navigate("/dashboard/progression")}>
+                  Voir ma progression
+                </Button>
+              </div>
             </div>
           </div>
         </main>
