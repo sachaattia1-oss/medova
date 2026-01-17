@@ -52,45 +52,64 @@ Deno.serve(async (req) => {
     }
 
     // Parse request body
-    const { quizId, userAnswers, timeSpentSeconds } = await req.json() as {
-      quizId: string
+    const body = await req.json() as {
+      quizId?: string
+      questionIds?: string[]
       userAnswers: UserAnswer[]
       timeSpentSeconds: number
+      courseId?: string
+      isSeries?: boolean
     }
+    
+    const { quizId, questionIds: providedQuestionIds, userAnswers, timeSpentSeconds, courseId, isSeries } = body
 
-    if (!quizId || !userAnswers) {
+    if (!userAnswers || (!quizId && !providedQuestionIds)) {
       return new Response(
         JSON.stringify({ error: 'Données manquantes' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    console.log(`User ${user.id} submitting quiz ${quizId}`)
-
     // Use service role client for database operations
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Fetch quiz questions
-    const { data: questions, error: questionsError } = await supabaseAdmin
-      .from('quiz_questions')
-      .select('id')
-      .eq('quiz_id', quizId)
-      .order('order_index')
+    let questionIds: string[]
 
-    if (questionsError) {
-      console.error('Error fetching questions:', questionsError)
-      throw questionsError
-    }
+    if (isSeries && providedQuestionIds) {
+      // Series mode: use provided question IDs directly
+      console.log(`User ${user.id} submitting series for course ${courseId} with ${providedQuestionIds.length} questions`)
+      questionIds = providedQuestionIds
+    } else if (quizId) {
+      // Quiz mode: fetch questions from quiz
+      console.log(`User ${user.id} submitting quiz ${quizId}`)
+      
+      const { data: questions, error: questionsError } = await supabaseAdmin
+        .from('quiz_questions')
+        .select('id')
+        .eq('quiz_id', quizId)
+        .order('order_index')
 
-    if (!questions || questions.length === 0) {
+      if (questionsError) {
+        console.error('Error fetching questions:', questionsError)
+        throw questionsError
+      }
+
+      if (!questions || questions.length === 0) {
+        return new Response(
+          JSON.stringify({ error: 'Quiz introuvable ou sans questions' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+      
+      questionIds = questions.map(q => q.id)
+    } else {
       return new Response(
-        JSON.stringify({ error: 'Quiz introuvable ou sans questions' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Données manquantes' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     // Fetch correct answers for all questions (server-side only!)
-    const questionIds = questions.map(q => q.id)
     const { data: answers, error: answersError } = await supabaseAdmin
       .from('quiz_answers')
       .select('id, question_id, is_correct')
@@ -105,10 +124,10 @@ Deno.serve(async (req) => {
     const results: QuestionResult[] = []
     let totalScore = 0
 
-    for (const question of questions) {
-      const questionAnswers = answers?.filter(a => a.question_id === question.id) || []
+    for (const questionId of questionIds) {
+      const questionAnswers = answers?.filter(a => a.question_id === questionId) || []
       const correctAnswerIds = questionAnswers.filter(a => a.is_correct).map(a => a.id)
-      const userAnswer = userAnswers.find(ua => ua.questionId === question.id)
+      const userAnswer = userAnswers.find(ua => ua.questionId === questionId)
       const selectedIds = userAnswer?.selectedAnswerIds || []
 
       // Calculate errors
@@ -128,7 +147,7 @@ Deno.serve(async (req) => {
 
       totalScore += score
       results.push({
-        questionId: question.id,
+        questionId,
         score,
         errors,
         correctAnswerIds,
@@ -136,36 +155,54 @@ Deno.serve(async (req) => {
       })
     }
 
-    console.log(`Quiz ${quizId} - User ${user.id} - Score: ${totalScore}/${questions.length}`)
+    console.log(`User ${user.id} - Score: ${totalScore}/${questionIds.length}`)
 
     // Save attempt using service role (bypasses RLS)
-    const { data: attempt, error: insertError } = await supabaseAdmin
-      .from('quiz_attempts')
-      .insert({
-        user_id: user.id,
-        quiz_id: quizId,
-        score: totalScore,
-        total_questions: questions.length,
-        time_spent_seconds: timeSpentSeconds,
-        completed_at: new Date().toISOString(),
-        answers_data: userAnswers,
-      })
-      .select()
-      .single()
+    // For series, we save with courseId context; for quiz, with quizId
+    const attemptData: Record<string, unknown> = {
+      user_id: user.id,
+      score: totalScore,
+      total_questions: questionIds.length,
+      time_spent_seconds: timeSpentSeconds,
+      completed_at: new Date().toISOString(),
+      answers_data: userAnswers,
+    }
+    
+    // Only add quiz_id if it's provided (required field)
+    if (quizId) {
+      attemptData.quiz_id = quizId
+    } else if (isSeries && providedQuestionIds && providedQuestionIds.length > 0) {
+      // For series, we need to find a quiz_id from the questions
+      const { data: questionData } = await supabaseAdmin
+        .from('quiz_questions')
+        .select('quiz_id')
+        .eq('id', providedQuestionIds[0])
+        .single()
+      
+      if (questionData?.quiz_id) {
+        attemptData.quiz_id = questionData.quiz_id
+      }
+    }
 
-    if (insertError) {
-      console.error('Error saving attempt:', insertError)
-      throw insertError
+    // Only insert if we have a quiz_id
+    if (attemptData.quiz_id) {
+      const { error: insertError } = await supabaseAdmin
+        .from('quiz_attempts')
+        .insert(attemptData)
+
+      if (insertError) {
+        console.error('Error saving attempt:', insertError)
+        // Don't throw, just log - we still want to return results
+      }
     }
 
     // Return results with correct answers (only after submission!)
     return new Response(
       JSON.stringify({
         success: true,
-        attemptId: attempt.id,
         totalScore,
-        totalQuestions: questions.length,
-        percentage: (totalScore / questions.length) * 100,
+        totalQuestions: questionIds.length,
+        percentage: (totalScore / questionIds.length) * 100,
         results,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
