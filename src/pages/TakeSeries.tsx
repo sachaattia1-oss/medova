@@ -38,7 +38,6 @@ interface Answer {
   id: string;
   question_id: string;
   answer_text: string;
-  is_correct: boolean;
   order_index: number | null;
 }
 
@@ -51,6 +50,7 @@ interface QuestionResult {
   questionId: string;
   score: number;
   errors: number;
+  correctAnswerIds: string[];
 }
 
 const TakeSeries = () => {
@@ -64,13 +64,17 @@ const TakeSeries = () => {
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
-  const [timeLeft, setTimeLeft] = useState<number>(30 * 60); // 30 min par série
+  const [timeLeft, setTimeLeft] = useState<number>(30 * 60);
   const [startTime] = useState(Date.now());
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [results, setResults] = useState<QuestionResult[]>([]);
-  const [totalScore, setTotalScore] = useState(0);
-  const [saving, setSaving] = useState(false);
-  const [correctAnswersMap, setCorrectAnswersMap] = useState<Record<string, string[]>>({});
+  
+  // Per-question state
+  const [isQuestionValidated, setIsQuestionValidated] = useState(false);
+  const [currentResult, setCurrentResult] = useState<QuestionResult | null>(null);
+  const [validating, setValidating] = useState(false);
+  
+  // Series results
+  const [seriesResults, setSeriesResults] = useState<QuestionResult[]>([]);
+  const [isSeriesComplete, setIsSeriesComplete] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -86,11 +90,10 @@ const TakeSeries = () => {
 
   // Timer
   useEffect(() => {
-    if (!isSubmitted && timeLeft > 0) {
+    if (!isSeriesComplete && timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-            handleSubmit();
             return 0;
           }
           return prev - 1;
@@ -98,11 +101,10 @@ const TakeSeries = () => {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [timeLeft, isSubmitted]);
+  }, [timeLeft, isSeriesComplete]);
 
   const fetchSeriesData = async () => {
     try {
-      // Fetch course
       const { data: courseData, error: courseError } = await supabase
         .from("courses")
         .select("id, title")
@@ -112,7 +114,6 @@ const TakeSeries = () => {
       if (courseError) throw courseError;
       setCourse(courseData);
 
-      // Fetch all quizzes for this course
       const { data: quizzesData } = await supabase
         .from("quizzes")
         .select("id")
@@ -126,7 +127,6 @@ const TakeSeries = () => {
 
       const quizIds = quizzesData.map(q => q.id);
 
-      // Fetch all questions from these quizzes
       const { data: allQuestionsData, error: questionsError } = await supabase
         .from("quiz_questions")
         .select("*")
@@ -140,12 +140,10 @@ const TakeSeries = () => {
         return;
       }
 
-      // Shuffle and pick SERIES_SIZE random questions
       const shuffled = [...allQuestionsData].sort(() => Math.random() - 0.5);
       const selectedQuestions = shuffled.slice(0, Math.min(SERIES_SIZE, shuffled.length));
       setQuestions(selectedQuestions);
 
-      // Initialize user answers
       setUserAnswers(
         selectedQuestions.map((q) => ({
           questionId: q.id,
@@ -153,7 +151,6 @@ const TakeSeries = () => {
         }))
       );
 
-      // Fetch answers for selected questions (from public view - no is_correct)
       const questionIds = selectedQuestions.map((q) => q.id);
       const { data: answersData, error: answersError } = await supabase
         .from("quiz_answers_public")
@@ -163,9 +160,8 @@ const TakeSeries = () => {
 
       if (answersError) throw answersError;
 
-      // Group answers by question
       const answersByQuestion: Record<string, Answer[]> = {};
-      (answersData || []).forEach((answer: any) => {
+      (answersData || []).forEach((answer: Answer) => {
         if (!answersByQuestion[answer.question_id]) {
           answersByQuestion[answer.question_id] = [];
         }
@@ -182,6 +178,8 @@ const TakeSeries = () => {
   };
 
   const toggleAnswer = (questionId: string, answerId: string) => {
+    if (isQuestionValidated) return; // Can't change after validation
+    
     setUserAnswers((prev) =>
       prev.map((ua) => {
         if (ua.questionId === questionId) {
@@ -198,19 +196,20 @@ const TakeSeries = () => {
     );
   };
 
-  const handleSubmit = async () => {
-    if (saving) return;
-    setSaving(true);
+  const validateCurrentQuestion = async () => {
+    if (validating) return;
+    setValidating(true);
 
     try {
-      const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-      
-      // Call edge function to validate
+      const currentQuestion = questions[currentQuestionIndex];
+      const currentUserAnswer = userAnswers.find(ua => ua.questionId === currentQuestion.id);
+
+      // Call edge function to validate just this question
       const { data, error } = await supabase.functions.invoke('submit-quiz', {
         body: {
-          questionIds: questions.map(q => q.id),
-          userAnswers,
-          timeSpentSeconds: timeSpent,
+          questionIds: [currentQuestion.id],
+          userAnswers: [currentUserAnswer],
+          timeSpentSeconds: 0,
           courseId,
           isSeries: true,
         },
@@ -218,27 +217,46 @@ const TakeSeries = () => {
 
       if (error) throw error;
 
-      if (!data.success) {
+      if (!data.success || !data.results || data.results.length === 0) {
         throw new Error('Erreur lors de la validation');
       }
 
-      setResults(data.results);
-      setTotalScore(data.totalScore);
-      
-      // Build correct answers map
-      const correctMap: Record<string, string[]> = {};
-      data.results.forEach((r: QuestionResult & { correctAnswerIds: string[] }) => {
-        correctMap[r.questionId] = r.correctAnswerIds;
-      });
-      setCorrectAnswersMap(correctMap);
-      
-      setIsSubmitted(true);
-      toast.success("Série terminée !");
+      const result = data.results[0] as QuestionResult;
+      setCurrentResult(result);
+      setIsQuestionValidated(true);
+
+      // Show score feedback
+      if (result.score === 1) {
+        toast.success("Parfait ! 1 point 🎉");
+      } else if (result.score === 0.5) {
+        toast("0.5 point - 1 erreur", { icon: "⚠️" });
+      } else if (result.score === 0.2) {
+        toast("0.2 point - 2 erreurs", { icon: "⚠️" });
+      } else {
+        toast.error("0 point - Plus de 2 erreurs");
+      }
+
     } catch (error) {
-      console.error("Error submitting series:", error);
+      console.error("Error validating question:", error);
       toast.error("Erreur lors de la validation");
     } finally {
-      setSaving(false);
+      setValidating(false);
+    }
+  };
+
+  const goToNextQuestion = () => {
+    // Save result
+    if (currentResult) {
+      setSeriesResults(prev => [...prev, currentResult]);
+    }
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(i => i + 1);
+      setIsQuestionValidated(false);
+      setCurrentResult(null);
+    } else {
+      // Series complete
+      setIsSeriesComplete(true);
     }
   };
 
@@ -246,6 +264,13 @@ const TakeSeries = () => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const getScoreLabel = (score: number) => {
+    if (score === 1) return { text: "1 pt", variant: "default" as const, color: "text-green-500" };
+    if (score === 0.5) return { text: "0.5 pt", variant: "secondary" as const, color: "text-yellow-500" };
+    if (score === 0.2) return { text: "0.2 pt", variant: "secondary" as const, color: "text-orange-500" };
+    return { text: "0 pt", variant: "destructive" as const, color: "text-red-500" };
   };
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -282,8 +307,10 @@ const TakeSeries = () => {
     );
   }
 
-  // Results view
-  if (isSubmitted) {
+  // Final series summary
+  if (isSeriesComplete) {
+    const allResults = currentResult ? [...seriesResults, currentResult] : seriesResults;
+    const totalScore = allResults.reduce((sum, r) => sum + r.score, 0);
     const percentage = (totalScore / questions.length) * 100;
 
     return (
@@ -307,50 +334,44 @@ const TakeSeries = () => {
                 <div className="flex justify-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    <span>{results.filter((r) => r.errors === 0).length} parfait</span>
+                    <span>{allResults.filter((r) => r.errors === 0).length} parfait</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 text-yellow-500" />
-                    <span>{results.filter((r) => r.errors === 1 || r.errors === 2).length} partiel</span>
+                    <span>{allResults.filter((r) => r.errors === 1 || r.errors === 2).length} partiel</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <XCircle className="w-4 h-4 text-red-500" />
-                    <span>{results.filter((r) => r.errors > 2).length} incorrect</span>
+                    <span>{allResults.filter((r) => r.errors > 2).length} incorrect</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Question Review */}
+            {/* Recap of all questions */}
             <div className="space-y-4 mb-8">
+              <h3 className="text-lg font-semibold">Récapitulatif</h3>
               {questions.map((question, index) => {
-                const questionResult = results.find((r) => r.questionId === question.id);
+                const result = allResults.find((r) => r.questionId === question.id);
                 const questionAnswers = answers[question.id] || [];
                 const userAnswer = userAnswers.find((ua) => ua.questionId === question.id);
+                const scoreInfo = result ? getScoreLabel(result.score) : null;
 
                 return (
                   <Card key={question.id}>
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <Badge variant="secondary">QCM {index + 1}</Badge>
-                        <Badge 
-                          variant={
-                            questionResult?.errors === 0 
-                              ? "default" 
-                              : questionResult?.errors && questionResult.errors <= 2 
-                                ? "secondary" 
-                                : "destructive"
-                          }
-                        >
-                          {questionResult?.score.toFixed(1)} pt
-                        </Badge>
+                        {scoreInfo && (
+                          <Badge variant={scoreInfo.variant}>{scoreInfo.text}</Badge>
+                        )}
                       </div>
                       <CardTitle className="text-base mt-2">{question.question_text}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
                         {questionAnswers.map((answer) => {
-                          const correctIds = correctAnswersMap[question.id] || [];
+                          const correctIds = result?.correctAnswerIds || [];
                           const isCorrect = correctIds.includes(answer.id);
                           const isSelected = userAnswer?.selectedAnswerIds.includes(answer.id);
 
@@ -373,9 +394,6 @@ const TakeSeries = () => {
                                 <div className="w-4 h-4" />
                               )}
                               <span>{answer.answer_text}</span>
-                              {isSelected && !isCorrect && (
-                                <span className="text-xs text-red-500 ml-auto">(votre réponse)</span>
-                              )}
                             </div>
                           );
                         })}
@@ -395,7 +413,7 @@ const TakeSeries = () => {
               <Button variant="outline" onClick={() => navigate("/dashboard/qcm")}>
                 Retour aux QCM
               </Button>
-              <Button onClick={() => navigate(`/dashboard/qcm/series/${courseId}`)}>
+              <Button onClick={() => window.location.reload()}>
                 Nouvelle série
               </Button>
             </div>
@@ -413,20 +431,34 @@ const TakeSeries = () => {
         <div className="max-w-3xl mx-auto">
           {/* Series progress indicator */}
           <div className="flex items-center justify-center gap-2 mb-6">
-            {questions.map((_, i) => (
-              <div
-                key={i}
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
-                  i < currentQuestionIndex
-                    ? "bg-accent text-accent-foreground"
-                    : i === currentQuestionIndex
-                      ? "bg-accent/20 text-accent border-2 border-accent scale-110"
-                      : "bg-muted text-muted-foreground"
-                }`}
-              >
-                {i + 1}
-              </div>
-            ))}
+            {questions.map((_, i) => {
+              const result = seriesResults[i];
+              const isCurrent = i === currentQuestionIndex;
+              const isPast = i < currentQuestionIndex;
+              
+              return (
+                <div
+                  key={i}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                    isPast && result
+                      ? result.score === 1
+                        ? "bg-green-500 text-white"
+                        : result.score >= 0.2
+                          ? "bg-yellow-500 text-white"
+                          : "bg-red-500 text-white"
+                      : isCurrent
+                        ? "bg-accent/20 text-accent border-2 border-accent scale-110"
+                        : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {isPast && result ? (
+                    result.score === 1 ? <CheckCircle2 className="w-5 h-5" /> : result.score >= 0.2 ? "½" : <XCircle className="w-5 h-5" />
+                  ) : (
+                    i + 1
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* Header */}
@@ -462,83 +494,134 @@ const TakeSeries = () => {
               <CardTitle className="text-lg">{currentQuestion?.question_text}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Sélectionnez toutes les réponses correctes
-              </p>
+              {!isQuestionValidated && (
+                <p className="text-sm text-muted-foreground mb-4">
+                  Sélectionnez toutes les réponses correctes
+                </p>
+              )}
+              
+              {isQuestionValidated && currentResult && (
+                <div className={`mb-4 p-4 rounded-lg border ${
+                  currentResult.score === 1 
+                    ? "bg-green-500/10 border-green-500/30" 
+                    : currentResult.score >= 0.2 
+                      ? "bg-yellow-500/10 border-yellow-500/30"
+                      : "bg-red-500/10 border-red-500/30"
+                }`}>
+                  <div className="flex items-center gap-3">
+                    {currentResult.score === 1 ? (
+                      <CheckCircle2 className="w-8 h-8 text-green-500" />
+                    ) : currentResult.score >= 0.2 ? (
+                      <AlertCircle className="w-8 h-8 text-yellow-500" />
+                    ) : (
+                      <XCircle className="w-8 h-8 text-red-500" />
+                    )}
+                    <div>
+                      <p className="font-bold text-lg">
+                        {currentResult.score === 1 
+                          ? "Parfait ! 1 point" 
+                          : currentResult.score === 0.5 
+                            ? "0.5 point (1 erreur)"
+                            : currentResult.score === 0.2
+                              ? "0.2 point (2 erreurs)"
+                              : "0 point (plus de 2 erreurs)"
+                        }
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {currentResult.errors === 0 
+                          ? "Toutes les bonnes réponses !" 
+                          : `${currentResult.errors} erreur${currentResult.errors > 1 ? "s" : ""}`
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-3">
                 {currentAnswers.map((answer, index) => {
                   const isSelected = currentUserAnswer?.selectedAnswerIds.includes(answer.id);
                   const letter = String.fromCharCode(65 + index);
+                  
+                  // After validation, show correct/incorrect
+                  const isCorrect = isQuestionValidated && currentResult?.correctAnswerIds.includes(answer.id);
+                  const isWrong = isQuestionValidated && isSelected && !isCorrect;
 
                   return (
                     <button
                       key={answer.id}
                       onClick={() => toggleAnswer(currentQuestion.id, answer.id)}
+                      disabled={isQuestionValidated}
                       className={`w-full flex items-center gap-3 p-4 rounded-lg border text-left transition-colors ${
-                        isSelected
-                          ? "border-accent bg-accent/10"
-                          : "border-border hover:border-accent/50"
+                        isQuestionValidated
+                          ? isCorrect
+                            ? "border-green-500 bg-green-500/10"
+                            : isWrong
+                              ? "border-red-500 bg-red-500/10"
+                              : "border-border bg-muted/50"
+                          : isSelected
+                            ? "border-accent bg-accent/10"
+                            : "border-border hover:border-accent/50"
                       }`}
                     >
-                      <Checkbox 
-                        checked={isSelected}
-                        className="pointer-events-none"
-                      />
+                      {isQuestionValidated ? (
+                        isCorrect ? (
+                          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        ) : isWrong ? (
+                          <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                        ) : (
+                          <div className="w-5 h-5" />
+                        )
+                      ) : (
+                        <Checkbox 
+                          checked={isSelected}
+                          className="pointer-events-none"
+                        />
+                      )}
                       <span className="font-medium text-muted-foreground">{letter}.</span>
                       <span>{answer.answer_text}</span>
+                      {isWrong && (
+                        <span className="text-xs text-red-500 ml-auto">(votre réponse)</span>
+                      )}
                     </button>
                   );
                 })}
               </div>
+
+              {/* Explanation after validation */}
+              {isQuestionValidated && currentQuestion?.explanation && (
+                <div className="mt-4 p-3 bg-accent/10 rounded-lg">
+                  <p className="text-sm">💡 {currentQuestion.explanation}</p>
+                </div>
+              )}
             </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentQuestionIndex((i) => Math.max(0, i - 1))}
-                disabled={currentQuestionIndex === 0}
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Précédent
-              </Button>
-              {currentQuestionIndex < questions.length - 1 ? (
-                <Button onClick={() => setCurrentQuestionIndex((i) => i + 1)}>
-                  Suivant
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              ) : (
-                <Button onClick={handleSubmit} disabled={saving}>
-                  {saving ? (
+            <CardFooter className="flex justify-end">
+              {!isQuestionValidated ? (
+                <Button onClick={validateCurrentQuestion} disabled={validating}>
+                  {validating ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   ) : (
                     <CheckCircle2 className="w-4 h-4 mr-2" />
                   )}
-                  Valider la série
+                  Valider ce QCM
+                </Button>
+              ) : (
+                <Button onClick={goToNextQuestion}>
+                  {currentQuestionIndex < questions.length - 1 ? (
+                    <>
+                      QCM suivant
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </>
+                  ) : (
+                    <>
+                      Voir le résumé
+                      <Trophy className="w-4 h-4 ml-2" />
+                    </>
+                  )}
                 </Button>
               )}
             </CardFooter>
           </Card>
-
-          {/* Question navigation dots */}
-          <div className="flex justify-center gap-2 mt-6 flex-wrap">
-            {questions.map((_, index) => {
-              const hasAnswer = userAnswers[index]?.selectedAnswerIds.length > 0;
-              return (
-                <button
-                  key={index}
-                  onClick={() => setCurrentQuestionIndex(index)}
-                  className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-                    index === currentQuestionIndex
-                      ? "bg-accent text-accent-foreground"
-                      : hasAnswer
-                        ? "bg-accent/20 text-accent"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              );
-            })}
-          </div>
         </div>
       </main>
     </div>
