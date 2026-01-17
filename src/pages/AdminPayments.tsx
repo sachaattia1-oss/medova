@@ -57,12 +57,21 @@ interface Earning {
   approved_at: string | null;
   paid_at: string | null;
   payment_reference: string | null;
+  reference_id: string | null;
   tutor_name?: string;
+  course_title?: string;
+  course_category?: string;
 }
 
 interface TutorProfile {
   user_id: string;
   full_name: string | null;
+}
+
+interface Course {
+  id: string;
+  title: string;
+  category: string | null;
 }
 
 const AdminPayments = () => {
@@ -99,6 +108,24 @@ const AdminPayments = () => {
       // Fetch tutor profiles
       const tutorIds = [...new Set((earningsData || []).map((e) => e.tutor_user_id))];
       
+      // Fetch course info for course-type earnings
+      const courseIds = [...new Set(
+        (earningsData || [])
+          .filter((e) => e.earning_type === "course" && e.reference_id)
+          .map((e) => e.reference_id)
+      )];
+
+      let coursesData: Course[] = [];
+      if (courseIds.length > 0) {
+        const { data, error: coursesError } = await supabase
+          .from("courses")
+          .select("id, title, category")
+          .in("id", courseIds);
+        
+        if (coursesError) throw coursesError;
+        coursesData = data || [];
+      }
+      
       if (tutorIds.length > 0) {
         const { data: profilesData, error: profilesError } = await supabase
           .from("profiles")
@@ -108,15 +135,18 @@ const AdminPayments = () => {
         if (profilesError) throw profilesError;
         setTutors(profilesData || []);
 
-        // Merge tutor names with earnings
-        const earningsWithNames = (earningsData || []).map((earning) => {
+        // Merge tutor names and course info with earnings
+        const earningsWithDetails = (earningsData || []).map((earning) => {
           const tutor = profilesData?.find((p) => p.user_id === earning.tutor_user_id);
+          const course = coursesData.find((c) => c.id === earning.reference_id);
           return {
             ...earning,
             tutor_name: tutor?.full_name || "Tuteur inconnu",
+            course_title: course?.title || null,
+            course_category: course?.category || null,
           };
         });
-        setEarnings(earningsWithNames);
+        setEarnings(earningsWithDetails);
       } else {
         setEarnings([]);
       }
@@ -377,6 +407,8 @@ const AdminPayments = () => {
                     <TableRow>
                       <TableHead>Tuteur</TableHead>
                       <TableHead>Description</TableHead>
+                      <TableHead>Cours</TableHead>
+                      <TableHead>Catégorie</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Montant</TableHead>
                       <TableHead>Date</TableHead>
@@ -392,6 +424,14 @@ const AdminPayments = () => {
                         </TableCell>
                         <TableCell className="max-w-[200px] truncate">
                           {earning.description}
+                        </TableCell>
+                        <TableCell className="max-w-[150px] truncate">
+                          {earning.course_title || "-"}
+                        </TableCell>
+                        <TableCell>
+                          {earning.course_category ? (
+                            <Badge variant="secondary">{earning.course_category}</Badge>
+                          ) : "-"}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
