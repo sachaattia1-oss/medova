@@ -56,6 +56,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[]>([]);
+  const [scheduleEvents, setScheduleEvents] = useState<ScheduleEvent[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
