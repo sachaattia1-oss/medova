@@ -64,8 +64,7 @@ const TakeSeries = () => {
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
-  const [timeLeft, setTimeLeft] = useState<number>(30 * 60);
-  const [startTime] = useState(Date.now());
+  const [stopwatch, setStopwatch] = useState<number>(0);
   
   // Per-question state
   const [isQuestionValidated, setIsQuestionValidated] = useState(false);
@@ -88,20 +87,15 @@ const TakeSeries = () => {
     }
   }, [courseId]);
 
-  // Timer
+  // Stopwatch - counts up and resets on each question
   useEffect(() => {
-    if (!isSeriesComplete && timeLeft > 0) {
+    if (!isSeriesComplete && !isQuestionValidated) {
       const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            return 0;
-          }
-          return prev - 1;
-        });
+        setStopwatch((prev) => prev + 1);
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [timeLeft, isSeriesComplete]);
+  }, [isSeriesComplete, isQuestionValidated, currentQuestionIndex]);
 
   const fetchSeriesData = async () => {
     try {
@@ -243,6 +237,7 @@ const TakeSeries = () => {
       setCurrentQuestionIndex(i => i + 1);
       setIsQuestionValidated(false);
       setCurrentResult(null);
+      setStopwatch(0);
     } else {
       // Series complete
       setIsSeriesComplete(true);
@@ -462,11 +457,11 @@ const TakeSeries = () => {
                 QCM {currentQuestionIndex + 1} / {questions.length}
               </Badge>
               <Badge 
-                variant={timeLeft < 60 ? "destructive" : "outline"}
+                variant="outline"
                 className="flex items-center gap-1"
               >
                 <Clock className="w-3 h-3" />
-                {formatTime(timeLeft)}
+                {formatTime(stopwatch)}
               </Badge>
             </div>
           </div>
