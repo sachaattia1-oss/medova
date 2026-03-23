@@ -53,7 +53,7 @@ const Auth = () => {
           if (selectedRole === "tutor") {
             toast.success("Compte tuteur créé ! Votre demande est en attente de validation par un administrateur.");
           } else {
-            toast.success("Compte créé avec succès ! Bienvenue sur GOPASS.");
+            toast.success("Compte créé avec succès ! Bienvenue sur MEDOVA.");
           }
           navigate(selectedRole === "tutor" ? "/tutor" : "/dashboard");
         }
@@ -116,7 +116,7 @@ const Auth = () => {
             </h1>
             <p className="text-muted-foreground">
               {isSignUp
-                ? "Rejoins la communauté GOPASS"
+                ? "Rejoins la communauté MEDOVA"
                 : "Bon retour parmi nous !"}
             </p>
           </div>

@@ -26,7 +26,7 @@ const Hero = () => {
             <span className="text-gradient">concours</span>
             <br />
             <span className="text-foreground">avec </span>
-            <span className="text-gradient">GOPASS</span>
+            <span className="text-gradient">MEDOVA</span>
           </h1>
 
           {/* Subheading */}

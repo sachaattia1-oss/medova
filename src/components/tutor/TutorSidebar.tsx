@@ -32,7 +32,7 @@ const TutorSidebar = () => {
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-semibold text-foreground">GOPASS</h1>
+            <h1 className="font-semibold text-foreground">MEDOVA</h1>
             <p className="text-xs text-muted-foreground">Espace Tuteur</p>
           </div>
         </Link>

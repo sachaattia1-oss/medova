@@ -12,7 +12,7 @@ const Footer = () => {
                 <GraduationCap className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold tracking-tight">
-                GO<span className="text-accent">PASS</span>
+                MEDO<span className="text-accent">VA</span>
               </span>
             </a>
             <p className="text-sm text-muted-foreground mb-4">
@@ -62,7 +62,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
-          <p>© 2024 GOPASS. Tous droits réservés.</p>
+          <p>© 2024 MEDOVA. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
