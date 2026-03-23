@@ -117,7 +117,7 @@ const Dashboard = () => {
         />
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatsCard
             title="Cours disponibles"
             value={courses.length}
@@ -132,15 +132,10 @@ const Dashboard = () => {
             onClick={() => navigate("/dashboard/qcm")}
           />
           <StatsCard
-            title="Score moyen"
-            value={`${averageScore}%`}
-            icon={Target}
-          />
-          <StatsCard
-            title="Temps d'étude"
-            value={`${totalHours}h`}
-            description="Total cumulé"
-            icon={Clock}
+            title="Emploi du temps"
+            value="Voir"
+            icon={Calendar}
+            onClick={() => navigate("/dashboard/emploi-du-temps")}
           />
         </div>
 
