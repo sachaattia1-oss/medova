@@ -16,7 +16,7 @@ const CTA = () => {
           </div>
 
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            Rejoins <span className="text-gradient">GOPASS</span> aujourd'hui
+            Rejoins <span className="text-gradient">MEDOVA</span> aujourd'hui
           </h2>
 
           <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">

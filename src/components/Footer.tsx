@@ -62,7 +62,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
-          <p>© 2024 GOPASS. Tous droits réservés.</p>
+          <p>© 2024 MEDOVA. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

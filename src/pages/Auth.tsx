@@ -116,7 +116,7 @@ const Auth = () => {
             </h1>
             <p className="text-muted-foreground">
               {isSignUp
-                ? "Rejoins la communauté GOPASS"
+                ? "Rejoins la communauté MEDOVA"
                 : "Bon retour parmi nous !"}
             </p>
           </div>
