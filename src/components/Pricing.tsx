@@ -33,21 +33,6 @@ const plans = [
     cta: "Économiser maintenant",
     popular: true,
   },
-  {
-    name: "Accès à vie",
-    description: "Un seul paiement, accès illimité",
-    price: "1499",
-    period: "",
-    features: [
-      "Tout le plan Annuel",
-      "Accès à vie garanti",
-      "Toutes les futures mises à jour",
-      "Mentorat personnalisé",
-      "Certificat de complétion",
-    ],
-    cta: "Obtenir l'accès",
-    popular: false,
-  },
 ];
 
 const Pricing = () => {
