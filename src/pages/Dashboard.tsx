@@ -57,6 +57,7 @@ const Dashboard = () => {
   const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[]>([]);
   const [scheduleEvents, setScheduleEvents] = useState<ScheduleEvent[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [totalQuizCount, setTotalQuizCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
