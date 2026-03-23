@@ -64,8 +64,7 @@ const TakeSeries = () => {
   const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
-  const [timeLeft, setTimeLeft] = useState<number>(30 * 60);
-  const [startTime] = useState(Date.now());
+  const [stopwatch, setStopwatch] = useState<number>(0);
   
   // Per-question state
   const [isQuestionValidated, setIsQuestionValidated] = useState(false);
