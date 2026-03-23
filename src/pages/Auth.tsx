@@ -69,8 +69,9 @@ const Auth = () => {
         if (error) {
           toast.error("Email ou mot de passe incorrect");
         } else {
+          // Small delay to let device check run
+          await new Promise(r => setTimeout(r, 1500));
           toast.success("Connexion réussie !");
-          // Navigation will be handled by the dashboard based on role
           navigate("/dashboard");
         }
       }
