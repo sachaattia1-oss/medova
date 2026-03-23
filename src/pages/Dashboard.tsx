@@ -6,9 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import StatsCard from "@/components/dashboard/StatsCard";
-import CourseCard from "@/components/dashboard/CourseCard";
-import { BookOpen, GraduationCap, Calendar, Clock } from "lucide-react";
+import { BookOpen, GraduationCap, Calendar, Clock, Bell, CalendarDays, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { format, parseISO, isAfter, isToday, isBefore, startOfDay, addDays, startOfWeek } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface Course {
   id: string;
@@ -26,12 +28,35 @@ interface QuizAttempt {
   time_spent_seconds: number | null;
 }
 
+interface ScheduleEvent {
+  id: string;
+  title: string;
+  day_of_week: number;
+  start_time: string;
+  end_time: string;
+  color: string;
+  start_date: string;
+  recurrence_type: string;
+}
+
+interface Reminder {
+  id: string;
+  title: string;
+  description: string | null;
+  reminder_date: string;
+  reminder_time: string;
+  is_completed: boolean;
+  color: string;
+}
+
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { isApprovedTutor, isAdmin, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[]>([]);
+  const [scheduleEvents, setScheduleEvents] = useState<ScheduleEvent[]>([]);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,10 +79,10 @@ const Dashboard = () => {
       if (!user) return;
 
       try {
-        // Fetch courses
+        // Fetch courses count
         const { data: coursesData } = await supabase
           .from("courses")
-          .select("*")
+          .select("id, title, description, category, is_free, thumbnail_url")
           .order("order_index", { ascending: true })
           .limit(6);
 
@@ -66,11 +91,30 @@ const Dashboard = () => {
         // Fetch user's quiz attempts
         const { data: attemptsData } = await supabase
           .from("quiz_attempts")
-          .select("*")
+          .select("id, score, total_questions, time_spent_seconds")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
         if (attemptsData) setQuizAttempts(attemptsData);
+
+        // Fetch schedule events
+        const { data: eventsData } = await supabase
+          .from("schedule_events")
+          .select("id, title, day_of_week, start_time, end_time, color, start_date, recurrence_type")
+          .order("start_time");
+
+        if (eventsData) setScheduleEvents(eventsData);
+
+        // Fetch upcoming reminders
+        const { data: remindersData } = await supabase
+          .from("reminders")
+          .select("id, title, description, reminder_date, reminder_time, is_completed, color")
+          .eq("is_completed", false)
+          .order("reminder_date")
+          .order("reminder_time")
+          .limit(5);
+
+        if (remindersData) setReminders(remindersData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -83,18 +127,20 @@ const Dashboard = () => {
 
   // Calculate stats
   const totalQuizzes = quizAttempts.length;
-  const averageScore = quizAttempts.length > 0
-    ? Math.round(
-        quizAttempts.reduce((acc, a) => {
-          if (a.score !== null && a.total_questions !== null && a.total_questions > 0) {
-            return acc + (a.score / a.total_questions) * 100;
-          }
-          return acc;
-        }, 0) / quizAttempts.length
-      )
-    : 0;
-  const totalTime = quizAttempts.reduce((acc, a) => acc + (a.time_spent_seconds || 0), 0);
-  const totalHours = Math.floor(totalTime / 3600);
+
+  // Get today's schedule events
+  const today = new Date();
+  const todayDayOfWeek = (today.getDay() + 6) % 7; // Monday = 0
+  const todayEvents = scheduleEvents.filter((event) => {
+    if (event.day_of_week !== todayDayOfWeek) return false;
+    const eventStartDate = new Date(event.start_date);
+    if (event.recurrence_type === "none") {
+      const eventWeekStart = startOfWeek(eventStartDate, { weekStartsOn: 1 });
+      const todayWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+      return eventWeekStart.getTime() === todayWeekStart.getTime();
+    }
+    return eventStartDate <= today;
+  });
 
   if (authLoading) {
     return (
@@ -139,54 +185,134 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Recent Courses */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">Cours récents</h2>
-            <button 
-              onClick={() => navigate("/dashboard/cours")}
-              className="text-sm text-accent hover:underline"
-            >
-              Voir tous les cours →
-            </button>
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="p-4 rounded-2xl bg-card border border-border/50">
-                  <Skeleton className="aspect-video rounded-xl mb-4" />
-                  <Skeleton className="h-5 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-full mb-1" />
-                  <Skeleton className="h-4 w-2/3 mb-4" />
-                  <Skeleton className="h-9 w-full" />
+        {/* Schedule & Reminders Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Today's Schedule */}
+          <Card className="border-border/50">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-accent" />
+                Emploi du temps - Aujourd'hui
+              </CardTitle>
+              <button
+                onClick={() => navigate("/dashboard/emploi-du-temps")}
+                className="text-sm text-accent hover:underline flex items-center gap-1"
+              >
+                Voir tout <ChevronRight className="w-4 h-4" />
+              </button>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-14 w-full rounded-lg" />
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : courses.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.slice(0, 3).map((course) => (
-                <CourseCard
-                  key={course.id}
-                  title={course.title}
-                  description={course.description || undefined}
-                  category={course.category || undefined}
-                  isFree={course.is_free || false}
-                  thumbnailUrl={course.thumbnail_url || undefined}
-                  onClick={() => navigate(`/dashboard/cours/${course.id}`)}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
-              <BookOpen className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="font-medium mb-2">Aucun cours disponible</h3>
-              <p className="text-sm text-muted-foreground">
-                Les cours seront bientôt disponibles.
-              </p>
-            </div>
-          )}
-        </section>
+              ) : todayEvents.length > 0 ? (
+                <div className="space-y-2">
+                  {todayEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => navigate("/dashboard/emploi-du-temps")}
+                    >
+                      <div
+                        className="w-1 h-10 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: event.color }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{event.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {event.start_time.slice(0, 5)} - {event.end_time.slice(0, 5)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Calendar className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">Aucun événement aujourd'hui</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Upcoming Reminders */}
+          <Card className="border-border/50">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Bell className="w-5 h-5 text-accent" />
+                Rappels à faire
+              </CardTitle>
+              <button
+                onClick={() => navigate("/dashboard/rappels")}
+                className="text-sm text-accent hover:underline flex items-center gap-1"
+              >
+                Voir tout <ChevronRight className="w-4 h-4" />
+              </button>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-14 w-full rounded-lg" />
+                  ))}
+                </div>
+              ) : reminders.length > 0 ? (
+                <div className="space-y-2">
+                  {reminders.map((reminder) => {
+                    const reminderDate = parseISO(reminder.reminder_date);
+                    const isOverdue = isBefore(reminderDate, startOfDay(new Date())) && !isToday(reminderDate);
+                    const isTodayReminder = isToday(reminderDate);
+
+                    return (
+                      <div
+                        key={reminder.id}
+                        className={`flex items-center gap-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                          isOverdue
+                            ? "bg-destructive/5 border-destructive/20 hover:bg-destructive/10"
+                            : isTodayReminder
+                            ? "bg-accent/5 border-accent/20 hover:bg-accent/10"
+                            : "border-border/50 bg-muted/30 hover:bg-muted/50"
+                        }`}
+                        onClick={() => navigate("/dashboard/rappels")}
+                      >
+                        <div
+                          className="w-1 h-10 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: reminder.color }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{reminder.title}</p>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <CalendarDays className="w-3.5 h-3.5" />
+                            {isTodayReminder
+                              ? "Aujourd'hui"
+                              : isOverdue
+                              ? "En retard"
+                              : format(reminderDate, "d MMM", { locale: fr })}
+                            <Clock className="w-3.5 h-3.5 ml-1" />
+                            {reminder.reminder_time.slice(0, 5)}
+                          </div>
+                        </div>
+                        {isOverdue && (
+                          <span className="text-xs text-destructive font-medium px-2 py-0.5 bg-destructive/10 rounded-full">
+                            En retard
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Bell className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">Aucun rappel en attente</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </main>
     </div>
   );
