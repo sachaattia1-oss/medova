@@ -14,6 +14,7 @@ import TakeSeries from "./pages/TakeSeries";
 import CategoryCourses from "./pages/CategoryCourses";
 import DashboardProgress from "./pages/DashboardProgress";
 import DashboardSchedule from "./pages/DashboardSchedule";
+import DashboardReminders from "./pages/DashboardReminders";
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
 import AdminTutors from "./pages/AdminTutors";
