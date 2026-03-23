@@ -171,6 +171,7 @@ const DashboardCourses = () => {
             </p>
           </div>
         )}
+        </SubscriptionGate>
       </main>
     </div>
   );

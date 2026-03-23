@@ -264,6 +264,7 @@ const DashboardQCM = () => {
             )}
           </div>
         )}
+        </SubscriptionGate>
       </main>
     </div>
   );

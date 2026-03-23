@@ -149,6 +149,7 @@ const CourseDetail = () => {
             )}
           </div>
         ) : null}
+        </SubscriptionGate>
       </main>
     </div>
   );
