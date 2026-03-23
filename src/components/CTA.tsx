@@ -30,9 +30,11 @@ const CTA = () => {
                 <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </a>
-            <Button size="lg" variant="outline">
-              Voir une démo
-            </Button>
+            <a href="#tarifs">
+              <Button size="lg" variant="outline">
+                Voir les offres
+              </Button>
+            </a>
           </div>
 
           <p className="text-sm text-muted-foreground mt-6">
