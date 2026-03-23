@@ -23,6 +23,7 @@ const navItems = [
   { icon: BookOpen, label: "Cours", href: "/dashboard/cours" },
   { icon: GraduationCap, label: "QCM", href: "/dashboard/qcm" },
   { icon: Calendar, label: "Emploi du temps", href: "/dashboard/emploi-du-temps" },
+  { icon: Bell, label: "Rappels", href: "/dashboard/rappels" },
   { icon: BarChart3, label: "Progression", href: "/dashboard/progression" },
   { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
 ];

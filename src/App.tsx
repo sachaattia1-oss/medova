@@ -43,6 +43,7 @@ const App = () => (
             <Route path="/dashboard/qcm/series/:courseId" element={<TakeSeries />} />
             <Route path="/dashboard/progression" element={<DashboardProgress />} />
             <Route path="/dashboard/emploi-du-temps" element={<DashboardSchedule />} />
+            <Route path="/dashboard/rappels" element={<DashboardReminders />} />
             <Route path="/admin/cours" element={<AdminCourses />} />
             <Route path="/admin/tuteurs" element={<AdminTutors />} />
             <Route path="/admin/paiements" element={<AdminPayments />} />
