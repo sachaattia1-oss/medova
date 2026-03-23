@@ -40,10 +40,12 @@ const Hero = () => {
                 <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </a>
-            <Button size="lg" variant="outline" className="border-border/50 hover:bg-muted/50">
-              <BookOpen className="mr-2 w-4 h-4" />
-              Voir les cours
-            </Button>
+            <a href="#tarifs">
+              <Button size="lg" variant="outline" className="border-border/50 hover:bg-muted/50">
+                <BookOpen className="mr-2 w-4 h-4" />
+                Voir les cours
+              </Button>
+            </a>
           </div>
 
           {/* Stats */}
