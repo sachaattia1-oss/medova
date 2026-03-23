@@ -20,6 +20,7 @@ import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
 import AdminTutors from "./pages/AdminTutors";
 import AdminPayments from "./pages/AdminPayments";
+import AdminDashboard from "./pages/AdminDashboard";
 import TutorDashboard from "./pages/TutorDashboard";
 import NotFound from "./pages/NotFound";
 
