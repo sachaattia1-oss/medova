@@ -16,6 +16,7 @@ import CategoryCourses from "./pages/CategoryCourses";
 import DashboardProgress from "./pages/DashboardProgress";
 import DashboardSchedule from "./pages/DashboardSchedule";
 import DashboardReminders from "./pages/DashboardReminders";
+import DashboardSettings from "./pages/DashboardSettings";
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
 import AdminTutors from "./pages/AdminTutors";
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/dashboard/progression" element={<SubscribedRoute><DashboardProgress /></SubscribedRoute>} />
             <Route path="/dashboard/emploi-du-temps" element={<SubscribedRoute><DashboardSchedule /></SubscribedRoute>} />
             <Route path="/dashboard/rappels" element={<SubscribedRoute><DashboardReminders /></SubscribedRoute>} />
+            <Route path="/dashboard/parametres" element={<DashboardSettings />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/cours" element={<AdminCourses />} />
             <Route path="/admin/tuteurs" element={<AdminTutors />} />
