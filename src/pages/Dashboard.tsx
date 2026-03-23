@@ -186,10 +186,10 @@ const Dashboard = () => {
             onClick={() => navigate("/dashboard/qcm")}
           />
           <StatsCard
-            title="Emploi du temps"
-            value=""
-            icon={Calendar}
-            onClick={() => navigate("/dashboard/emploi-du-temps")}
+            title="QCM disponibles"
+            value={totalQuizCount}
+            icon={BookOpen}
+            onClick={() => navigate("/dashboard/qcm")}
           />
         </div>
 
