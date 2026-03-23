@@ -133,7 +133,7 @@ const Dashboard = () => {
           />
           <StatsCard
             title="Emploi du temps"
-            value="Voir"
+            value=""
             icon={Calendar}
             onClick={() => navigate("/dashboard/emploi-du-temps")}
           />
