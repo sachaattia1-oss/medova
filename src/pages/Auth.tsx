@@ -31,7 +31,7 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { signUp, signIn } = useAuth();
+  const { signUp, signIn, deviceBlocked } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
