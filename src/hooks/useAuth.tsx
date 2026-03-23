@@ -99,11 +99,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
+    // Remove device on logout
+    const deviceId = localStorage.getItem("medova_device_id");
+    if (user && deviceId) {
+      await supabase.from("user_devices").delete().eq("user_id", user.id).eq("device_id", deviceId);
+    }
     await supabase.auth.signOut();
   };
 
+  const isLoading = loading || deviceChecking;
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user: deviceBlocked ? null : user, session: deviceBlocked ? null : session, loading: isLoading, deviceBlocked, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
