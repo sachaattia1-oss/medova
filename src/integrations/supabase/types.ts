@@ -204,6 +204,48 @@ export type Database = {
         }
         Relationships: []
       }
+      question_discussions: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          parent_id: string | null
+          quiz_question_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          quiz_question_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          parent_id?: string | null
+          quiz_question_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_discussions_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "question_discussions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_discussions_quiz_question_id_fkey"
+            columns: ["quiz_question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quiz_answers: {
         Row: {
           answer_text: string
