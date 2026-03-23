@@ -115,7 +115,7 @@ const DashboardCourses = () => {
       <DashboardSidebar />
       
       <main className="ml-64 p-8">
-        <SubscriptionGate>
+        
         <DashboardHeader 
           title="Cours" 
           description="Sélectionne une matière pour accéder aux cours"
