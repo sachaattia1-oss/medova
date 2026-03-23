@@ -11,6 +11,7 @@ interface StatsCardProps {
     isPositive: boolean;
   };
   className?: string;
+  onClick?: () => void;
 }
 
 const StatsCard = ({ title, value, description, icon: Icon, trend, className }: StatsCardProps) => {
