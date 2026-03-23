@@ -87,20 +87,15 @@ const TakeSeries = () => {
     }
   }, [courseId]);
 
-  // Timer
+  // Stopwatch - counts up and resets on each question
   useEffect(() => {
-    if (!isSeriesComplete && timeLeft > 0) {
+    if (!isSeriesComplete && !isQuestionValidated) {
       const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            return 0;
-          }
-          return prev - 1;
-        });
+        setStopwatch((prev) => prev + 1);
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [timeLeft, isSeriesComplete]);
+  }, [isSeriesComplete, isQuestionValidated, currentQuestionIndex]);
 
   const fetchSeriesData = async () => {
     try {
