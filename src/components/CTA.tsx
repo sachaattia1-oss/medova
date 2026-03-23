@@ -20,7 +20,7 @@ const CTA = () => {
           </h2>
 
           <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
-            Plus de 10 000 étudiants nous font déjà confiance. Commence dès maintenant et maximise tes chances de succès.
+            Plus de 5 000 étudiants nous font déjà confiance. Commence dès maintenant et maximise tes chances de succès.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -38,8 +38,8 @@ const CTA = () => {
           </p>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 };
 
 export default CTA;
