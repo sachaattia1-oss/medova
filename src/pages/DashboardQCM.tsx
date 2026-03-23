@@ -157,7 +157,7 @@ const DashboardQCM = () => {
     <div className="min-h-screen bg-background">
       <DashboardSidebar />
       <main className="ml-64 p-8">
-        <SubscriptionGate>
+        
         <DashboardHeader 
           title="QCM" 
           description="Sélectionne un cours pour lancer une série de 5 QCM"
