@@ -10,7 +10,8 @@ import {
   Shield,
   Calendar,
   Users,
-  Wallet
+  Wallet,
+  Bell
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
