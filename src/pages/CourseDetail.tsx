@@ -71,6 +71,7 @@ const CourseDetail = () => {
       <DashboardSidebar />
       
       <main className="ml-64 p-8">
+        
         <Button
           variant="ghost"
           size="sm"
@@ -147,6 +148,7 @@ const CourseDetail = () => {
             )}
           </div>
         ) : null}
+        
       </main>
     </div>
   );

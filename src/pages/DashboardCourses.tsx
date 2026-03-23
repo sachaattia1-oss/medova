@@ -115,6 +115,7 @@ const DashboardCourses = () => {
       <DashboardSidebar />
       
       <main className="ml-64 p-8">
+        
         <DashboardHeader 
           title="Cours" 
           description="Sélectionne une matière pour accéder aux cours"
@@ -169,6 +170,7 @@ const DashboardCourses = () => {
             </p>
           </div>
         )}
+        
       </main>
     </div>
   );
