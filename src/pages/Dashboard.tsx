@@ -57,6 +57,7 @@ const Dashboard = () => {
   const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[]>([]);
   const [scheduleEvents, setScheduleEvents] = useState<ScheduleEvent[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [totalQuizCount, setTotalQuizCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -96,6 +97,13 @@ const Dashboard = () => {
           .order("created_at", { ascending: false });
 
         if (attemptsData) setQuizAttempts(attemptsData);
+
+        // Fetch total quiz count
+        const { count } = await supabase
+          .from("quizzes")
+          .select("id", { count: "exact", head: true });
+
+        setTotalQuizCount(count || 0);
 
         // Fetch schedule events
         const { data: eventsData } = await supabase
@@ -178,10 +186,10 @@ const Dashboard = () => {
             onClick={() => navigate("/dashboard/qcm")}
           />
           <StatsCard
-            title="Emploi du temps"
-            value=""
-            icon={Calendar}
-            onClick={() => navigate("/dashboard/emploi-du-temps")}
+            title="QCM disponibles"
+            value={totalQuizCount}
+            icon={BookOpen}
+            onClick={() => navigate("/dashboard/qcm")}
           />
         </div>
 
