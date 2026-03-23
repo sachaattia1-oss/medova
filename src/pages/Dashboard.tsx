@@ -122,12 +122,14 @@ const Dashboard = () => {
             title="Cours disponibles"
             value={courses.length}
             icon={BookOpen}
+            onClick={() => navigate("/dashboard/cours")}
           />
           <StatsCard
             title="QCM complétés"
             value={totalQuizzes}
             icon={GraduationCap}
             trend={totalQuizzes > 0 ? { value: 12, isPositive: true } : undefined}
+            onClick={() => navigate("/dashboard/qcm")}
           />
           <StatsCard
             title="Score moyen"
