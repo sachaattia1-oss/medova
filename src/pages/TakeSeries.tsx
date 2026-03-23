@@ -237,6 +237,7 @@ const TakeSeries = () => {
       setCurrentQuestionIndex(i => i + 1);
       setIsQuestionValidated(false);
       setCurrentResult(null);
+      setStopwatch(0);
     } else {
       // Series complete
       setIsSeriesComplete(true);
