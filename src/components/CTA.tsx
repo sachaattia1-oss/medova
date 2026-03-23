@@ -24,10 +24,12 @@ const CTA = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="hero" className="group">
-              Créer mon compte gratuit
-              <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </Button>
+            <a href="#tarifs">
+              <Button size="lg" variant="hero" className="group">
+                Créer mon compte gratuit
+                <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </a>
             <Button size="lg" variant="outline">
               Voir une démo
             </Button>

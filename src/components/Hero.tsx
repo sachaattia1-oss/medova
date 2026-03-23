@@ -34,10 +34,12 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animation-delay-400">
-            <Button size="lg" variant="hero" className="group">
-              Commencer maintenant
-              <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </Button>
+            <a href="#tarifs">
+              <Button size="lg" variant="hero" className="group">
+                Commencer maintenant
+                <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </a>
             <Button size="lg" variant="outline" className="border-border/50 hover:bg-muted/50">
               <BookOpen className="mr-2 w-4 h-4" />
               Voir les cours
