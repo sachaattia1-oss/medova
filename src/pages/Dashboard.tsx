@@ -98,6 +98,13 @@ const Dashboard = () => {
 
         if (attemptsData) setQuizAttempts(attemptsData);
 
+        // Fetch total quiz count
+        const { count } = await supabase
+          .from("quizzes")
+          .select("id", { count: "exact", head: true });
+
+        setTotalQuizCount(count || 0);
+
         // Fetch schedule events
         const { data: eventsData } = await supabase
           .from("schedule_events")
