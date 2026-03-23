@@ -72,6 +72,7 @@ const CourseDetail = () => {
       <DashboardSidebar />
       
       <main className="ml-64 p-8">
+        <SubscriptionGate>
         <Button
           variant="ghost"
           size="sm"
