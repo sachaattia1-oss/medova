@@ -31,7 +31,7 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { signUp, signIn } = useAuth();
+  const { signUp, signIn, deviceBlocked } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,8 +69,9 @@ const Auth = () => {
         if (error) {
           toast.error("Email ou mot de passe incorrect");
         } else {
+          // Small delay to let device check run
+          await new Promise(r => setTimeout(r, 1500));
           toast.success("Connexion réussie !");
-          // Navigation will be handled by the dashboard based on role
           navigate("/dashboard");
         }
       }
@@ -87,6 +88,25 @@ const Auth = () => {
     setFullName("");
     setSelectedRole("user");
   };
+
+  if (deviceBlocked) {
+    return (
+      <div className="min-h-screen bg-gradient-hero flex items-center justify-center px-4">
+        <div className="w-full max-w-md text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+            <Lock className="w-8 h-8 text-destructive" />
+          </div>
+          <h1 className="text-2xl font-bold">Limite d'appareils atteinte</h1>
+          <p className="text-muted-foreground">
+            Votre compte est déjà connecté sur 2 appareils. Déconnectez-vous d'un autre appareil pour pouvoir vous connecter ici.
+          </p>
+          <Button onClick={() => navigate("/")} variant="outline">
+            Retour à l'accueil
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-hero flex flex-col">

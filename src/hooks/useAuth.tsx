@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { useDeviceLimit } from "@/hooks/useDeviceLimit";
 
 type SignUpRole = "user" | "tutor";
 
@@ -8,6 +9,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  deviceBlocked: boolean;
   signUp: (email: string, password: string, fullName: string, role?: SignUpRole) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -19,7 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const { blocked: deviceBlocked, checking: deviceChecking } = useDeviceLimit(user?.id);
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -97,11 +99,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
+    // Remove device on logout
+    const deviceId = localStorage.getItem("medova_device_id");
+    if (user && deviceId) {
+      await supabase.from("user_devices").delete().eq("user_id", user.id).eq("device_id", deviceId);
+    }
     await supabase.auth.signOut();
   };
 
+  const isLoading = loading || deviceChecking;
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user: deviceBlocked ? null : user, session: deviceBlocked ? null : session, loading: isLoading, deviceBlocked, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
