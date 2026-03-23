@@ -40,7 +40,7 @@ const plans = [
 
 const Pricing = () => {
   return (
-    <section className="py-24">
+    <section id="tarifs" className="py-24">
       <div className="container px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mb-6">
