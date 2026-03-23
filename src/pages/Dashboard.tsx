@@ -128,18 +128,20 @@ const Dashboard = () => {
 
   // Calculate stats
   const totalQuizzes = quizAttempts.length;
-  const averageScore = quizAttempts.length > 0
-    ? Math.round(
-        quizAttempts.reduce((acc, a) => {
-          if (a.score !== null && a.total_questions !== null && a.total_questions > 0) {
-            return acc + (a.score / a.total_questions) * 100;
-          }
-          return acc;
-        }, 0) / quizAttempts.length
-      )
-    : 0;
-  const totalTime = quizAttempts.reduce((acc, a) => acc + (a.time_spent_seconds || 0), 0);
-  const totalHours = Math.floor(totalTime / 3600);
+
+  // Get today's schedule events
+  const today = new Date();
+  const todayDayOfWeek = (today.getDay() + 6) % 7; // Monday = 0
+  const todayEvents = scheduleEvents.filter((event) => {
+    if (event.day_of_week !== todayDayOfWeek) return false;
+    const eventStartDate = new Date(event.start_date);
+    if (event.recurrence_type === "none") {
+      const eventWeekStart = startOfWeek(eventStartDate, { weekStartsOn: 1 });
+      const todayWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+      return eventWeekStart.getTime() === todayWeekStart.getTime();
+    }
+    return eventStartDate <= today;
+  });
 
   if (authLoading) {
     return (
