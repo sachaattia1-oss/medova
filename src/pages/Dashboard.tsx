@@ -80,10 +80,10 @@ const Dashboard = () => {
       if (!user) return;
 
       try {
-        // Fetch courses
+        // Fetch courses count
         const { data: coursesData } = await supabase
           .from("courses")
-          .select("*")
+          .select("id, title, description, category, is_free, thumbnail_url")
           .order("order_index", { ascending: true })
           .limit(6);
 
@@ -92,11 +92,30 @@ const Dashboard = () => {
         // Fetch user's quiz attempts
         const { data: attemptsData } = await supabase
           .from("quiz_attempts")
-          .select("*")
+          .select("id, score, total_questions, time_spent_seconds")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
         if (attemptsData) setQuizAttempts(attemptsData);
+
+        // Fetch schedule events
+        const { data: eventsData } = await supabase
+          .from("schedule_events")
+          .select("id, title, day_of_week, start_time, end_time, color, start_date, recurrence_type")
+          .order("start_time");
+
+        if (eventsData) setScheduleEvents(eventsData);
+
+        // Fetch upcoming reminders
+        const { data: remindersData } = await supabase
+          .from("reminders")
+          .select("id, title, description, reminder_date, reminder_time, is_completed, color")
+          .eq("is_completed", false)
+          .order("reminder_date")
+          .order("reminder_time")
+          .limit(5);
+
+        if (remindersData) setReminders(remindersData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
