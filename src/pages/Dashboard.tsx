@@ -184,54 +184,134 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Recent Courses */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">Cours récents</h2>
-            <button 
-              onClick={() => navigate("/dashboard/cours")}
-              className="text-sm text-accent hover:underline"
-            >
-              Voir tous les cours →
-            </button>
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="p-4 rounded-2xl bg-card border border-border/50">
-                  <Skeleton className="aspect-video rounded-xl mb-4" />
-                  <Skeleton className="h-5 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-full mb-1" />
-                  <Skeleton className="h-4 w-2/3 mb-4" />
-                  <Skeleton className="h-9 w-full" />
+        {/* Schedule & Reminders Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Today's Schedule */}
+          <Card className="border-border/50">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-accent" />
+                Emploi du temps - Aujourd'hui
+              </CardTitle>
+              <button
+                onClick={() => navigate("/dashboard/emploi-du-temps")}
+                className="text-sm text-accent hover:underline flex items-center gap-1"
+              >
+                Voir tout <ChevronRight className="w-4 h-4" />
+              </button>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-14 w-full rounded-lg" />
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : courses.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.slice(0, 3).map((course) => (
-                <CourseCard
-                  key={course.id}
-                  title={course.title}
-                  description={course.description || undefined}
-                  category={course.category || undefined}
-                  isFree={course.is_free || false}
-                  thumbnailUrl={course.thumbnail_url || undefined}
-                  onClick={() => navigate(`/dashboard/cours/${course.id}`)}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
-              <BookOpen className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="font-medium mb-2">Aucun cours disponible</h3>
-              <p className="text-sm text-muted-foreground">
-                Les cours seront bientôt disponibles.
-              </p>
-            </div>
-          )}
-        </section>
+              ) : todayEvents.length > 0 ? (
+                <div className="space-y-2">
+                  {todayEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => navigate("/dashboard/emploi-du-temps")}
+                    >
+                      <div
+                        className="w-1 h-10 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: event.color }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{event.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {event.start_time.slice(0, 5)} - {event.end_time.slice(0, 5)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Calendar className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">Aucun événement aujourd'hui</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Upcoming Reminders */}
+          <Card className="border-border/50">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Bell className="w-5 h-5 text-accent" />
+                Rappels à faire
+              </CardTitle>
+              <button
+                onClick={() => navigate("/dashboard/rappels")}
+                className="text-sm text-accent hover:underline flex items-center gap-1"
+              >
+                Voir tout <ChevronRight className="w-4 h-4" />
+              </button>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-14 w-full rounded-lg" />
+                  ))}
+                </div>
+              ) : reminders.length > 0 ? (
+                <div className="space-y-2">
+                  {reminders.map((reminder) => {
+                    const reminderDate = parseISO(reminder.reminder_date);
+                    const isOverdue = isBefore(reminderDate, startOfDay(new Date())) && !isToday(reminderDate);
+                    const isTodayReminder = isToday(reminderDate);
+
+                    return (
+                      <div
+                        key={reminder.id}
+                        className={`flex items-center gap-3 p-3 rounded-lg border transition-colors cursor-pointer ${
+                          isOverdue
+                            ? "bg-destructive/5 border-destructive/20 hover:bg-destructive/10"
+                            : isTodayReminder
+                            ? "bg-accent/5 border-accent/20 hover:bg-accent/10"
+                            : "border-border/50 bg-muted/30 hover:bg-muted/50"
+                        }`}
+                        onClick={() => navigate("/dashboard/rappels")}
+                      >
+                        <div
+                          className="w-1 h-10 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: reminder.color }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{reminder.title}</p>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <CalendarDays className="w-3.5 h-3.5" />
+                            {isTodayReminder
+                              ? "Aujourd'hui"
+                              : isOverdue
+                              ? "En retard"
+                              : format(reminderDate, "d MMM", { locale: fr })}
+                            <Clock className="w-3.5 h-3.5 ml-1" />
+                            {reminder.reminder_time.slice(0, 5)}
+                          </div>
+                        </div>
+                        {isOverdue && (
+                          <span className="text-xs text-destructive font-medium px-2 py-0.5 bg-destructive/10 rounded-full">
+                            En retard
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Bell className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">Aucun rappel en attente</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </main>
     </div>
   );
