@@ -25,10 +25,10 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             <a href="#cours" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Cours
+              ​
             </a>
             <a href="#qcm" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              QCM
+              ​
             </a>
             <a href="#tarifs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Tarifs
@@ -40,17 +40,17 @@ const Header = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            {user ? (
-              <>
+            {user ?
+            <>
                 <Button variant="hero" size="sm" asChild>
                   <Link to="/dashboard">Mon espace</Link>
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => signOut()}>
                   Déconnexion
                 </Button>
-              </>
-            ) : (
-              <>
+              </> :
+
+            <>
                 <Button variant="ghost" size="sm" asChild>
                   <Link to="/auth">Se connecter</Link>
                 </Button>
@@ -58,21 +58,21 @@ const Header = () => {
                   <Link to="/auth">S'inscrire</Link>
                 </Button>
               </>
-            )}
+            }
           </div>
 
           {/* Mobile Menu Toggle */}
           <button
             className="md:hidden p-2"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
+            onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border/50">
+        {isMenuOpen &&
+        <div className="md:hidden py-4 border-t border-border/50">
             <nav className="flex flex-col gap-4">
               <a href="#cours" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Cours
@@ -87,17 +87,17 @@ const Header = () => {
                 Contact
               </a>
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
-                {user ? (
-                  <>
+                {user ?
+              <>
                     <Button variant="hero" size="sm" asChild>
                       <Link to="/dashboard">Mon espace</Link>
                     </Button>
                     <Button variant="ghost" size="sm" className="justify-start" onClick={() => signOut()}>
                       Déconnexion
                     </Button>
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+              <>
                     <Button variant="ghost" size="sm" className="justify-start" asChild>
                       <Link to="/auth">Se connecter</Link>
                     </Button>
@@ -105,14 +105,14 @@ const Header = () => {
                       <Link to="/auth">S'inscrire</Link>
                     </Button>
                   </>
-                )}
+              }
               </div>
             </nav>
           </div>
-        )}
+        }
       </div>
-    </header>
-  );
+    </header>);
+
 };
 
 export default Header;
