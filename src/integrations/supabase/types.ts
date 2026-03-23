@@ -362,6 +362,45 @@ export type Database = {
           },
         ]
       }
+      reminders: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_completed: boolean
+          reminder_date: string
+          reminder_time: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          reminder_date: string
+          reminder_time: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          reminder_date?: string
+          reminder_time?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       schedule_events: {
         Row: {
           color: string | null
