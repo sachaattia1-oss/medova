@@ -36,15 +36,15 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/cours" element={<DashboardCourses />} />
-            <Route path="/dashboard/cours/categorie/:categoryId" element={<CategoryCourses />} />
-            <Route path="/dashboard/cours/:id" element={<CourseDetail />} />
-            <Route path="/dashboard/qcm" element={<DashboardQCM />} />
-            <Route path="/dashboard/qcm/:quizId" element={<TakeQuiz />} />
-            <Route path="/dashboard/qcm/series/:courseId" element={<TakeSeries />} />
-            <Route path="/dashboard/progression" element={<DashboardProgress />} />
-            <Route path="/dashboard/emploi-du-temps" element={<DashboardSchedule />} />
-            <Route path="/dashboard/rappels" element={<DashboardReminders />} />
+            <Route path="/dashboard/cours" element={<SubscribedRoute><DashboardCourses /></SubscribedRoute>} />
+            <Route path="/dashboard/cours/categorie/:categoryId" element={<SubscribedRoute><CategoryCourses /></SubscribedRoute>} />
+            <Route path="/dashboard/cours/:id" element={<SubscribedRoute><CourseDetail /></SubscribedRoute>} />
+            <Route path="/dashboard/qcm" element={<SubscribedRoute><DashboardQCM /></SubscribedRoute>} />
+            <Route path="/dashboard/qcm/:quizId" element={<SubscribedRoute><TakeQuiz /></SubscribedRoute>} />
+            <Route path="/dashboard/qcm/series/:courseId" element={<SubscribedRoute><TakeSeries /></SubscribedRoute>} />
+            <Route path="/dashboard/progression" element={<SubscribedRoute><DashboardProgress /></SubscribedRoute>} />
+            <Route path="/dashboard/emploi-du-temps" element={<SubscribedRoute><DashboardSchedule /></SubscribedRoute>} />
+            <Route path="/dashboard/rappels" element={<SubscribedRoute><DashboardReminders /></SubscribedRoute>} />
             <Route path="/admin/cours" element={<AdminCourses />} />
             <Route path="/admin/tuteurs" element={<AdminTutors />} />
             <Route path="/admin/paiements" element={<AdminPayments />} />
