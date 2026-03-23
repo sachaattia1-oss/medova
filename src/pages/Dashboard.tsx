@@ -7,7 +7,7 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import StatsCard from "@/components/dashboard/StatsCard";
 import CourseCard from "@/components/dashboard/CourseCard";
-import { BookOpen, GraduationCap, Target, Clock } from "lucide-react";
+import { BookOpen, GraduationCap, Calendar, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Course {
