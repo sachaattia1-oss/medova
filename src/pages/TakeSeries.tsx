@@ -19,6 +19,7 @@ import {
   Trophy
 } from "lucide-react";
 import { toast } from "sonner";
+import QuestionDiscussion from "@/components/quiz/QuestionDiscussion";
 
 const SERIES_SIZE = 5;
 
