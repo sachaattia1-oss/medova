@@ -29,6 +29,27 @@ interface QuizAttempt {
   time_spent_seconds: number | null;
 }
 
+interface ScheduleEvent {
+  id: string;
+  title: string;
+  day_of_week: number;
+  start_time: string;
+  end_time: string;
+  color: string;
+  start_date: string;
+  recurrence_type: string;
+}
+
+interface Reminder {
+  id: string;
+  title: string;
+  description: string | null;
+  reminder_date: string;
+  reminder_time: string;
+  is_completed: boolean;
+  color: string;
+}
+
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const { isApprovedTutor, isAdmin, loading: roleLoading } = useUserRole();
