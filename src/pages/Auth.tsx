@@ -297,7 +297,7 @@ const Auth = () => {
                 {loading
                   ? "Chargement..."
                   : isSignUp
-                  ? selectedRole === "tutor"
+                  ? selectedChoice === "tutor"
                     ? "Demander un compte tuteur"
                     : "Créer mon compte"
                   : "Se connecter"}
