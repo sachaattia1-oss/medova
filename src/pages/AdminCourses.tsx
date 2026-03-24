@@ -42,6 +42,7 @@ interface Course {
   is_free: boolean | null;
   pdf_url: string | null;
   order_index: number | null;
+  target_audience: string;
 }
 
 interface Category {
