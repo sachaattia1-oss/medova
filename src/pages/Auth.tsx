@@ -157,13 +157,31 @@ const Auth = () => {
               {isSignUp && (
                 <div className="space-y-3">
                   <Label>Je suis...</Label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
-                      onClick={() => setSelectedRole("user")}
+                      onClick={() => setSelectedChoice("terminale")}
                       className={cn(
                         "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                        selectedRole === "user"
+                        selectedChoice === "terminale"
+                          ? "border-accent bg-accent/10 text-accent"
+                          : "border-border hover:border-accent/50 hover:bg-muted/50"
+                      )}
+                    >
+                      <BookOpen className="w-8 h-8" />
+                      <div className="text-center">
+                        <div className="font-medium text-sm">Terminale</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          Préparer la PASS
+                        </div>
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedChoice("user")}
+                      className={cn(
+                        "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                        selectedChoice === "user"
                           ? "border-accent bg-accent/10 text-accent"
                           : "border-border hover:border-accent/50 hover:bg-muted/50"
                       )}
@@ -178,10 +196,10 @@ const Auth = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setSelectedRole("tutor")}
+                      onClick={() => setSelectedChoice("tutor")}
                       className={cn(
                         "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                        selectedRole === "tutor"
+                        selectedChoice === "tutor"
                           ? "border-accent bg-accent/10 text-accent"
                           : "border-border hover:border-accent/50 hover:bg-muted/50"
                       )}
@@ -195,7 +213,7 @@ const Auth = () => {
                       </div>
                     </button>
                   </div>
-                  {selectedRole === "tutor" && (
+                  {selectedChoice === "tutor" && (
                     <p className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 p-2 rounded-lg">
                       ⚠️ Les comptes tuteurs nécessitent une validation par un administrateur avant d'être activés.
                     </p>
