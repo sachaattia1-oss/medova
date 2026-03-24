@@ -82,6 +82,7 @@ const TutorDashboard = () => {
         <Route path="/quiz" element={<TutorQuizzes />} />
         <Route path="/quiz/:quizId" element={<TutorQuizEditor />} />
         <Route path="/messages" element={<TutorMessages />} />
+        <Route path="/discussions" element={<TutorDiscussions />} />
         <Route path="/remuneration" element={<TutorEarnings />} />
       </Routes>
     </TutorLayout>
