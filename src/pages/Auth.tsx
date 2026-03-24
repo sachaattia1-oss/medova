@@ -326,12 +326,12 @@ const Auth = () => {
           {isSignUp && (
             <div className="mt-6 space-y-3">
               <p className="text-sm text-muted-foreground text-center">
-                {selectedRole === "tutor" 
+                {selectedChoice === "tutor" 
                   ? "En tant que tuteur, tu pourras :"
                   : "En créant un compte, tu accèdes à :"}
               </p>
               <ul className="space-y-2 text-sm">
-                {selectedRole === "tutor" ? (
+                {selectedChoice === "tutor" ? (
                   <>
                     {[
                       "Suivre la progression des étudiants",
@@ -346,11 +346,15 @@ const Auth = () => {
                   </>
                 ) : (
                   <>
-                    {[
+                    {(selectedChoice === "terminale" ? [
+                      "Anticipe ton année PASS",
+                      "QCM interactifs pour t'entraîner",
+                      "Suivi de progression personnalisé",
+                    ] : [
                       "500+ QCM commentés",
                       "QCM interactifs illimités",
                       "Suivi de progression personnalisé",
-                    ].map((feature) => (
+                    ]).map((feature) => (
                       <li key={feature} className="flex items-center gap-2 text-muted-foreground">
                         <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                         {feature}
