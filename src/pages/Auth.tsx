@@ -95,7 +95,7 @@ const Auth = () => {
     setEmail("");
     setPassword("");
     setFullName("");
-    setSelectedRole("user");
+    setSelectedChoice("user");
   };
 
   if (deviceBlocked) {
