@@ -325,6 +325,25 @@ const TutorQuizzes = () => {
                   <Label htmlFor="is_free">QCM gratuit</Label>
                 </div>
 
+                <div className="space-y-2">
+                  <Label>Public cible</Label>
+                  <Select
+                    value={formData.target_audience}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, target_audience: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner le public" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous (Terminale + PASS)</SelectItem>
+                      <SelectItem value="terminale">Terminale uniquement</SelectItem>
+                      <SelectItem value="pass">PASS uniquement</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="flex justify-end gap-2 pt-4">
                   <Button
                     type="button"
