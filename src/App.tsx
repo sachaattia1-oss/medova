@@ -49,6 +49,7 @@ const App = () => (
             <Route path="/dashboard/emploi-du-temps" element={<SubscribedRoute><DashboardSchedule /></SubscribedRoute>} />
             <Route path="/dashboard/rappels" element={<SubscribedRoute><DashboardReminders /></SubscribedRoute>} />
             <Route path="/dashboard/parametres" element={<DashboardSettings />} />
+            <Route path="/dashboard/mes-questions" element={<SubscribedRoute><DashboardMyQuestions /></SubscribedRoute>} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/cours" element={<AdminCourses />} />
             <Route path="/admin/tuteurs" element={<AdminTutors />} />
