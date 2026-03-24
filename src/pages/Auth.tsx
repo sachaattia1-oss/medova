@@ -46,16 +46,25 @@ const Auth = () => {
           return;
         }
 
-        const { error } = await signUp(email, password, fullName, selectedRole);
+        const role = selectedChoice === "tutor" ? "tutor" : "user";
+        const studentType = selectedChoice === "terminale" ? "terminale" : selectedChoice === "user" ? "pass" : null;
+        const { error } = await signUp(email, password, fullName, role);
         if (error) {
           toast.error(error.message);
         } else {
-          if (selectedRole === "tutor") {
+          // Store student type in profile
+          if (studentType) {
+            const { data: { user: newUser } } = await supabase.auth.getUser();
+            if (newUser) {
+              await supabase.from("profiles").update({ student_type: studentType }).eq("user_id", newUser.id);
+            }
+          }
+          if (selectedChoice === "tutor") {
             toast.success("Compte tuteur créé ! Votre demande est en attente de validation par un administrateur.");
           } else {
             toast.success("Compte créé avec succès ! Bienvenue sur MEDOVA.");
           }
-          navigate(selectedRole === "tutor" ? "/tutor" : "/dashboard");
+          navigate(selectedChoice === "tutor" ? "/tutor" : "/dashboard");
         }
       } else {
         const validation = signInSchema.safeParse({ email, password });
