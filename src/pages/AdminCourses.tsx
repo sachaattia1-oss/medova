@@ -467,9 +467,10 @@ const AdminCourses = () => {
                 <div className="rounded-lg border border-border overflow-hidden">
                   <Table>
                     <TableHeader>
-                      <TableRow>
+                    <TableRow>
                         <TableHead>Titre</TableHead>
                         <TableHead>Description</TableHead>
+                        <TableHead>Public</TableHead>
                         <TableHead>Gratuit</TableHead>
                         <TableHead>PDF</TableHead>
                         <TableHead className="w-[100px]">Actions</TableHead>
