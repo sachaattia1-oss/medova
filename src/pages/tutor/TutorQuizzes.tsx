@@ -47,6 +47,7 @@ interface Quiz {
 }
 
 const TutorQuizzes = () => {
+  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
