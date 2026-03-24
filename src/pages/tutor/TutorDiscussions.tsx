@@ -14,10 +14,25 @@ import {
   MessageSquare,
   ChevronDown,
   ChevronUp,
+  Eye,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+
+interface QuizAnswer {
+  id: string;
+  answer_text: string;
+  is_correct: boolean;
+  order_index: number;
+}
 
 interface DiscussionQuestion {
   id: string;
@@ -28,6 +43,8 @@ interface DiscussionQuestion {
   user_name?: string;
   question_text?: string;
   quiz_title?: string;
+  explanation?: string;
+  answers?: QuizAnswer[];
   replies: DiscussionReply[];
 }
 
@@ -98,8 +115,22 @@ const TutorDiscussions = () => {
       ];
       const { data: quizQuestions } = await supabase
         .from("quiz_questions")
-        .select("id, question_text, quiz_id")
+        .select("id, question_text, quiz_id, explanation")
         .in("id", quizQuestionIds);
+
+      // Fetch quiz answers for full question view
+      const { data: quizAnswers } = await supabase
+        .from("quiz_answers")
+        .select("id, question_id, answer_text, is_correct, order_index")
+        .in("question_id", quizQuestionIds)
+        .order("order_index", { ascending: true });
+
+      const answersMap = new Map<string, QuizAnswer[]>();
+      (quizAnswers || []).forEach((a) => {
+        const list = answersMap.get(a.question_id) || [];
+        list.push(a as QuizAnswer);
+        answersMap.set(a.question_id, list);
+      });
 
       // Fetch quiz titles
       const quizIds = [
@@ -116,7 +147,7 @@ const TutorDiscussions = () => {
       const qqMap = new Map(
         (quizQuestions || []).map((q) => [
           q.id,
-          { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "QCM" },
+          { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "QCM", explanation: q.explanation },
         ])
       );
 
@@ -127,6 +158,8 @@ const TutorDiscussions = () => {
           user_name: nameMap.get(d.user_id) || "Anonyme",
           question_text: qqInfo?.text || "Question supprimée",
           quiz_title: qqInfo?.quizTitle || "QCM",
+          explanation: qqInfo?.explanation || undefined,
+          answers: answersMap.get(d.quiz_question_id) || [],
           replies: (replies || [])
             .filter((r) => r.parent_id === d.id)
             .map((r) => ({
@@ -242,9 +275,43 @@ const TutorDiscussions = () => {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mb-2 italic">
-                          Question QCM : {q.question_text}
-                        </p>
+                        <Collapsible>
+                          <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                            <Eye className="w-3 h-3" />
+                            Voir la question complète
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="mt-2">
+                            <div className="bg-muted/30 rounded-lg p-3 border border-border/50">
+                              <p className="text-sm font-medium mb-2">{q.question_text}</p>
+                              {q.answers && q.answers.length > 0 && (
+                                <div className="space-y-1.5 mb-2">
+                                  {q.answers.map((a, i) => (
+                                    <div
+                                      key={a.id}
+                                      className={`flex items-center gap-2 text-xs rounded px-2 py-1 ${
+                                        a.is_correct
+                                          ? "bg-green-500/10 text-green-700 dark:text-green-400"
+                                          : "text-muted-foreground"
+                                      }`}
+                                    >
+                                      {a.is_correct ? (
+                                        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                                      ) : (
+                                        <XCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                                      )}
+                                      <span>{String.fromCharCode(65 + i)}. {a.answer_text}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              {q.explanation && (
+                                <p className="text-xs text-muted-foreground italic border-t border-border/50 pt-2">
+                                  💡 {q.explanation}
+                                </p>
+                              )}
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
                       </div>
                     </div>
                   </CardHeader>
