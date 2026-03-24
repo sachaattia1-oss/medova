@@ -42,7 +42,6 @@ interface Course {
   is_free: boolean | null;
   pdf_url: string | null;
   order_index: number | null;
-  target_audience: string;
 }
 
 interface Category {
@@ -70,7 +69,6 @@ const AdminCourses = () => {
     category_id: "",
     pdf_url: "",
     is_free: false,
-    target_audience: "all",
   });
 
   useEffect(() => {
@@ -133,7 +131,6 @@ const AdminCourses = () => {
       category_id: "",
       pdf_url: "",
       is_free: false,
-      target_audience: "all",
     });
     setEditingCourse(null);
     setPdfFile(null);
@@ -184,7 +181,6 @@ const AdminCourses = () => {
         category_id: course.category_id || "",
         pdf_url: course.pdf_url || "",
         is_free: course.is_free || false,
-        target_audience: course.target_audience || "all",
       });
     } else {
       resetForm();
@@ -213,7 +209,6 @@ const AdminCourses = () => {
         category_id: formData.category_id || null,
         pdf_url: pdfUrl || null,
         is_free: formData.is_free,
-        target_audience: formData.target_audience,
       };
 
       if (editingCourse) {
@@ -405,25 +400,6 @@ const AdminCourses = () => {
                   <Label htmlFor="is_free">Cours gratuit</Label>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Public cible</Label>
-                  <Select
-                    value={formData.target_audience}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, target_audience: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner le public" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tous (Terminale + PASS)</SelectItem>
-                      <SelectItem value="terminale">Terminale uniquement</SelectItem>
-                      <SelectItem value="pass">PASS uniquement</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 <div className="flex justify-end gap-2 pt-4">
                   <Button
                     type="button"
@@ -467,10 +443,9 @@ const AdminCourses = () => {
                 <div className="rounded-lg border border-border overflow-hidden">
                   <Table>
                     <TableHeader>
-                    <TableRow>
+                      <TableRow>
                         <TableHead>Titre</TableHead>
                         <TableHead>Description</TableHead>
-                        <TableHead>Public</TableHead>
                         <TableHead>Gratuit</TableHead>
                         <TableHead>PDF</TableHead>
                         <TableHead className="w-[100px]">Actions</TableHead>
@@ -484,11 +459,6 @@ const AdminCourses = () => {
                           </TableCell>
                           <TableCell className="text-muted-foreground max-w-[200px] truncate">
                             {course.description || "-"}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">
-                              {course.target_audience === "all" ? "Tous" : course.target_audience === "terminale" ? "Terminale" : "PASS"}
-                            </Badge>
                           </TableCell>
                           <TableCell>
                             {course.is_free ? (
@@ -552,29 +522,23 @@ const AdminCourses = () => {
               <div className="rounded-lg border border-border overflow-hidden">
                 <Table>
                   <TableHeader>
-                     <TableRow>
-                       <TableHead>Titre</TableHead>
-                       <TableHead>Description</TableHead>
-                       <TableHead>Public</TableHead>
-                       <TableHead>Gratuit</TableHead>
-                       <TableHead>PDF</TableHead>
-                       <TableHead className="w-[100px]">Actions</TableHead>
-                     </TableRow>
-                   </TableHeader>
-                   <TableBody>
-                     {uncategorized.map((course) => (
-                       <TableRow key={course.id}>
-                         <TableCell className="font-medium">
-                           {course.title}
-                         </TableCell>
-                         <TableCell className="text-muted-foreground max-w-[200px] truncate">
-                           {course.description || "-"}
-                         </TableCell>
-                         <TableCell>
-                           <Badge variant="outline">
-                             {course.target_audience === "all" ? "Tous" : course.target_audience === "terminale" ? "Terminale" : "PASS"}
-                           </Badge>
-                         </TableCell>
+                    <TableRow>
+                      <TableHead>Titre</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Gratuit</TableHead>
+                      <TableHead>PDF</TableHead>
+                      <TableHead className="w-[100px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {uncategorized.map((course) => (
+                      <TableRow key={course.id}>
+                        <TableCell className="font-medium">
+                          {course.title}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground max-w-[200px] truncate">
+                          {course.description || "-"}
+                        </TableCell>
                         <TableCell>
                           {course.is_free ? (
                             <Badge variant="secondary">Oui</Badge>
