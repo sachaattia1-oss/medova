@@ -38,6 +38,7 @@ interface Course {
   is_free: boolean | null;
   pdf_url: string | null;
   order_index: number | null;
+  target_audience: string;
 }
 
 interface Category {
@@ -61,6 +62,7 @@ const TutorCourses = () => {
     category_id: "",
     pdf_url: "",
     is_free: false,
+    target_audience: "all",
   });
 
   useEffect(() => {
@@ -105,6 +107,7 @@ const TutorCourses = () => {
       category_id: "",
       pdf_url: "",
       is_free: false,
+      target_audience: "all",
     });
     setEditingCourse(null);
     setPdfFile(null);
@@ -155,6 +158,7 @@ const TutorCourses = () => {
         category_id: course.category_id || "",
         pdf_url: course.pdf_url || "",
         is_free: course.is_free || false,
+        target_audience: course.target_audience || "all",
       });
     } else {
       resetForm();
@@ -182,6 +186,7 @@ const TutorCourses = () => {
         category_id: formData.category_id || null,
         pdf_url: pdfUrl || null,
         is_free: formData.is_free,
+        target_audience: formData.target_audience,
       };
 
       if (editingCourse) {
@@ -364,6 +369,25 @@ const TutorCourses = () => {
                 <Label htmlFor="is_free">Cours gratuit</Label>
               </div>
 
+                <div className="space-y-2">
+                  <Label>Public cible</Label>
+                  <Select
+                    value={formData.target_audience}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, target_audience: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner le public" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous les étudiants</SelectItem>
+                      <SelectItem value="terminale">Terminale uniquement</SelectItem>
+                      <SelectItem value="pass">PASS uniquement</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
               <div className="flex justify-end gap-2 pt-4">
                 <Button
                   type="button"
@@ -411,6 +435,7 @@ const TutorCourses = () => {
                       <TableHead>Titre</TableHead>
                       <TableHead>Description</TableHead>
                       <TableHead>Gratuit</TableHead>
+                      <TableHead>Public</TableHead>
                       <TableHead>PDF</TableHead>
                       <TableHead className="w-[100px]">Actions</TableHead>
                     </TableRow>
@@ -430,6 +455,11 @@ const TutorCourses = () => {
                           ) : (
                             <span className="text-muted-foreground">Non</span>
                           )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {course.target_audience === "terminale" ? "Terminale" : course.target_audience === "pass" ? "PASS" : "Tous"}
+                          </Badge>
                         </TableCell>
                         <TableCell>
                           {course.pdf_url ? (
