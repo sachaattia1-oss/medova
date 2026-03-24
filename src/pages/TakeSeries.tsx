@@ -19,6 +19,7 @@ import {
   Trophy
 } from "lucide-react";
 import { toast } from "sonner";
+import QuestionDiscussion from "@/components/quiz/QuestionDiscussion";
 
 const SERIES_SIZE = 5;
 
@@ -387,6 +388,7 @@ const TakeSeries = () => {
                           <p className="text-sm">💡 {question.explanation}</p>
                         </div>
                       )}
+                      <QuestionDiscussion quizQuestionId={question.id} />
                     </CardContent>
                   </Card>
                 );
@@ -558,6 +560,11 @@ const TakeSeries = () => {
                 <div className="mt-4 p-3 bg-accent/10 rounded-lg">
                   <p className="text-sm">💡 {currentQuestion.explanation}</p>
                 </div>
+              )}
+
+              {/* Discussion section after validation */}
+              {isQuestionValidated && currentQuestion && (
+                <QuestionDiscussion quizQuestionId={currentQuestion.id} />
               )}
             </CardContent>
             <CardFooter className="flex justify-end">
