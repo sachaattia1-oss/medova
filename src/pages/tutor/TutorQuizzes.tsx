@@ -149,6 +149,7 @@ const TutorQuizzes = () => {
         course_id: formData.course_id,
         time_limit_minutes: formData.time_limit_minutes,
         is_free: formData.is_free,
+        target_audience: formData.target_audience,
       };
 
       if (editingQuiz) {
