@@ -4,8 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Send, Loader2, User, GraduationCap, Shield } from "lucide-react";
+import { MessageSquare, Send, Loader2, User } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -18,7 +17,6 @@ interface Discussion {
   content: string;
   created_at: string;
   user_name?: string;
-  user_role?: string;
   replies?: Discussion[];
 }
 
@@ -35,6 +33,8 @@ const QuestionDiscussion = ({ quizQuestionId }: QuestionDiscussionProps) => {
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [sending, setSending] = useState(false);
+
+  const canReply = isTutor || isAdmin;
 
   useEffect(() => {
     fetchDiscussions();
@@ -57,21 +57,13 @@ const QuestionDiscussion = ({ quizQuestionId }: QuestionDiscussionProps) => {
           .select("user_id, full_name")
           .in("user_id", userIds);
 
-        const { data: roles } = await supabase
-          .from("user_roles")
-          .select("user_id, role")
-          .in("user_id", userIds);
-
         const nameMap = new Map((profiles || []).map((p) => [p.user_id, p.full_name]));
-        const roleMap = new Map((roles || []).map((r) => [r.user_id, r.role]));
 
         const enriched = data.map((d) => ({
           ...d,
           user_name: nameMap.get(d.user_id) || "Anonyme",
-          user_role: roleMap.get(d.user_id) || "user",
         }));
 
-        // Group: top-level questions with replies
         const topLevel = enriched.filter((d) => !d.parent_id);
         const replies = enriched.filter((d) => d.parent_id);
 
@@ -136,18 +128,6 @@ const QuestionDiscussion = ({ quizQuestionId }: QuestionDiscussionProps) => {
     }
   };
 
-  const getRoleIcon = (role?: string) => {
-    if (role === "admin") return <Shield className="w-3 h-3" />;
-    if (role === "tutor") return <GraduationCap className="w-3 h-3" />;
-    return <User className="w-3 h-3" />;
-  };
-
-  const getRoleBadge = (role?: string) => {
-    if (role === "admin") return <Badge variant="destructive" className="text-xs h-5">Admin</Badge>;
-    if (role === "tutor") return <Badge className="text-xs h-5 bg-accent">Tuteur</Badge>;
-    return null;
-  };
-
   return (
     <div className="mt-6 border-t pt-4">
       <div className="flex items-center gap-2 mb-4">
@@ -190,18 +170,17 @@ const QuestionDiscussion = ({ quizQuestionId }: QuestionDiscussionProps) => {
               {/* Question */}
               <div className="flex items-start gap-2">
                 <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                  {getRoleIcon(discussion.user_role)}
+                  <User className="w-3 h-3" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm font-medium">{discussion.user_name}</span>
-                    {getRoleBadge(discussion.user_role)}
                     <span className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(discussion.created_at), { addSuffix: true, locale: fr })}
                     </span>
                   </div>
                   <p className="text-sm">{discussion.content}</p>
-                  {(isTutor || isAdmin) && (
+                  {canReply && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -220,12 +199,11 @@ const QuestionDiscussion = ({ quizQuestionId }: QuestionDiscussionProps) => {
                   {discussion.replies.map((reply) => (
                     <div key={reply.id} className="flex items-start gap-2">
                       <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        {getRoleIcon(reply.user_role)}
+                        <User className="w-3 h-3" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-sm font-medium">{reply.user_name}</span>
-                          {getRoleBadge(reply.user_role)}
                           <span className="text-xs text-muted-foreground">
                             {formatDistanceToNow(new Date(reply.created_at), { addSuffix: true, locale: fr })}
                           </span>
@@ -237,8 +215,8 @@ const QuestionDiscussion = ({ quizQuestionId }: QuestionDiscussionProps) => {
                 </div>
               )}
 
-              {/* Reply form */}
-              {replyTo === discussion.id && (
+              {/* Reply form - only for tutors/admins */}
+              {replyTo === discussion.id && canReply && (
                 <div className="ml-9 mt-3">
                   <Textarea
                     value={replyContent}
