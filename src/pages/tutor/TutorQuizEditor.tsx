@@ -130,17 +130,45 @@ const TutorQuizEditor = () => {
     }
   };
 
+  const openEditDialog = (question: Question) => {
+    const questionAnswers = answers[question.id] || [];
+    const filledAnswers = Array.from({ length: 5 }, (_, i) => ({
+      text: questionAnswers[i]?.answer_text || "",
+      is_correct: questionAnswers[i]?.is_correct || false,
+    }));
+    setEditingQuestion(question);
+    setNewQuestion({
+      question_text: question.question_text,
+      explanation: question.explanation || "",
+      answers: filledAnswers,
+    });
+    setIsQuestionDialogOpen(true);
+  };
+
+  const resetForm = () => {
+    setEditingQuestion(null);
+    setNewQuestion({
+      question_text: "",
+      explanation: "",
+      answers: [
+        { text: "", is_correct: false },
+        { text: "", is_correct: false },
+        { text: "", is_correct: false },
+        { text: "", is_correct: false },
+        { text: "", is_correct: false },
+      ],
+    });
+  };
+
   const handleAddQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate that at least one answer is marked as correct
     const hasCorrectAnswer = newQuestion.answers.some((a) => a.is_correct);
     if (!hasCorrectAnswer) {
       toast.error("Vous devez sélectionner au moins une bonne réponse");
       return;
     }
 
-    // Validate that all 5 propositions are filled
     const allFilled = newQuestion.answers.every((a) => a.text.trim());
     if (!allFilled) {
       toast.error("Veuillez remplir les 5 propositions");
@@ -150,51 +178,72 @@ const TutorQuizEditor = () => {
     setSaving(true);
 
     try {
-      // Create question
-      const { data: questionData, error: questionError } = await supabase
-        .from("quiz_questions")
-        .insert({
-          quiz_id: quizId,
-          question_text: newQuestion.question_text,
-          explanation: newQuestion.explanation || null,
-          order_index: questions.length,
-        })
-        .select()
-        .single();
+      if (editingQuestion) {
+        // Update existing question
+        const { error: updateError } = await supabase
+          .from("quiz_questions")
+          .update({
+            question_text: newQuestion.question_text,
+            explanation: newQuestion.explanation || null,
+          })
+          .eq("id", editingQuestion.id);
 
-      if (questionError) throw questionError;
+        if (updateError) throw updateError;
 
-      // Create answers (all 5)
-      const answersToInsert = newQuestion.answers.map((a, index) => ({
-        question_id: questionData.id,
-        answer_text: a.text,
-        is_correct: a.is_correct,
-        order_index: index,
-      }));
+        // Delete old answers and re-insert
+        await supabase.from("quiz_answers").delete().eq("question_id", editingQuestion.id);
 
-      const { error: answersError } = await supabase
-        .from("quiz_answers")
-        .insert(answersToInsert);
+        const answersToInsert = newQuestion.answers.map((a, index) => ({
+          question_id: editingQuestion.id,
+          answer_text: a.text,
+          is_correct: a.is_correct,
+          order_index: index,
+        }));
 
-      if (answersError) throw answersError;
+        const { error: answersError } = await supabase
+          .from("quiz_answers")
+          .insert(answersToInsert);
 
-      toast.success("Question ajoutée");
+        if (answersError) throw answersError;
+
+        toast.success("Question modifiée");
+      } else {
+        // Create new question
+        const { data: questionData, error: questionError } = await supabase
+          .from("quiz_questions")
+          .insert({
+            quiz_id: quizId,
+            question_text: newQuestion.question_text,
+            explanation: newQuestion.explanation || null,
+            order_index: questions.length,
+          })
+          .select()
+          .single();
+
+        if (questionError) throw questionError;
+
+        const answersToInsert = newQuestion.answers.map((a, index) => ({
+          question_id: questionData.id,
+          answer_text: a.text,
+          is_correct: a.is_correct,
+          order_index: index,
+        }));
+
+        const { error: answersError } = await supabase
+          .from("quiz_answers")
+          .insert(answersToInsert);
+
+        if (answersError) throw answersError;
+
+        toast.success("Question ajoutée");
+      }
+
       setIsQuestionDialogOpen(false);
-      setNewQuestion({
-        question_text: "",
-        explanation: "",
-        answers: [
-          { text: "", is_correct: false },
-          { text: "", is_correct: false },
-          { text: "", is_correct: false },
-          { text: "", is_correct: false },
-          { text: "", is_correct: false },
-        ],
-      });
+      resetForm();
       fetchQuizData();
     } catch (error) {
-      console.error("Error adding question:", error);
-      toast.error("Erreur lors de l'ajout de la question");
+      console.error("Error saving question:", error);
+      toast.error("Erreur lors de la sauvegarde");
     } finally {
       setSaving(false);
     }
