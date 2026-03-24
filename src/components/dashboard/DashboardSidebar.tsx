@@ -25,7 +25,9 @@ const navItems = [
   { icon: GraduationCap, label: "QCM", href: "/dashboard/qcm" },
   { icon: Calendar, label: "Emploi du temps", href: "/dashboard/emploi-du-temps" },
   { icon: Bell, label: "Rappels", href: "/dashboard/rappels" },
+  { icon: HelpCircle, label: "Mes questions", href: "/dashboard/mes-questions" },
   { icon: BarChart3, label: "Progression", href: "/dashboard/progression" },
+  { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
   { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
 ];
 
