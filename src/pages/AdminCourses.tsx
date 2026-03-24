@@ -213,6 +213,7 @@ const AdminCourses = () => {
         category_id: formData.category_id || null,
         pdf_url: pdfUrl || null,
         is_free: formData.is_free,
+        target_audience: formData.target_audience,
       };
 
       if (editingCourse) {
