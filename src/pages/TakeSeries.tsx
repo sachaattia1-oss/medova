@@ -142,13 +142,13 @@ const TakeSeries = () => {
       setQuestions(allQuestionsData);
 
       setUserAnswers(
-        selectedQuestions.map((q) => ({
+        allQuestionsData.map((q) => ({
           questionId: q.id,
           selectedAnswerIds: [],
         }))
       );
 
-      const questionIds = selectedQuestions.map((q) => q.id);
+      const questionIds = allQuestionsData.map((q) => q.id);
       const { data: answersData, error: answersError } = await supabase
         .from("quiz_answers_public")
         .select("*")
