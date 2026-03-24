@@ -552,23 +552,29 @@ const AdminCourses = () => {
               <div className="rounded-lg border border-border overflow-hidden">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Titre</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Gratuit</TableHead>
-                      <TableHead>PDF</TableHead>
-                      <TableHead className="w-[100px]">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {uncategorized.map((course) => (
-                      <TableRow key={course.id}>
-                        <TableCell className="font-medium">
-                          {course.title}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground max-w-[200px] truncate">
-                          {course.description || "-"}
-                        </TableCell>
+                     <TableRow>
+                       <TableHead>Titre</TableHead>
+                       <TableHead>Description</TableHead>
+                       <TableHead>Public</TableHead>
+                       <TableHead>Gratuit</TableHead>
+                       <TableHead>PDF</TableHead>
+                       <TableHead className="w-[100px]">Actions</TableHead>
+                     </TableRow>
+                   </TableHeader>
+                   <TableBody>
+                     {uncategorized.map((course) => (
+                       <TableRow key={course.id}>
+                         <TableCell className="font-medium">
+                           {course.title}
+                         </TableCell>
+                         <TableCell className="text-muted-foreground max-w-[200px] truncate">
+                           {course.description || "-"}
+                         </TableCell>
+                         <TableCell>
+                           <Badge variant="outline">
+                             {course.target_audience === "all" ? "Tous" : course.target_audience === "terminale" ? "Terminale" : "PASS"}
+                           </Badge>
+                         </TableCell>
                         <TableCell>
                           {course.is_free ? (
                             <Badge variant="secondary">Oui</Badge>
