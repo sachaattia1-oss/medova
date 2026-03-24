@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Sparkles, GraduationCap, Users } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Sparkles, GraduationCap, Users, BookOpen } from "lucide-react";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 
@@ -20,14 +21,14 @@ const signInSchema = z.object({
   password: z.string().min(1, "Mot de passe requis").max(72),
 });
 
-type SignUpRole = "user" | "tutor";
+type SignUpChoice = "user" | "terminale" | "tutor";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [selectedRole, setSelectedRole] = useState<SignUpRole>("user");
+  const [selectedChoice, setSelectedChoice] = useState<SignUpChoice>("user");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -46,16 +47,25 @@ const Auth = () => {
           return;
         }
 
-        const { error } = await signUp(email, password, fullName, selectedRole);
+        const role = selectedChoice === "tutor" ? "tutor" : "user";
+        const studentType = selectedChoice === "terminale" ? "terminale" : selectedChoice === "user" ? "pass" : null;
+        const { error } = await signUp(email, password, fullName, role);
         if (error) {
           toast.error(error.message);
         } else {
-          if (selectedRole === "tutor") {
+          // Store student type in profile
+          if (studentType) {
+            const { data: { user: newUser } } = await supabase.auth.getUser();
+            if (newUser) {
+              await supabase.from("profiles").update({ student_type: studentType }).eq("user_id", newUser.id);
+            }
+          }
+          if (selectedChoice === "tutor") {
             toast.success("Compte tuteur créé ! Votre demande est en attente de validation par un administrateur.");
           } else {
             toast.success("Compte créé avec succès ! Bienvenue sur MEDOVA.");
           }
-          navigate(selectedRole === "tutor" ? "/tutor" : "/dashboard");
+          navigate(selectedChoice === "tutor" ? "/tutor" : "/dashboard");
         }
       } else {
         const validation = signInSchema.safeParse({ email, password });
@@ -86,7 +96,7 @@ const Auth = () => {
     setEmail("");
     setPassword("");
     setFullName("");
-    setSelectedRole("user");
+    setSelectedChoice("user");
   };
 
   if (deviceBlocked) {
@@ -148,13 +158,31 @@ const Auth = () => {
               {isSignUp && (
                 <div className="space-y-3">
                   <Label>Je suis...</Label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
-                      onClick={() => setSelectedRole("user")}
+                      onClick={() => setSelectedChoice("terminale")}
                       className={cn(
                         "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                        selectedRole === "user"
+                        selectedChoice === "terminale"
+                          ? "border-accent bg-accent/10 text-accent"
+                          : "border-border hover:border-accent/50 hover:bg-muted/50"
+                      )}
+                    >
+                      <BookOpen className="w-8 h-8" />
+                      <div className="text-center">
+                        <div className="font-medium text-sm">Terminale</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          Préparer la PASS
+                        </div>
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedChoice("user")}
+                      className={cn(
+                        "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                        selectedChoice === "user"
                           ? "border-accent bg-accent/10 text-accent"
                           : "border-border hover:border-accent/50 hover:bg-muted/50"
                       )}
@@ -169,10 +197,10 @@ const Auth = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setSelectedRole("tutor")}
+                      onClick={() => setSelectedChoice("tutor")}
                       className={cn(
                         "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
-                        selectedRole === "tutor"
+                        selectedChoice === "tutor"
                           ? "border-accent bg-accent/10 text-accent"
                           : "border-border hover:border-accent/50 hover:bg-muted/50"
                       )}
@@ -186,7 +214,7 @@ const Auth = () => {
                       </div>
                     </button>
                   </div>
-                  {selectedRole === "tutor" && (
+                  {selectedChoice === "tutor" && (
                     <p className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 p-2 rounded-lg">
                       ⚠️ Les comptes tuteurs nécessitent une validation par un administrateur avant d'être activés.
                     </p>
@@ -270,7 +298,7 @@ const Auth = () => {
                 {loading
                   ? "Chargement..."
                   : isSignUp
-                  ? selectedRole === "tutor"
+                  ? selectedChoice === "tutor"
                     ? "Demander un compte tuteur"
                     : "Créer mon compte"
                   : "Se connecter"}
@@ -299,12 +327,12 @@ const Auth = () => {
           {isSignUp && (
             <div className="mt-6 space-y-3">
               <p className="text-sm text-muted-foreground text-center">
-                {selectedRole === "tutor" 
+                {selectedChoice === "tutor" 
                   ? "En tant que tuteur, tu pourras :"
                   : "En créant un compte, tu accèdes à :"}
               </p>
               <ul className="space-y-2 text-sm">
-                {selectedRole === "tutor" ? (
+                {selectedChoice === "tutor" ? (
                   <>
                     {[
                       "Suivre la progression des étudiants",
@@ -319,11 +347,15 @@ const Auth = () => {
                   </>
                 ) : (
                   <>
-                    {[
+                    {(selectedChoice === "terminale" ? [
+                      "Anticipe ton année PASS",
+                      "QCM interactifs pour t'entraîner",
+                      "Suivi de progression personnalisé",
+                    ] : [
                       "500+ QCM commentés",
                       "QCM interactifs illimités",
                       "Suivi de progression personnalisé",
-                    ].map((feature) => (
+                    ]).map((feature) => (
                       <li key={feature} className="flex items-center gap-2 text-muted-foreground">
                         <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                         {feature}

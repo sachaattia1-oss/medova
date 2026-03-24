@@ -162,6 +162,7 @@ export type Database = {
           is_subscribed: boolean | null
           is_tutor_approved: boolean | null
           last_seen_at: string | null
+          student_type: string | null
           subscription_expires_at: string | null
           subscription_type: string | null
           tutor_approved_at: string | null
@@ -178,6 +179,7 @@ export type Database = {
           is_subscribed?: boolean | null
           is_tutor_approved?: boolean | null
           last_seen_at?: string | null
+          student_type?: string | null
           subscription_expires_at?: string | null
           subscription_type?: string | null
           tutor_approved_at?: string | null
@@ -194,6 +196,7 @@ export type Database = {
           is_subscribed?: boolean | null
           is_tutor_approved?: boolean | null
           last_seen_at?: string | null
+          student_type?: string | null
           subscription_expires_at?: string | null
           subscription_type?: string | null
           tutor_approved_at?: string | null

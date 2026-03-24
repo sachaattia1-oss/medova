@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN student_type text DEFAULT NULL;
