@@ -3,6 +3,20 @@ import { Check, Sparkles, Zap } from "lucide-react";
 
 const plans = [
   {
+    name: "Terminale",
+    description: "Prépare ta PASS dès le lycée",
+    price: "99",
+    period: "/an",
+    features: [
+      "Accès à tous les cours",
+      "QCM d'entraînement",
+      "Suivi de progression",
+      "Support par email",
+    ],
+    cta: "S'abonner",
+    popular: false,
+  },
+  {
     name: "Mensuel",
     description: "Idéal pour tester la plateforme",
     price: "140",
@@ -55,7 +69,7 @@ const Pricing = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
