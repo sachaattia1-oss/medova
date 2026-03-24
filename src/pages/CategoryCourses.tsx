@@ -18,6 +18,7 @@ interface Course {
   is_free: boolean | null;
   thumbnail_url: string | null;
   pdf_url: string | null;
+  created_at: string;
 }
 
 interface Category {
