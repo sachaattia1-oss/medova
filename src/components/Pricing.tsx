@@ -3,6 +3,20 @@ import { Check, Sparkles, Zap } from "lucide-react";
 
 const plans = [
   {
+    name: "Terminale",
+    description: "Prépare ta PASS dès le lycée",
+    price: "99",
+    period: "/an",
+    features: [
+      "Accès à tous les cours",
+      "QCM d'entraînement",
+      "Suivi de progression",
+      "Support par email",
+    ],
+    cta: "S'abonner",
+    popular: false,
+  },
+  {
     name: "Mensuel",
     description: "Idéal pour tester la plateforme",
     price: "140",
