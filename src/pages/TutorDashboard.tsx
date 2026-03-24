@@ -11,6 +11,7 @@ import TutorQuizzes from "@/pages/tutor/TutorQuizzes";
 import TutorQuizEditor from "@/pages/tutor/TutorQuizEditor";
 import TutorMessages from "@/pages/tutor/TutorMessages";
 import TutorEarnings from "@/pages/tutor/TutorEarnings";
+import TutorDiscussions from "@/pages/tutor/TutorDiscussions";
 
 const TutorDashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
