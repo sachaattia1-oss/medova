@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Sparkles, GraduationCap, Users } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Sparkles, GraduationCap, Users, BookOpen } from "lucide-react";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 
