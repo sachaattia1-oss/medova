@@ -490,7 +490,6 @@ const AdminCourses = () => {
                               {course.target_audience === "all" ? "Tous" : course.target_audience === "terminale" ? "Terminale" : "PASS"}
                             </Badge>
                           </TableCell>
-                          </TableCell>
                           <TableCell>
                             {course.is_free ? (
                               <Badge variant="secondary">Oui</Badge>
