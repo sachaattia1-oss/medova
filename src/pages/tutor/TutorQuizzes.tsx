@@ -110,6 +110,7 @@ const TutorQuizzes = () => {
       course_id: selectedCourseId || "",
       time_limit_minutes: 30,
       is_free: false,
+      target_audience: "all",
     });
     setEditingQuiz(null);
   };
