@@ -40,6 +40,7 @@ interface Course {
   pdf_url: string | null;
   order_index: number | null;
   target_audience: string;
+  created_by: string | null;
 }
 
 interface Category {
