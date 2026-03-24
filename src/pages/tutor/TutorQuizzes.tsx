@@ -63,6 +63,7 @@ const TutorQuizzes = () => {
     course_id: "",
     time_limit_minutes: 30,
     is_free: false,
+    target_audience: "all",
   });
 
   useEffect(() => {
