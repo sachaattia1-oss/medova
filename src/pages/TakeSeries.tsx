@@ -109,44 +109,46 @@ const TakeSeries = () => {
       if (courseError) throw courseError;
       setCourse(courseData);
 
+      // Fetch all series (quizzes) for this course
       const { data: quizzesData } = await supabase
         .from("quizzes")
-        .select("id")
+        .select("id, title")
         .eq("course_id", courseId);
 
       if (!quizzesData || quizzesData.length === 0) {
-        toast.error("Aucun QCM disponible pour ce cours");
+        toast.error("Aucune série disponible pour ce cours");
         setLoading(false);
         return;
       }
 
-      const quizIds = quizzesData.map(q => q.id);
+      // Pick a random series (quiz)
+      const randomIndex = Math.floor(Math.random() * quizzesData.length);
+      const selectedQuiz = quizzesData[randomIndex];
 
       const { data: allQuestionsData, error: questionsError } = await supabase
         .from("quiz_questions")
         .select("*")
-        .in("quiz_id", quizIds);
+        .eq("quiz_id", selectedQuiz.id)
+        .order("order_index", { ascending: true });
 
       if (questionsError) throw questionsError;
 
       if (!allQuestionsData || allQuestionsData.length === 0) {
-        toast.error("Aucune question disponible");
+        toast.error("Cette série ne contient pas de questions");
         setLoading(false);
         return;
       }
 
-      const shuffled = [...allQuestionsData].sort(() => Math.random() - 0.5);
-      const selectedQuestions = shuffled.slice(0, Math.min(SERIES_SIZE, shuffled.length));
-      setQuestions(selectedQuestions);
+      setQuestions(allQuestionsData);
 
       setUserAnswers(
-        selectedQuestions.map((q) => ({
+        allQuestionsData.map((q) => ({
           questionId: q.id,
           selectedAnswerIds: [],
         }))
       );
 
-      const questionIds = selectedQuestions.map((q) => q.id);
+      const questionIds = allQuestionsData.map((q) => q.id);
       const { data: answersData, error: answersError } = await supabase
         .from("quiz_answers_public")
         .select("*")
