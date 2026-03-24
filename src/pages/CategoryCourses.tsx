@@ -118,8 +118,8 @@ const CategoryCourses = () => {
         />
 
         {/* Search */}
-        <div className="mb-8">
-          <div className="relative max-w-md">
+        <div className="mb-8 flex items-center gap-3">
+          <div className="relative max-w-md flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher un cours..."
@@ -128,6 +128,15 @@ const CategoryCourses = () => {
               className="pl-10"
             />
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortOrder(prev => prev === "desc" ? "asc" : "desc")}
+            className="flex items-center gap-2"
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            {sortOrder === "desc" ? "Plus récent" : "Plus ancien"}
+          </Button>
         </div>
 
         {/* Courses Grid */}
