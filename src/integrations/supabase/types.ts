@@ -73,6 +73,7 @@ export type Database = {
           category: string | null
           category_id: string | null
           created_at: string
+          created_by: string | null
           description: string | null
           id: string
           is_free: boolean | null
@@ -87,6 +88,7 @@ export type Database = {
           category?: string | null
           category_id?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_free?: boolean | null
@@ -101,6 +103,7 @@ export type Database = {
           category?: string | null
           category_id?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_free?: boolean | null
@@ -368,6 +371,7 @@ export type Database = {
           category: string | null
           course_id: string | null
           created_at: string
+          created_by: string | null
           description: string | null
           id: string
           is_free: boolean | null
@@ -381,6 +385,7 @@ export type Database = {
           category?: string | null
           course_id?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_free?: boolean | null
@@ -394,6 +399,7 @@ export type Database = {
           category?: string | null
           course_id?: string | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_free?: boolean | null

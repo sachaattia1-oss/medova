@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,6 +40,7 @@ interface Course {
   pdf_url: string | null;
   order_index: number | null;
   target_audience: string;
+  created_by: string | null;
 }
 
 interface Category {
@@ -48,6 +50,7 @@ interface Category {
 }
 
 const TutorCourses = () => {
+  const { user } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -198,7 +201,7 @@ const TutorCourses = () => {
         if (error) throw error;
         toast.success("Cours mis à jour");
       } else {
-        const { error } = await supabase.from("courses").insert(courseData);
+        const { error } = await supabase.from("courses").insert({ ...courseData, created_by: user?.id });
 
         if (error) throw error;
         toast.success("Cours créé");
@@ -469,22 +472,24 @@ const TutorCourses = () => {
                           )}
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleOpenDialog(course)}
-                            >
-                              <Pencil className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(course.id)}
-                            >
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </Button>
-                          </div>
+                          {course.created_by === user?.id && (
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleOpenDialog(course)}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDelete(course.id)}
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}

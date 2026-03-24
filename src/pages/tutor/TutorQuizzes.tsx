@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,9 +44,11 @@ interface Quiz {
   time_limit_minutes: number | null;
   is_free: boolean | null;
   order_index: number | null;
+  created_by: string | null;
 }
 
 const TutorQuizzes = () => {
+  const { user } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -161,7 +164,7 @@ const TutorQuizzes = () => {
         if (error) throw error;
         toast.success("Quiz mis à jour");
       } else {
-        const { error } = await supabase.from("quizzes").insert(quizData);
+        const { error } = await supabase.from("quizzes").insert({ ...quizData, created_by: user?.id });
 
         if (error) throw error;
         toast.success("Quiz créé");
@@ -528,20 +531,24 @@ const TutorQuizzes = () => {
                       </div>
                     </div>
                     <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleOpenDialog(quiz)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(quiz.id)}
-                      >
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                      </Button>
+                      {quiz.created_by === user?.id && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleOpenDialog(quiz)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(quiz.id)}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
