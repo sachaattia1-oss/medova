@@ -124,6 +124,7 @@ const TutorQuizzes = () => {
         course_id: quiz.course_id || "",
         time_limit_minutes: quiz.time_limit_minutes || 30,
         is_free: quiz.is_free || false,
+        target_audience: (quiz as any).target_audience || "all",
       });
     } else {
       resetForm();
