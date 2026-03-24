@@ -82,10 +82,9 @@ const CategoryCourses = () => {
       course.description?.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
-      if (sortOrder === "asc") {
-        return a.id.localeCompare(b.id); // oldest first (UUID v4 + created_at fallback)
-      }
-      return b.id.localeCompare(a.id);
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
 
   if (authLoading) {
