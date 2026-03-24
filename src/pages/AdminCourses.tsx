@@ -184,6 +184,7 @@ const AdminCourses = () => {
         category_id: course.category_id || "",
         pdf_url: course.pdf_url || "",
         is_free: course.is_free || false,
+        target_audience: course.target_audience || "all",
       });
     } else {
       resetForm();
