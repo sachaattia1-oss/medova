@@ -19,6 +19,13 @@ import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
+interface QuizAnswer {
+  id: string;
+  answer_text: string;
+  is_correct: boolean;
+  order_index: number;
+}
+
 interface DiscussionQuestion {
   id: string;
   quiz_question_id: string;
@@ -28,6 +35,8 @@ interface DiscussionQuestion {
   user_name?: string;
   question_text?: string;
   quiz_title?: string;
+  explanation?: string;
+  answers?: QuizAnswer[];
   replies: DiscussionReply[];
 }
 
