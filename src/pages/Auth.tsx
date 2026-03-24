@@ -20,14 +20,14 @@ const signInSchema = z.object({
   password: z.string().min(1, "Mot de passe requis").max(72),
 });
 
-type SignUpRole = "user" | "tutor";
+type SignUpChoice = "user" | "terminale" | "tutor";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [selectedRole, setSelectedRole] = useState<SignUpRole>("user");
+  const [selectedChoice, setSelectedChoice] = useState<SignUpChoice>("user");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
