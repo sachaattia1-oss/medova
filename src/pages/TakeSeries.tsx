@@ -560,6 +560,11 @@ const TakeSeries = () => {
                   <p className="text-sm">💡 {currentQuestion.explanation}</p>
                 </div>
               )}
+
+              {/* Discussion section after validation */}
+              {isQuestionValidated && currentQuestion && (
+                <QuestionDiscussion quizQuestionId={currentQuestion.id} />
+              )}
             </CardContent>
             <CardFooter className="flex justify-end">
               {!isQuestionValidated ? (
