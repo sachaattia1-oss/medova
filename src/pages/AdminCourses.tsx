@@ -133,6 +133,7 @@ const AdminCourses = () => {
       category_id: "",
       pdf_url: "",
       is_free: false,
+      target_audience: "all",
     });
     setEditingCourse(null);
     setPdfFile(null);
