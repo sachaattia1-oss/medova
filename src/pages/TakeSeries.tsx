@@ -388,6 +388,7 @@ const TakeSeries = () => {
                           <p className="text-sm">💡 {question.explanation}</p>
                         </div>
                       )}
+                      <QuestionDiscussion quizQuestionId={question.id} />
                     </CardContent>
                   </Card>
                 );
