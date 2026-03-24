@@ -75,10 +75,17 @@ const CategoryCourses = () => {
   }, [categoryId]);
 
   // Filter courses by search
-  const filteredCourses = courses.filter((course) =>
-    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    course.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCourses = courses
+    .filter((course) =>
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a.id.localeCompare(b.id); // oldest first (UUID v4 + created_at fallback)
+      }
+      return b.id.localeCompare(a.id);
+    });
 
   if (authLoading) {
     return (
