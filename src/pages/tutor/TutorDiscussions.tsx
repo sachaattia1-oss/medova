@@ -115,8 +115,22 @@ const TutorDiscussions = () => {
       ];
       const { data: quizQuestions } = await supabase
         .from("quiz_questions")
-        .select("id, question_text, quiz_id")
+        .select("id, question_text, quiz_id, explanation")
         .in("id", quizQuestionIds);
+
+      // Fetch quiz answers for full question view
+      const { data: quizAnswers } = await supabase
+        .from("quiz_answers")
+        .select("id, question_id, answer_text, is_correct, order_index")
+        .in("question_id", quizQuestionIds)
+        .order("order_index", { ascending: true });
+
+      const answersMap = new Map<string, QuizAnswer[]>();
+      (quizAnswers || []).forEach((a) => {
+        const list = answersMap.get(a.question_id) || [];
+        list.push(a as QuizAnswer);
+        answersMap.set(a.question_id, list);
+      });
 
       // Fetch quiz titles
       const quizIds = [
@@ -133,7 +147,7 @@ const TutorDiscussions = () => {
       const qqMap = new Map(
         (quizQuestions || []).map((q) => [
           q.id,
-          { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "QCM" },
+          { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "QCM", explanation: q.explanation },
         ])
       );
 
@@ -144,6 +158,8 @@ const TutorDiscussions = () => {
           user_name: nameMap.get(d.user_id) || "Anonyme",
           question_text: qqInfo?.text || "Question supprimée",
           quiz_title: qqInfo?.quizTitle || "QCM",
+          explanation: qqInfo?.explanation || undefined,
+          answers: answersMap.get(d.quiz_question_id) || [],
           replies: (replies || [])
             .filter((r) => r.parent_id === d.id)
             .map((r) => ({
