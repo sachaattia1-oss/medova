@@ -164,7 +164,7 @@ const TutorQuizzes = () => {
         if (error) throw error;
         toast.success("Quiz mis à jour");
       } else {
-        const { error } = await supabase.from("quizzes").insert(quizData);
+        const { error } = await supabase.from("quizzes").insert({ ...quizData, created_by: user?.id });
 
         if (error) throw error;
         toast.success("Quiz créé");
