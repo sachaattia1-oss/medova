@@ -60,6 +60,7 @@ const TutorQuizEditor = () => {
 
   // New question form - 5 propositions for medical QCM
   const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [newQuestion, setNewQuestion] = useState({
     question_text: "",
     explanation: "",
