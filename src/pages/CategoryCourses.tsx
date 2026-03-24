@@ -7,7 +7,7 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import CourseCard from "@/components/dashboard/CourseCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, BookOpen } from "lucide-react";
+import { ArrowLeft, Search, BookOpen, ArrowUpDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Course {
@@ -18,6 +18,7 @@ interface Course {
   is_free: boolean | null;
   thumbnail_url: string | null;
   pdf_url: string | null;
+  created_at: string;
 }
 
 interface Category {
@@ -34,6 +35,7 @@ const CategoryCourses = () => {
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -74,10 +76,16 @@ const CategoryCourses = () => {
   }, [categoryId]);
 
   // Filter courses by search
-  const filteredCourses = courses.filter((course) =>
-    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    course.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCourses = courses
+    .filter((course) =>
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+    });
 
   if (authLoading) {
     return (
@@ -110,8 +118,8 @@ const CategoryCourses = () => {
         />
 
         {/* Search */}
-        <div className="mb-8">
-          <div className="relative max-w-md">
+        <div className="mb-8 flex items-center gap-3">
+          <div className="relative max-w-md flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Rechercher un cours..."
@@ -120,6 +128,15 @@ const CategoryCourses = () => {
               className="pl-10"
             />
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortOrder(prev => prev === "desc" ? "asc" : "desc")}
+            className="flex items-center gap-2"
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            {sortOrder === "desc" ? "Plus récent" : "Plus ancien"}
+          </Button>
         </div>
 
         {/* Courses Grid */}
