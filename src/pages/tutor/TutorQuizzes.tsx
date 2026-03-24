@@ -44,6 +44,7 @@ interface Quiz {
   time_limit_minutes: number | null;
   is_free: boolean | null;
   order_index: number | null;
+  created_by: string | null;
 }
 
 const TutorQuizzes = () => {
