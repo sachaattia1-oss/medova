@@ -275,9 +275,43 @@ const TutorDiscussions = () => {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mb-2 italic">
-                          Question QCM : {q.question_text}
-                        </p>
+                        <Collapsible>
+                          <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                            <Eye className="w-3 h-3" />
+                            Voir la question complète
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="mt-2">
+                            <div className="bg-muted/30 rounded-lg p-3 border border-border/50">
+                              <p className="text-sm font-medium mb-2">{q.question_text}</p>
+                              {q.answers && q.answers.length > 0 && (
+                                <div className="space-y-1.5 mb-2">
+                                  {q.answers.map((a, i) => (
+                                    <div
+                                      key={a.id}
+                                      className={`flex items-center gap-2 text-xs rounded px-2 py-1 ${
+                                        a.is_correct
+                                          ? "bg-green-500/10 text-green-700 dark:text-green-400"
+                                          : "text-muted-foreground"
+                                      }`}
+                                    >
+                                      {a.is_correct ? (
+                                        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                                      ) : (
+                                        <XCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                                      )}
+                                      <span>{String.fromCharCode(65 + i)}. {a.answer_text}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              {q.explanation && (
+                                <p className="text-xs text-muted-foreground italic border-t border-border/50 pt-2">
+                                  💡 {q.explanation}
+                                </p>
+                              )}
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
                       </div>
                     </div>
                   </CardHeader>
