@@ -63,6 +63,7 @@ const TutorQuizzes = () => {
     course_id: "",
     time_limit_minutes: 30,
     is_free: false,
+    target_audience: "all",
   });
 
   useEffect(() => {
@@ -109,6 +110,7 @@ const TutorQuizzes = () => {
       course_id: selectedCourseId || "",
       time_limit_minutes: 30,
       is_free: false,
+      target_audience: "all",
     });
     setEditingQuiz(null);
   };
@@ -122,6 +124,7 @@ const TutorQuizzes = () => {
         course_id: quiz.course_id || "",
         time_limit_minutes: quiz.time_limit_minutes || 30,
         is_free: quiz.is_free || false,
+        target_audience: (quiz as any).target_audience || "all",
       });
     } else {
       resetForm();
@@ -146,6 +149,7 @@ const TutorQuizzes = () => {
         course_id: formData.course_id,
         time_limit_minutes: formData.time_limit_minutes,
         is_free: formData.is_free,
+        target_audience: formData.target_audience,
       };
 
       if (editingQuiz) {
@@ -319,6 +323,25 @@ const TutorQuizzes = () => {
                     className="rounded border-border"
                   />
                   <Label htmlFor="is_free">QCM gratuit</Label>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Public cible</Label>
+                  <Select
+                    value={formData.target_audience}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, target_audience: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner le public" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous (Terminale + PASS)</SelectItem>
+                      <SelectItem value="terminale">Terminale uniquement</SelectItem>
+                      <SelectItem value="pass">PASS uniquement</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="flex justify-end gap-2 pt-4">
