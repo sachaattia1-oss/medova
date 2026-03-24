@@ -319,16 +319,19 @@ const TutorQuizEditor = () => {
             <p className="text-muted-foreground">{quiz.description}</p>
           )}
         </div>
-        <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
+      <Dialog open={isQuestionDialogOpen} onOpenChange={(open) => {
+            if (!open) resetForm();
+            setIsQuestionDialogOpen(open);
+          }}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => resetForm()}>
               <Plus className="w-4 h-4 mr-2" />
               Ajouter une question
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Nouvelle question QCM médical</DialogTitle>
+              <DialogTitle>{editingQuestion ? "Modifier la question" : "Nouvelle question QCM médical"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleAddQuestion} className="space-y-4 mt-4">
               <div className="space-y-2">
