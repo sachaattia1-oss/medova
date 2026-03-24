@@ -78,6 +78,7 @@ export type Database = {
           is_free: boolean | null
           order_index: number | null
           pdf_url: string | null
+          target_audience: string
           thumbnail_url: string | null
           title: string
           updated_at: string
@@ -91,6 +92,7 @@ export type Database = {
           is_free?: boolean | null
           order_index?: number | null
           pdf_url?: string | null
+          target_audience?: string
           thumbnail_url?: string | null
           title: string
           updated_at?: string
@@ -104,6 +106,7 @@ export type Database = {
           is_free?: boolean | null
           order_index?: number | null
           pdf_url?: string | null
+          target_audience?: string
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
@@ -369,6 +372,7 @@ export type Database = {
           id: string
           is_free: boolean | null
           order_index: number | null
+          target_audience: string
           time_limit_minutes: number | null
           title: string
           updated_at: string
@@ -381,6 +385,7 @@ export type Database = {
           id?: string
           is_free?: boolean | null
           order_index?: number | null
+          target_audience?: string
           time_limit_minutes?: number | null
           title: string
           updated_at?: string
@@ -393,6 +398,7 @@ export type Database = {
           id?: string
           is_free?: boolean | null
           order_index?: number | null
+          target_audience?: string
           time_limit_minutes?: number | null
           title?: string
           updated_at?: string
