@@ -14,7 +14,15 @@ import {
   MessageSquare,
   ChevronDown,
   ChevronUp,
+  Eye,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
