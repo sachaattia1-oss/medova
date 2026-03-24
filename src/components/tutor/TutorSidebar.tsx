@@ -5,6 +5,7 @@ import {
   BookOpen, 
   FileQuestion,
   MessageSquare,
+  HelpCircle,
   GraduationCap,
   LogOut,
   Wallet
