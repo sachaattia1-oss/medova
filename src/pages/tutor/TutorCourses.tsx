@@ -201,7 +201,7 @@ const TutorCourses = () => {
         if (error) throw error;
         toast.success("Cours mis à jour");
       } else {
-        const { error } = await supabase.from("courses").insert(courseData);
+        const { error } = await supabase.from("courses").insert({ ...courseData, created_by: user?.id });
 
         if (error) throw error;
         toast.success("Cours créé");
