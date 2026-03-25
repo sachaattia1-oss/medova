@@ -143,6 +143,7 @@ const DashboardCourses = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {categories.map((category) => {
               const Icon = categoryIcons[category.name] || BookOpen;
+              const colorClass = categoryColors[category.name] || "from-gray-500 to-gray-600";
               const count = courseCounts[category.id] || 0;
               const newCount = newCourseCounts[category.id] || 0;
 
@@ -150,8 +151,13 @@ const DashboardCourses = () => {
                 <button
                   key={category.id}
                   onClick={() => navigate(`/dashboard/cours/categorie/${category.id}`)}
-                  className="group p-6 rounded-2xl bg-card border border-border/50 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all text-left"
+                  className="group p-6 rounded-2xl bg-card border border-border/50 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all text-left relative"
                 >
+                  {newCount > 0 && (
+                    <span className="absolute top-3 right-3 min-w-5 h-5 px-1.5 bg-green-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                      {newCount}
+                    </span>
+                  )}
                   <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${colorClass} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                     <Icon className="w-8 h-8 text-white" />
                   </div>
