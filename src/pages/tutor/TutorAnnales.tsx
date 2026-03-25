@@ -4,8 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
@@ -48,11 +50,17 @@ interface Quiz {
   title: string;
 }
 
+interface Course {
+  id: string;
+  title: string;
+}
+
 const TutorAnnales = () => {
   const { user } = useAuth();
   const [annales, setAnnales] = useState<Annale[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -61,8 +69,18 @@ const TutorAnnales = () => {
   const [title, setTitle] = useState("");
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [categoryId, setCategoryId] = useState("");
-  const [quizId, setQuizId] = useState("");
   const [targetAudience, setTargetAudience] = useState("all");
+
+  // Quiz mode: "existing" or "new"
+  const [quizMode, setQuizMode] = useState<"existing" | "new">("existing");
+  const [quizId, setQuizId] = useState("");
+
+  // New quiz form
+  const [newQuizTitle, setNewQuizTitle] = useState("");
+  const [newQuizDescription, setNewQuizDescription] = useState("");
+  const [newQuizCourseId, setNewQuizCourseId] = useState("");
+  const [newQuizTimeLimit, setNewQuizTimeLimit] = useState(30);
+  const [newQuizIsFree, setNewQuizIsFree] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -71,14 +89,16 @@ const TutorAnnales = () => {
   const fetchData = async () => {
     if (!user) return;
     try {
-      const [{ data: annalesData }, { data: catData }, { data: quizData }] = await Promise.all([
+      const [{ data: annalesData }, { data: catData }, { data: quizData }, { data: coursesData }] = await Promise.all([
         supabase.from("annales").select("*").order("year", { ascending: false }),
         supabase.from("course_categories").select("id, name").order("order_index"),
         supabase.from("quizzes").select("id, title").order("title"),
+        supabase.from("courses").select("id, title").order("title"),
       ]);
       setAnnales(annalesData || []);
       setCategories(catData || []);
       setQuizzes(quizData || []);
+      setCourses(coursesData || []);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -87,15 +107,47 @@ const TutorAnnales = () => {
   };
 
   const handleSubmit = async () => {
-    if (!user || !title.trim() || !year || !quizId) return;
+    if (!user || !title.trim() || !year) return;
+
+    if (quizMode === "existing" && !quizId) {
+      toast.error("Veuillez sélectionner un quiz");
+      return;
+    }
+    if (quizMode === "new" && !newQuizTitle.trim()) {
+      toast.error("Veuillez entrer un titre pour le quiz");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
+      let finalQuizId = quizId;
+
+      // Create new quiz if needed
+      if (quizMode === "new") {
+        const { data: newQuiz, error: quizError } = await supabase
+          .from("quizzes")
+          .insert({
+            title: newQuizTitle.trim(),
+            description: newQuizDescription || null,
+            course_id: newQuizCourseId || null,
+            time_limit_minutes: newQuizTimeLimit,
+            is_free: newQuizIsFree,
+            target_audience: targetAudience,
+            created_by: user.id,
+          })
+          .select("id")
+          .single();
+
+        if (quizError) throw quizError;
+        finalQuizId = newQuiz.id;
+      }
+
       const { error } = await supabase.from("annales").insert({
         title: title.trim(),
         year: parseInt(year),
         category_id: categoryId || null,
-        quiz_id: quizId,
+        quiz_id: finalQuizId,
         target_audience: targetAudience,
         created_by: user.id,
       });
@@ -103,6 +155,9 @@ const TutorAnnales = () => {
       if (error) throw error;
 
       toast.success("Annale ajoutée avec succès");
+      if (quizMode === "new") {
+        toast.info("N'oubliez pas d'ajouter les questions au quiz dans \"Mes quiz\"");
+      }
       setDialogOpen(false);
       resetForm();
       fetchData();
@@ -128,8 +183,14 @@ const TutorAnnales = () => {
     setTitle("");
     setYear(new Date().getFullYear().toString());
     setCategoryId("");
-    setQuizId("");
     setTargetAudience("all");
+    setQuizMode("existing");
+    setQuizId("");
+    setNewQuizTitle("");
+    setNewQuizDescription("");
+    setNewQuizCourseId("");
+    setNewQuizTimeLimit(30);
+    setNewQuizIsFree(false);
   };
 
   const getCategoryName = (id: string | null) =>
@@ -141,28 +202,34 @@ const TutorAnnales = () => {
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 20 }, (_, i) => currentYear - i);
 
+  const canSubmit = title.trim() && year && (
+    (quizMode === "existing" && quizId) ||
+    (quizMode === "new" && newQuizTitle.trim())
+  );
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold">Annales</h2>
-          <p className="text-muted-foreground">Créez des annales d'examens sous forme de QCM. Commencez par créer un quiz dans "Mes quiz", puis associez-le ici comme annale.</p>
+          <p className="text-muted-foreground">Gérez les annales d'examens sous forme de QCM</p>
         </div>
 
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
               Ajouter une annale
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Nouvelle annale</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
+              {/* Annale info */}
               <div>
-                <Label>Titre *</Label>
+                <Label>Titre de l'annale *</Label>
                 <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Annale PASS 2024 - UE1" />
               </div>
 
@@ -203,22 +270,95 @@ const TutorAnnales = () => {
                 </Select>
               </div>
 
-              <div>
-                <Label>QCM associé *</Label>
-                <Select value={quizId} onValueChange={setQuizId}>
-                  <SelectTrigger><SelectValue placeholder="Sélectionner un quiz" /></SelectTrigger>
-                  <SelectContent>
-                    {quizzes.map((q) => (
-                      <SelectItem key={q.id} value={q.id}>{q.title}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Créez d'abord le quiz dans "Mes quiz", puis associez-le ici.
-                </p>
+              {/* Quiz mode toggle */}
+              <div className="border-t border-border pt-4">
+                <Label className="text-base font-semibold mb-3 block">QCM associé *</Label>
+                <div className="flex gap-2 mb-4">
+                  <Button
+                    type="button"
+                    variant={quizMode === "existing" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setQuizMode("existing")}
+                  >
+                    Quiz existant
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={quizMode === "new" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setQuizMode("new")}
+                  >
+                    Créer un nouveau quiz
+                  </Button>
+                </div>
+
+                {quizMode === "existing" ? (
+                  <div>
+                    <Select value={quizId} onValueChange={setQuizId}>
+                      <SelectTrigger><SelectValue placeholder="Sélectionner un quiz" /></SelectTrigger>
+                      <SelectContent>
+                        {quizzes.map((q) => (
+                          <SelectItem key={q.id} value={q.id}>{q.title}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : (
+                  <div className="space-y-3 p-4 rounded-lg bg-muted/50 border border-border">
+                    <div>
+                      <Label>Titre du quiz *</Label>
+                      <Input
+                        value={newQuizTitle}
+                        onChange={(e) => setNewQuizTitle(e.target.value)}
+                        placeholder="Ex: QCM Annale UE1 2024"
+                      />
+                    </div>
+                    <div>
+                      <Label>Description</Label>
+                      <Textarea
+                        value={newQuizDescription}
+                        onChange={(e) => setNewQuizDescription(e.target.value)}
+                        placeholder="Description du quiz (optionnel)"
+                        rows={2}
+                      />
+                    </div>
+                    <div>
+                      <Label>Cours associé (optionnel)</Label>
+                      <Select value={newQuizCourseId} onValueChange={setNewQuizCourseId}>
+                        <SelectTrigger><SelectValue placeholder="Aucun cours" /></SelectTrigger>
+                        <SelectContent>
+                          {courses.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Temps limite (min)</Label>
+                        <Input
+                          type="number"
+                          value={newQuizTimeLimit}
+                          onChange={(e) => setNewQuizTimeLimit(parseInt(e.target.value) || 30)}
+                          min={1}
+                        />
+                      </div>
+                      <div className="flex items-end gap-2 pb-1">
+                        <Switch
+                          checked={newQuizIsFree}
+                          onCheckedChange={setNewQuizIsFree}
+                        />
+                        <Label>Gratuit</Label>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Le quiz sera créé automatiquement. Vous pourrez y ajouter les questions ensuite dans "Mes quiz".
+                    </p>
+                  </div>
+                )}
               </div>
 
-              <Button className="w-full" onClick={handleSubmit} disabled={submitting || !title.trim() || !quizId}>
+              <Button className="w-full" onClick={handleSubmit} disabled={submitting || !canSubmit}>
                 {submitting ? "Ajout en cours..." : "Ajouter l'annale"}
               </Button>
             </div>
@@ -234,7 +374,7 @@ const TutorAnnales = () => {
         <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
           <FileText className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
           <h3 className="font-medium mb-2">Aucune annale</h3>
-          <p className="text-sm text-muted-foreground">Créez un quiz puis ajoutez-le comme annale</p>
+          <p className="text-sm text-muted-foreground">Ajoutez une annale avec un quiz existant ou créez-en un nouveau</p>
         </div>
       ) : (
         <Card>
