@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      annales: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          created_by: string
+          id: string
+          pdf_url: string | null
+          quiz_id: string | null
+          target_audience: string
+          title: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          pdf_url?: string | null
+          quiz_id?: string | null
+          target_audience?: string
+          title: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          pdf_url?: string | null
+          quiz_id?: string | null
+          target_audience?: string
+          title?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "annales_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "course_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "annales_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           created_at: string
