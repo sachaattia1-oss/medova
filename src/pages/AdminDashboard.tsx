@@ -279,6 +279,11 @@ const AdminDashboard = () => {
                                 </div>
                               </TableCell>
                               <TableCell>
+                                <Badge variant={student.student_type === "pass" ? "default" : student.student_type === "terminale" ? "secondary" : "outline"}>
+                                  {student.student_type === "pass" ? "PASS" : student.student_type === "terminale" ? "Terminale" : "Non défini"}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
                                 {student.is_subscribed ? (
                                   <Badge className="bg-emerald-500 hover:bg-emerald-500">Abonné</Badge>
                                 ) : (
