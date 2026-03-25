@@ -28,7 +28,6 @@ const navItems = [
   { icon: HelpCircle, label: "Mes questions", href: "/dashboard/mes-questions" },
   { icon: BarChart3, label: "Progression", href: "/dashboard/progression" },
   { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
-  { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
 ];
 
 const adminItems = [
@@ -42,6 +41,7 @@ const DashboardSidebar = () => {
   const location = useLocation();
   const { signOut, user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [unreadReplies, setUnreadReplies] = useState(0);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -55,6 +55,37 @@ const DashboardSidebar = () => {
       setIsAdmin(!!data);
     };
     checkAdmin();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchUnreadReplies = async () => {
+      if (!user) return;
+      
+      // Get all questions posted by this user
+      const { data: myQuestions } = await supabase
+        .from("question_discussions")
+        .select("id")
+        .eq("user_id", user.id)
+        .is("parent_id", null);
+
+      if (!myQuestions || myQuestions.length === 0) {
+        setUnreadReplies(0);
+        return;
+      }
+
+      const questionIds = myQuestions.map(q => q.id);
+
+      // Count replies to those questions (not by the user themselves)
+      const { count } = await supabase
+        .from("question_discussions")
+        .select("id", { count: "exact", head: true })
+        .in("parent_id", questionIds)
+        .neq("user_id", user.id);
+
+      setUnreadReplies(count || 0);
+    };
+
+    fetchUnreadReplies();
   }, [user]);
 
   return (
@@ -75,6 +106,7 @@ const DashboardSidebar = () => {
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
           const isActive = location.pathname === item.href;
+          const showBadge = item.href === "/dashboard/mes-questions" && unreadReplies > 0;
           return (
             <Link
               key={item.href}
@@ -87,7 +119,12 @@ const DashboardSidebar = () => {
               )}
             >
               <item.icon className="w-5 h-5" />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {showBadge && (
+                <span className="min-w-5 h-5 px-1.5 bg-accent text-accent-foreground text-xs font-semibold rounded-full flex items-center justify-center">
+                  {unreadReplies > 99 ? "99+" : unreadReplies}
+                </span>
+              )}
             </Link>
           );
         })}
