@@ -82,7 +82,7 @@ const TutorHome = () => {
       </div>
 
       {/* Quick stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         {statsData.map((stat) => (
           <Card key={stat.label}>
             <CardContent className="p-4">
