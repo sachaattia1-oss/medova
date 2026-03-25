@@ -148,7 +148,7 @@ const AdminDashboard = () => {
     try {
       const { data } = await supabase
         .from("profiles")
-        .select("user_id, full_name, avatar_url, is_subscribed, subscription_type, subscription_expires_at, created_at, last_seen_at")
+        .select("user_id, full_name, avatar_url, is_subscribed, subscription_type, subscription_expires_at, created_at, last_seen_at, student_type")
         .in("user_id", targetIds)
         .order("created_at", { ascending: false });
       setFilteredStudents(data || []);
