@@ -49,6 +49,11 @@ const CourseCard = ({
             Premium
           </div>
         )}
+        {isNew && (
+          <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-green-500 text-white text-xs font-bold animate-pulse">
+            Nouveau
+          </div>
+        )}
         {category && (
           <div className="absolute bottom-2 left-2 px-2 py-1 rounded-full bg-accent/90 text-accent-foreground text-xs font-medium">
             {category}

@@ -136,6 +136,11 @@ const DashboardSidebar = () => {
                   {unreadReplies > 99 ? "99+" : unreadReplies}
                 </span>
               )}
+              {showNewCoursesBadge && (
+                <span className="min-w-5 h-5 px-1.5 bg-green-500 text-white text-xs font-semibold rounded-full flex items-center justify-center">
+                  {newCoursesCount > 99 ? "99+" : newCoursesCount}
+                </span>
+              )}
             </Link>
           );
         })}
