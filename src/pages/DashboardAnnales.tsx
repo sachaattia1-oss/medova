@@ -8,16 +8,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Calendar, BookOpen, ExternalLink } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { FileText, Calendar, BookOpen } from "lucide-react";
 
 interface Annale {
   id: string;
   title: string;
   year: number;
   category_id: string | null;
-  pdf_url: string | null;
   quiz_id: string | null;
   target_audience: string;
   created_at: string;
@@ -84,7 +81,7 @@ const DashboardAnnales = () => {
     <div className="min-h-screen bg-background">
       <DashboardSidebar />
       <main className="ml-64 p-8">
-        <DashboardHeader title="Annales" description="Consultez les annales d'examens par année et par matière" />
+        <DashboardHeader title="Annales" description="Entraînez-vous sur les annales d'examens sous forme de QCM" />
 
         {/* Filters */}
         <div className="flex gap-4 mb-6">
@@ -160,30 +157,19 @@ const DashboardAnnales = () => {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      {annale.pdf_url && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1"
-                          onClick={() => window.open(annale.pdf_url!, "_blank")}
-                        >
-                          <ExternalLink className="w-4 h-4 mr-1" />
-                          Voir le PDF
-                        </Button>
-                      )}
-                      {annale.quiz_id && (
-                        <Button
-                          variant="hero"
-                          size="sm"
-                          className="flex-1"
-                          onClick={() => navigate(`/dashboard/qcm/${annale.quiz_id}`)}
-                        >
-                          <BookOpen className="w-4 h-4 mr-1" />
-                          Faire le QCM
-                        </Button>
-                      )}
-                    </div>
+                    {annale.quiz_id ? (
+                      <Button
+                        variant="hero"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => navigate(`/dashboard/qcm/${annale.quiz_id}`)}
+                      >
+                        <BookOpen className="w-4 h-4 mr-1" />
+                        Commencer le QCM
+                      </Button>
+                    ) : (
+                      <p className="text-sm text-muted-foreground text-center">QCM bientôt disponible</p>
+                    )}
                   </CardContent>
                 </Card>
               );

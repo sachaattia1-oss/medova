@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FileText, Plus, Trash2, Upload, Calendar } from "lucide-react";
+import { FileText, Plus, Trash2, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -32,7 +32,6 @@ interface Annale {
   title: string;
   year: number;
   category_id: string | null;
-  pdf_url: string | null;
   quiz_id: string | null;
   target_audience: string;
   created_by: string;
@@ -56,7 +55,7 @@ const TutorAnnales = () => {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -64,7 +63,6 @@ const TutorAnnales = () => {
   const [categoryId, setCategoryId] = useState("");
   const [quizId, setQuizId] = useState("");
   const [targetAudience, setTargetAudience] = useState("all");
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -89,33 +87,16 @@ const TutorAnnales = () => {
   };
 
   const handleSubmit = async () => {
-    if (!user || !title.trim() || !year) return;
-    setUploading(true);
+    if (!user || !title.trim() || !year || !quizId) return;
+    setSubmitting(true);
 
     try {
-      let pdfUrl: string | null = null;
-
-      if (pdfFile) {
-        const fileName = `${Date.now()}-${pdfFile.name}`;
-        const { error: uploadError } = await supabase.storage
-          .from("annales-pdfs")
-          .upload(fileName, pdfFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage
-          .from("annales-pdfs")
-          .getPublicUrl(fileName);
-        pdfUrl = urlData.publicUrl;
-      }
-
       const { error } = await supabase.from("annales").insert({
         title: title.trim(),
         year: parseInt(year),
         category_id: categoryId || null,
-        quiz_id: quizId || null,
+        quiz_id: quizId,
         target_audience: targetAudience,
-        pdf_url: pdfUrl,
         created_by: user.id,
       });
 
@@ -128,7 +109,7 @@ const TutorAnnales = () => {
     } catch (error: any) {
       toast.error("Erreur: " + error.message);
     } finally {
-      setUploading(false);
+      setSubmitting(false);
     }
   };
 
@@ -149,11 +130,13 @@ const TutorAnnales = () => {
     setCategoryId("");
     setQuizId("");
     setTargetAudience("all");
-    setPdfFile(null);
   };
 
   const getCategoryName = (id: string | null) =>
     categories.find((c) => c.id === id)?.name || "—";
+
+  const getQuizTitle = (id: string | null) =>
+    quizzes.find((q) => q.id === id)?.title || "—";
 
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 20 }, (_, i) => currentYear - i);
@@ -163,7 +146,7 @@ const TutorAnnales = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold">Annales</h2>
-          <p className="text-muted-foreground">Gérez les annales d'examens</p>
+          <p className="text-muted-foreground">Créez des annales d'examens sous forme de QCM. Commencez par créer un quiz dans "Mes quiz", puis associez-le ici comme annale.</p>
         </div>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -221,37 +204,22 @@ const TutorAnnales = () => {
               </div>
 
               <div>
-                <Label>QCM associé (optionnel)</Label>
+                <Label>QCM associé *</Label>
                 <Select value={quizId} onValueChange={setQuizId}>
-                  <SelectTrigger><SelectValue placeholder="Aucun QCM" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Sélectionner un quiz" /></SelectTrigger>
                   <SelectContent>
                     {quizzes.map((q) => (
                       <SelectItem key={q.id} value={q.id}>{q.title}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Créez d'abord le quiz dans "Mes quiz", puis associez-le ici.
+                </p>
               </div>
 
-              <div>
-                <Label>Fichier PDF</Label>
-                <div className="mt-1">
-                  <label className="flex items-center gap-2 px-4 py-3 border border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                    <Upload className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      {pdfFile ? pdfFile.name : "Choisir un fichier PDF"}
-                    </span>
-                    <input
-                      type="file"
-                      accept=".pdf"
-                      className="hidden"
-                      onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
-                    />
-                  </label>
-                </div>
-              </div>
-
-              <Button className="w-full" onClick={handleSubmit} disabled={uploading || !title.trim()}>
-                {uploading ? "Envoi en cours..." : "Ajouter l'annale"}
+              <Button className="w-full" onClick={handleSubmit} disabled={submitting || !title.trim() || !quizId}>
+                {submitting ? "Ajout en cours..." : "Ajouter l'annale"}
               </Button>
             </div>
           </DialogContent>
@@ -266,7 +234,7 @@ const TutorAnnales = () => {
         <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
           <FileText className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
           <h3 className="font-medium mb-2">Aucune annale</h3>
-          <p className="text-sm text-muted-foreground">Commencez par ajouter une annale</p>
+          <p className="text-sm text-muted-foreground">Créez un quiz puis ajoutez-le comme annale</p>
         </div>
       ) : (
         <Card>
@@ -278,7 +246,6 @@ const TutorAnnales = () => {
                   <TableHead>Année</TableHead>
                   <TableHead>Matière</TableHead>
                   <TableHead>Public</TableHead>
-                  <TableHead>PDF</TableHead>
                   <TableHead>QCM</TableHead>
                   <TableHead>Date d'ajout</TableHead>
                   <TableHead></TableHead>
@@ -300,14 +267,7 @@ const TutorAnnales = () => {
                         {annale.target_audience === "pass" ? "PASS" : annale.target_audience === "terminale" ? "Terminale" : "Tous"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      {annale.pdf_url ? (
-                        <a href={annale.pdf_url} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline text-sm">
-                          Voir
-                        </a>
-                      ) : "—"}
-                    </TableCell>
-                    <TableCell>{annale.quiz_id ? "✓" : "—"}</TableCell>
+                    <TableCell className="text-sm">{getQuizTitle(annale.quiz_id)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {format(new Date(annale.created_at), "d MMM yyyy", { locale: fr })}
                     </TableCell>
