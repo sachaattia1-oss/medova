@@ -253,6 +253,7 @@ const AdminDashboard = () => {
                         <TableHeader>
                           <TableRow>
                             <TableHead>Étudiant</TableHead>
+                            <TableHead>Filière</TableHead>
                             <TableHead>Abonnement</TableHead>
                             <TableHead>Type</TableHead>
                             <TableHead>Expiration</TableHead>
