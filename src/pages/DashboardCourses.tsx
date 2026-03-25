@@ -80,16 +80,22 @@ const DashboardCourses = () => {
         // Fetch courses to count per category
         const { data: coursesData } = await supabase
           .from("courses")
-          .select("category_id");
+          .select("category_id, created_at");
 
         if (coursesData) {
           const counts: Record<string, number> = {};
+          const newCounts: Record<string, number> = {};
+          const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
           coursesData.forEach((course) => {
             if (course.category_id) {
               counts[course.category_id] = (counts[course.category_id] || 0) + 1;
+              if (new Date(course.created_at).getTime() > oneDayAgo) {
+                newCounts[course.category_id] = (newCounts[course.category_id] || 0) + 1;
+              }
             }
           });
           setCourseCounts(counts);
+          setNewCourseCounts(newCounts);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
