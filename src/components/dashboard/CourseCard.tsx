@@ -11,6 +11,7 @@ interface CourseCardProps {
   progress?: number;
   thumbnailUrl?: string;
   pdfUrl?: string;
+  isNew?: boolean;
   onClick?: () => void;
 }
 
