@@ -74,6 +74,27 @@ const TutorSidebar = () => {
         </Link>
       </div>
 
+      {/* Tutor profile */}
+      <div className="px-6 py-4 border-b border-border">
+        <div className="flex items-center gap-3">
+          <Avatar className="w-10 h-10 border-2 border-accent/20">
+            <AvatarFallback className="bg-accent/10 text-accent font-medium">
+              {user?.user_metadata?.full_name
+                ?.split(" ")
+                .map((n: string) => n[0])
+                .join("")
+                .toUpperCase() || user?.email?.[0].toUpperCase() || "T"}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <p className="text-sm font-medium truncate">
+              {user?.user_metadata?.full_name || "Tuteur"}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+          </div>
+        </div>
+      </div>
+
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {

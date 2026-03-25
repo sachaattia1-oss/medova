@@ -115,10 +115,30 @@ const TutorHome = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>Accédez à "Mes cours" pour voir et créer des cours</p>
-            </div>
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">Chargement...</div>
+            ) : recentCourses.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Vous n'avez pas encore publié de cours</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentCourses.map((course) => (
+                  <div key={course.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-sm truncate">{course.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(course.created_at), "d MMM yyyy", { locale: fr })}
+                      </p>
+                    </div>
+                    <Badge variant={course.target_audience === "pass" ? "default" : course.target_audience === "terminale" ? "secondary" : "outline"}>
+                      {course.target_audience === "pass" ? "PASS" : course.target_audience === "terminale" ? "Terminale" : "Tous"}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
