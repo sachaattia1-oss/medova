@@ -163,6 +163,7 @@ const CategoryCourses = () => {
                 isFree={course.is_free || false}
                 thumbnailUrl={course.thumbnail_url || undefined}
                 pdfUrl={course.pdf_url || undefined}
+                isNew={Date.now() - new Date(course.created_at).getTime() < 24 * 60 * 60 * 1000}
                 onClick={() => navigate(`/dashboard/cours/${course.id}`)}
               />
             ))}
