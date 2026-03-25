@@ -57,6 +57,7 @@ const DashboardCourses = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [courseCounts, setCourseCounts] = useState<Record<string, number>>({});
+  const [newCourseCounts, setNewCourseCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -79,16 +80,22 @@ const DashboardCourses = () => {
         // Fetch courses to count per category
         const { data: coursesData } = await supabase
           .from("courses")
-          .select("category_id");
+          .select("category_id, created_at");
 
         if (coursesData) {
           const counts: Record<string, number> = {};
+          const newCounts: Record<string, number> = {};
+          const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
           coursesData.forEach((course) => {
             if (course.category_id) {
               counts[course.category_id] = (counts[course.category_id] || 0) + 1;
+              if (new Date(course.created_at).getTime() > oneDayAgo) {
+                newCounts[course.category_id] = (newCounts[course.category_id] || 0) + 1;
+              }
             }
           });
           setCourseCounts(counts);
+          setNewCourseCounts(newCounts);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -138,13 +145,19 @@ const DashboardCourses = () => {
               const Icon = categoryIcons[category.name] || BookOpen;
               const colorClass = categoryColors[category.name] || "from-gray-500 to-gray-600";
               const count = courseCounts[category.id] || 0;
+              const newCount = newCourseCounts[category.id] || 0;
 
               return (
                 <button
                   key={category.id}
                   onClick={() => navigate(`/dashboard/cours/categorie/${category.id}`)}
-                  className="group p-6 rounded-2xl bg-card border border-border/50 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all text-left"
+                  className="group p-6 rounded-2xl bg-card border border-border/50 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all text-left relative"
                 >
+                  {newCount > 0 && (
+                    <span className="absolute top-3 right-3 min-w-5 h-5 px-1.5 bg-green-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                      {newCount}
+                    </span>
+                  )}
                   <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${colorClass} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                     <Icon className="w-8 h-8 text-white" />
                   </div>

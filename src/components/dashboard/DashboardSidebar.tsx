@@ -42,6 +42,7 @@ const DashboardSidebar = () => {
   const { signOut, user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [unreadReplies, setUnreadReplies] = useState(0);
+  const [newCoursesCount, setNewCoursesCount] = useState(0);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -85,7 +86,17 @@ const DashboardSidebar = () => {
       setUnreadReplies(count || 0);
     };
 
+    const fetchNewCourses = async () => {
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { count } = await supabase
+        .from("courses")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", oneDayAgo);
+      setNewCoursesCount(count || 0);
+    };
+
     fetchUnreadReplies();
+    fetchNewCourses();
   }, [user]);
 
   return (
@@ -107,6 +118,7 @@ const DashboardSidebar = () => {
         {navItems.map((item) => {
           const isActive = location.pathname === item.href;
           const showBadge = item.href === "/dashboard/mes-questions" && unreadReplies > 0;
+          const showNewCoursesBadge = item.href === "/dashboard/cours" && newCoursesCount > 0;
           return (
             <Link
               key={item.href}
@@ -123,6 +135,11 @@ const DashboardSidebar = () => {
               {showBadge && (
                 <span className="min-w-5 h-5 px-1.5 bg-accent text-accent-foreground text-xs font-semibold rounded-full flex items-center justify-center">
                   {unreadReplies > 99 ? "99+" : unreadReplies}
+                </span>
+              )}
+              {showNewCoursesBadge && (
+                <span className="min-w-5 h-5 px-1.5 bg-green-500 text-white text-xs font-semibold rounded-full flex items-center justify-center">
+                  {newCoursesCount > 99 ? "99+" : newCoursesCount}
                 </span>
               )}
             </Link>

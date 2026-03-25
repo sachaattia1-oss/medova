@@ -11,6 +11,7 @@ interface CourseCardProps {
   progress?: number;
   thumbnailUrl?: string;
   pdfUrl?: string;
+  isNew?: boolean;
   onClick?: () => void;
 }
 
@@ -22,6 +23,7 @@ const CourseCard = ({
   progress = 0,
   thumbnailUrl,
   pdfUrl,
+  isNew = false,
   onClick 
 }: CourseCardProps) => {
   return (
@@ -45,6 +47,11 @@ const CourseCard = ({
           <div className="absolute top-2 right-2 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium flex items-center gap-1">
             <Lock className="w-3 h-3" />
             Premium
+          </div>
+        )}
+        {isNew && (
+          <div className="absolute top-2 left-2 px-2 py-1 rounded-full bg-green-500 text-white text-xs font-bold animate-pulse">
+            Nouveau
           </div>
         )}
         {category && (
