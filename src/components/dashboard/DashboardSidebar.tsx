@@ -117,6 +117,7 @@ const DashboardSidebar = () => {
         {navItems.map((item) => {
           const isActive = location.pathname === item.href;
           const showBadge = item.href === "/dashboard/mes-questions" && unreadReplies > 0;
+          const showNewCoursesBadge = item.href === "/dashboard/cours" && newCoursesCount > 0;
           return (
             <Link
               key={item.href}
