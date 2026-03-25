@@ -36,6 +36,7 @@ interface StudentProfile {
   subscription_expires_at: string | null;
   created_at: string;
   last_seen_at: string | null;
+  student_type: string | null;
 }
 
 interface StudentStats {
@@ -148,7 +149,7 @@ const AdminDashboard = () => {
     try {
       const { data } = await supabase
         .from("profiles")
-        .select("user_id, full_name, avatar_url, is_subscribed, subscription_type, subscription_expires_at, created_at, last_seen_at")
+        .select("user_id, full_name, avatar_url, is_subscribed, subscription_type, subscription_expires_at, created_at, last_seen_at, student_type")
         .in("user_id", targetIds)
         .order("created_at", { ascending: false });
       setFilteredStudents(data || []);
@@ -252,6 +253,7 @@ const AdminDashboard = () => {
                         <TableHeader>
                           <TableRow>
                             <TableHead>Étudiant</TableHead>
+                            <TableHead>Filière</TableHead>
                             <TableHead>Abonnement</TableHead>
                             <TableHead>Type</TableHead>
                             <TableHead>Expiration</TableHead>
@@ -275,6 +277,11 @@ const AdminDashboard = () => {
                                     <p className="text-xs text-muted-foreground">{student.user_id.slice(0, 8)}…</p>
                                   </div>
                                 </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant={student.student_type === "pass" ? "default" : student.student_type === "terminale" ? "secondary" : "outline"}>
+                                  {student.student_type === "pass" ? "PASS" : student.student_type === "terminale" ? "Terminale" : "Non défini"}
+                                </Badge>
                               </TableCell>
                               <TableCell>
                                 {student.is_subscribed ? (
