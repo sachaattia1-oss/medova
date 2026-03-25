@@ -27,11 +27,8 @@ const DashboardHeader = ({ title, description }: DashboardHeaderProps) => {
       </div>
       
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon">
           <Bell className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent text-accent-foreground text-xs rounded-full flex items-center justify-center">
-            3
-          </span>
         </Button>
         
         <div className="flex items-center gap-3">
