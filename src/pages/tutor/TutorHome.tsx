@@ -12,6 +12,7 @@ const TutorHome = () => {
     quizzesCount: 0,
     unreadMessages: 0,
   });
+  const [recentCourses, setRecentCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,15 +20,17 @@ const TutorHome = () => {
       if (!user) return;
 
       try {
-        // Count courses
+        // Count courses by this tutor
         const { count: coursesCount } = await supabase
           .from("courses")
-          .select("*", { count: "exact", head: true });
+          .select("*", { count: "exact", head: true })
+          .eq("created_by", user.id);
 
-        // Count quizzes
+        // Count quizzes by this tutor
         const { count: quizzesCount } = await supabase
           .from("quizzes")
-          .select("*", { count: "exact", head: true });
+          .select("*", { count: "exact", head: true })
+          .eq("created_by", user.id);
 
         // Count unread conversations
         const { count: unreadMessages } = await supabase
@@ -35,6 +38,15 @@ const TutorHome = () => {
           .select("*", { count: "exact", head: true })
           .eq("is_read_by_admin", false);
 
+        // Fetch recent courses by this tutor
+        const { data: courses } = await supabase
+          .from("courses")
+          .select("id, title, category, created_at, target_audience")
+          .eq("created_by", user.id)
+          .order("created_at", { ascending: false })
+          .limit(5);
+
+        setRecentCourses(courses || []);
         setStats({
           coursesCount: coursesCount || 0,
           quizzesCount: quizzesCount || 0,
@@ -51,7 +63,6 @@ const TutorHome = () => {
   }, [user]);
 
   const statsData = [
-    { label: "Étudiants actifs", value: "—", icon: Users, color: "text-blue-500" },
     { label: "Cours créés", value: stats.coursesCount.toString(), icon: BookOpen, color: "text-green-500" },
     { label: "Messages non lus", value: stats.unreadMessages.toString(), icon: MessageSquare, color: "text-amber-500" },
     { label: "Quiz créés", value: stats.quizzesCount.toString(), icon: BarChart3, color: "text-purple-500" },
