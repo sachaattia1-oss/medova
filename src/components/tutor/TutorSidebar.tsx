@@ -8,7 +8,8 @@ import {
   HelpCircle,
   GraduationCap,
   LogOut,
-  Wallet
+  Wallet,
+  FileText
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
