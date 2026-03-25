@@ -57,6 +57,7 @@ const DashboardCourses = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [courseCounts, setCourseCounts] = useState<Record<string, number>>({});
+  const [newCourseCounts, setNewCourseCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
