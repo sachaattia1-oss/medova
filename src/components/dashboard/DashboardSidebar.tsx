@@ -41,6 +41,7 @@ const DashboardSidebar = () => {
   const location = useLocation();
   const { signOut, user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [unreadReplies, setUnreadReplies] = useState(0);
   const [newCoursesCount, setNewCoursesCount] = useState(0);
 
   useEffect(() => {
