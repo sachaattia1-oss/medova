@@ -36,6 +36,7 @@ interface StudentProfile {
   subscription_expires_at: string | null;
   created_at: string;
   last_seen_at: string | null;
+  student_type: string | null;
 }
 
 interface StudentStats {
