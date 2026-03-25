@@ -143,8 +143,8 @@ const DashboardCourses = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {categories.map((category) => {
               const Icon = categoryIcons[category.name] || BookOpen;
-              const colorClass = categoryColors[category.name] || "from-gray-500 to-gray-600";
               const count = courseCounts[category.id] || 0;
+              const newCount = newCourseCounts[category.id] || 0;
 
               return (
                 <button
