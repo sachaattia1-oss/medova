@@ -85,7 +85,17 @@ const DashboardSidebar = () => {
       setUnreadReplies(count || 0);
     };
 
+    const fetchNewCourses = async () => {
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { count } = await supabase
+        .from("courses")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", oneDayAgo);
+      setNewCoursesCount(count || 0);
+    };
+
     fetchUnreadReplies();
+    fetchNewCourses();
   }, [user]);
 
   return (
