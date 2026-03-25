@@ -11,6 +11,8 @@ import {
   Wallet
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { label: "Accueil", icon: Home, path: "/tutor" },
@@ -23,7 +25,38 @@ const navItems = [
 
 const TutorSidebar = () => {
   const location = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
+  const [newQuestionsCount, setNewQuestionsCount] = useState(0);
+
+  useEffect(() => {
+    const fetchNewQuestions = async () => {
+      if (!user) return;
+
+      // Count unanswered top-level questions (no reply from tutor/admin yet)
+      const { data: questions } = await supabase
+        .from("question_discussions")
+        .select("id")
+        .is("parent_id", null);
+
+      if (!questions || questions.length === 0) {
+        setNewQuestionsCount(0);
+        return;
+      }
+
+      // Get questions that have no replies yet
+      const questionIds = questions.map(q => q.id);
+      const { data: replies } = await supabase
+        .from("question_discussions")
+        .select("parent_id")
+        .in("parent_id", questionIds);
+
+      const answeredIds = new Set((replies || []).map(r => r.parent_id));
+      const unanswered = questionIds.filter(id => !answeredIds.has(id));
+      setNewQuestionsCount(unanswered.length);
+    };
+
+    fetchNewQuestions();
+  }, [user]);
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col">
@@ -45,6 +78,7 @@ const TutorSidebar = () => {
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || 
             (item.path !== "/tutor" && location.pathname.startsWith(item.path));
+          const showBadge = item.path === "/tutor/discussions" && newQuestionsCount > 0;
           
           return (
             <Link
@@ -58,7 +92,12 @@ const TutorSidebar = () => {
               )}
             >
               <item.icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
+              <span className="font-medium flex-1">{item.label}</span>
+              {showBadge && (
+                <span className="min-w-5 h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full flex items-center justify-center">
+                  {newQuestionsCount > 99 ? "99+" : newQuestionsCount}
+                </span>
+              )}
             </Link>
           );
         })}
