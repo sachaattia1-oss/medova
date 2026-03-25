@@ -23,6 +23,7 @@ const CourseCard = ({
   progress = 0,
   thumbnailUrl,
   pdfUrl,
+  isNew = false,
   onClick 
 }: CourseCardProps) => {
   return (
