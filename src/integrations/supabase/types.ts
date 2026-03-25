@@ -20,7 +20,6 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
-          pdf_url: string | null
           quiz_id: string | null
           target_audience: string
           title: string
@@ -32,7 +31,6 @@ export type Database = {
           created_at?: string
           created_by: string
           id?: string
-          pdf_url?: string | null
           quiz_id?: string | null
           target_audience?: string
           title: string
@@ -44,7 +42,6 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
-          pdf_url?: string | null
           quiz_id?: string | null
           target_audience?: string
           title?: string
