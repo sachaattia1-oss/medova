@@ -18,7 +18,7 @@ const Header = () => {
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold tracking-tight">
-              MEDO<span className="text-accent">VA</span>
+              MED<span className="text-accent">OVA</span>
             </span>
           </Link>
 
