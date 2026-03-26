@@ -50,6 +50,7 @@ interface Quiz {
 
 const TutorQuizzes = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -61,6 +62,11 @@ const TutorQuizzes = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 
+  // Simplified form - only target_audience for new QCM
+  const [newTargetAudience, setNewTargetAudience] = useState("all");
+  const [creatingQuiz, setCreatingQuiz] = useState(false);
+
+  // Edit form keeps full data
   const [formData, setFormData] = useState({
     title: "",
     description: "",
