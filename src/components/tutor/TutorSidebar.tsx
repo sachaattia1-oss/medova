@@ -109,10 +109,10 @@ const TutorSidebar = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
+                "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-foreground",
                 isActive
                   ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  : "hover:bg-muted"
               )}
             >
               <item.icon className="w-5 h-5" />
