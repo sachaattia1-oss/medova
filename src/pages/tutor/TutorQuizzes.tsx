@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -49,6 +50,7 @@ interface Quiz {
 
 const TutorQuizzes = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -60,6 +62,11 @@ const TutorQuizzes = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 
+  // Simplified form - only target_audience for new QCM
+  const [newTargetAudience, setNewTargetAudience] = useState("all");
+  const [creatingQuiz, setCreatingQuiz] = useState(false);
+
+  // Edit form keeps full data
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -118,21 +125,45 @@ const TutorQuizzes = () => {
     setEditingQuiz(null);
   };
 
-  const handleOpenDialog = (quiz?: Quiz) => {
-    if (quiz) {
-      setEditingQuiz(quiz);
-      setFormData({
-        title: quiz.title,
-        description: quiz.description || "",
-        course_id: quiz.course_id || "",
-        time_limit_minutes: quiz.time_limit_minutes || 30,
-        is_free: quiz.is_free || false,
-        target_audience: (quiz as any).target_audience || "all",
-      });
-    } else {
-      resetForm();
-    }
+  const handleOpenEditDialog = (quiz: Quiz) => {
+    setEditingQuiz(quiz);
+    setFormData({
+      title: quiz.title,
+      description: quiz.description || "",
+      course_id: quiz.course_id || "",
+      time_limit_minutes: quiz.time_limit_minutes || 30,
+      is_free: quiz.is_free || false,
+      target_audience: (quiz as any).target_audience || "all",
+    });
     setIsDialogOpen(true);
+  };
+
+  const handleCreateNewQuiz = async () => {
+    if (!selectedCourseId || !user) return;
+    setCreatingQuiz(true);
+
+    try {
+      const courseName = courses.find(c => c.id === selectedCourseId)?.title || "Quiz";
+      const existingCount = quizzes.filter(q => q.course_id === selectedCourseId).length;
+      const autoTitle = `${courseName} - QCM ${existingCount + 1}`;
+
+      const { data, error } = await supabase.from("quizzes").insert({
+        title: autoTitle,
+        course_id: selectedCourseId,
+        target_audience: newTargetAudience,
+        created_by: user.id,
+      }).select().single();
+
+      if (error) throw error;
+
+      toast.success("QCM créé, ajoutez vos questions");
+      navigate(`/tutor/quiz/${data.id}`);
+    } catch (error) {
+      console.error("Error creating quiz:", error);
+      toast.error("Erreur lors de la création");
+    } finally {
+      setCreatingQuiz(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -239,139 +270,89 @@ const TutorQuizzes = () => {
           </p>
         </div>
         {selectedCourseId && (
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => handleOpenDialog()}>
-                <Plus className="w-4 h-4 mr-2" />
-                Nouveau QCM
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingQuiz ? "Modifier le QCM" : "Nouveau QCM"}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Titre *</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
-                    required
-                  />
+          <div className="flex gap-2">
+            <Dialog open={isDialogOpen && !editingQuiz} onOpenChange={(open) => { if (!open) { setNewTargetAudience("all"); } setIsDialogOpen(open && !editingQuiz); }}>
+              <DialogTrigger asChild>
+                <Button disabled={creatingQuiz}>
+                  {creatingQuiz ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+                  Nouveau QCM
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[400px]">
+                <DialogHeader>
+                  <DialogTitle>Nouveau QCM</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label>Public cible</Label>
+                    <Select value={newTargetAudience} onValueChange={setNewTargetAudience}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tous les étudiants</SelectItem>
+                        <SelectItem value="terminale">Terminale uniquement</SelectItem>
+                        <SelectItem value="pass">PASS uniquement</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-2">
+                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Annuler</Button>
+                    <Button onClick={handleCreateNewQuiz} disabled={creatingQuiz}>
+                      {creatingQuiz ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                      Créer et ajouter les questions
+                    </Button>
+                  </div>
                 </div>
+              </DialogContent>
+            </Dialog>
 
-                <div className="space-y-2">
-                  <Label>Cours associé</Label>
-                  <Select
-                    value={formData.course_id}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, course_id: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner un cours" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {courses.map((course) => (
-                        <SelectItem key={course.id} value={course.id}>
-                          {course.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    rows={3}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="time_limit">Temps limite (minutes)</Label>
-                  <Input
-                    id="time_limit"
-                    type="number"
-                    min={1}
-                    max={180}
-                    value={formData.time_limit_minutes}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        time_limit_minutes: parseInt(e.target.value) || 30,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="is_free"
-                    checked={formData.is_free}
-                    onChange={(e) =>
-                      setFormData({ ...formData, is_free: e.target.checked })
-                    }
-                    className="rounded border-border"
-                  />
-                  <Label htmlFor="is_free">QCM gratuit</Label>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Public cible</Label>
-                  <Select
-                    value={formData.target_audience}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, target_audience: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner le public" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tous les étudiants</SelectItem>
-                      <SelectItem value="terminale">Terminale uniquement</SelectItem>
-                      <SelectItem value="pass">PASS uniquement</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsDialogOpen(false)}
-                    disabled={saving}
-                  >
-                    Annuler
-                  </Button>
-                  <Button type="submit" disabled={saving}>
-                    {saving ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Sauvegarde...
-                      </>
-                    ) : editingQuiz ? (
-                      "Mettre à jour"
-                    ) : (
-                      "Créer"
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+            {/* Edit dialog (separate) */}
+            <Dialog open={isDialogOpen && !!editingQuiz} onOpenChange={(open) => { if (!open) { setEditingQuiz(null); } setIsDialogOpen(open); }}>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Modifier le QCM</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Titre *</Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      rows={3}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Public cible</Label>
+                    <Select value={formData.target_audience} onValueChange={(value) => setFormData({ ...formData, target_audience: value })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tous les étudiants</SelectItem>
+                        <SelectItem value="terminale">Terminale uniquement</SelectItem>
+                        <SelectItem value="pass">PASS uniquement</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} disabled={saving}>Annuler</Button>
+                    <Button type="submit" disabled={saving}>
+                      {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Sauvegarde...</> : "Mettre à jour"}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
         )}
       </div>
 
@@ -497,7 +478,7 @@ const TutorQuizzes = () => {
                 <p className="text-muted-foreground text-center mb-4">
                   Créez votre premier QCM pour ce cours
                 </p>
-                <Button onClick={() => handleOpenDialog()}>
+                <Button onClick={() => setIsDialogOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
                   Créer un QCM
                 </Button>
@@ -536,7 +517,7 @@ const TutorQuizzes = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleOpenDialog(quiz)}
+                            onClick={() => handleOpenEditDialog(quiz)}
                           >
                             <Pencil className="w-4 h-4" />
                           </Button>
