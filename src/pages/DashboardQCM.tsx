@@ -122,18 +122,16 @@ const DashboardQCM = () => {
 
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
 
-  const getSeriesCountForCategory = (categoryId: string) => {
+  const getQuestionCountForCategory = (categoryId: string) => {
     const coursesInCategory = courses.filter((c) => c.category_id === categoryId);
     const courseIds = coursesInCategory.map((c) => c.id);
     const quizIdsInCategory = quizzes.filter((q) => q.course_id && courseIds.includes(q.course_id)).map(q => q.id);
-    const qcmCount = questions.filter((q) => quizIdsInCategory.includes(q.quiz_id)).length;
-    return Math.floor(qcmCount / 5); // 1 série = 5 QCM
+    return questions.filter((q) => quizIdsInCategory.includes(q.quiz_id)).length;
   };
 
-  const getSeriesCountForCourse = (courseId: string) => {
+  const getQuestionCountForCourse = (courseId: string) => {
     const quizIdsForCourse = quizzes.filter((q) => q.course_id === courseId).map(q => q.id);
-    const qcmCount = questions.filter((q) => quizIdsForCourse.includes(q.quiz_id)).length;
-    return Math.floor(qcmCount / 5); // 1 série = 5 QCM
+    return questions.filter((q) => quizIdsForCourse.includes(q.quiz_id)).length;
   };
 
   const startSeries = (courseId: string) => {

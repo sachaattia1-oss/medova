@@ -102,44 +102,62 @@ const TakeSeries = () => {
     try {
       const { data: courseData, error: courseError } = await supabase
         .from("courses")
-        .select("id, title")
+        .select("id, title, category_id")
         .eq("id", courseId)
         .single();
 
       if (courseError) throw courseError;
       setCourse(courseData);
 
-      // Fetch all series (quizzes) for this course
+      // Fetch all quizzes for this course
       const { data: quizzesData } = await supabase
         .from("quizzes")
-        .select("id, title")
+        .select("id")
         .eq("course_id", courseId);
 
-      if (!quizzesData || quizzesData.length === 0) {
-        toast.error("Aucune série disponible pour ce cours");
+      // Also fetch annales quizzes for the same category
+      let annalesQuizIds: string[] = [];
+      if (courseData.category_id) {
+        const { data: annalesData } = await supabase
+          .from("annales")
+          .select("quiz_id")
+          .eq("category_id", courseData.category_id)
+          .not("quiz_id", "is", null);
+        if (annalesData) {
+          annalesQuizIds = annalesData.map(a => a.quiz_id!);
+        }
+      }
+
+      const allQuizIds = [
+        ...(quizzesData || []).map(q => q.id),
+        ...annalesQuizIds,
+      ];
+
+      if (allQuizIds.length === 0) {
+        toast.error("Aucun QCM disponible pour ce cours");
         setLoading(false);
         return;
       }
 
-      // Pick a random series (quiz)
-      const randomIndex = Math.floor(Math.random() * quizzesData.length);
-      const selectedQuiz = quizzesData[randomIndex];
-
+      // Fetch ALL questions from all these quizzes
       const { data: allQuestionsData, error: questionsError } = await supabase
         .from("quiz_questions")
         .select("*")
-        .eq("quiz_id", selectedQuiz.id)
-        .order("order_index", { ascending: true });
+        .in("quiz_id", allQuizIds);
 
       if (questionsError) throw questionsError;
 
-      if (!allQuestionsData || allQuestionsData.length === 0) {
-        toast.error("Cette série ne contient pas de questions");
+      if (!allQuestionsData || allQuestionsData.length < SERIES_SIZE) {
+        toast.error(`Pas assez de QCM disponibles (${allQuestionsData?.length || 0}/${SERIES_SIZE})`);
         setLoading(false);
         return;
       }
 
-      setQuestions(allQuestionsData);
+      // Pick 5 random questions
+      const shuffled = [...allQuestionsData].sort(() => Math.random() - 0.5);
+      const selectedQuestions = shuffled.slice(0, SERIES_SIZE);
+
+      setQuestions(selectedQuestions);
 
       setUserAnswers(
         allQuestionsData.map((q) => ({
