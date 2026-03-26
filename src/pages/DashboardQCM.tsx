@@ -190,7 +190,7 @@ const DashboardQCM = () => {
             {categories.length > 0 ? categories.map((category) => {
               const Icon = categoryIcons[category.name] || BookOpen;
               const colorClass = categoryColors[category.name] || "from-gray-500 to-gray-600";
-              const seriesCount = getSeriesCountForCategory(category.id);
+              const qcmCount = getQuestionCountForCategory(category.id);
               return (
                 <button
                   key={category.id}
