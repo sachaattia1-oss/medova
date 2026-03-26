@@ -223,9 +223,9 @@ const DashboardQCM = () => {
             </div>
 
             {filteredCourses.length > 0 ? filteredCourses.map((course) => {
-              const seriesCount = getSeriesCountForCourse(course.id);
+              const qcmCount = getQuestionCountForCourse(course.id);
               const isStarting = startingQuiz === course.id;
-              const canStart = seriesCount >= 1;
+              const canStart = qcmCount >= 5;
               
               return (
                 <Card 
