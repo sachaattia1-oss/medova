@@ -247,7 +247,7 @@ const DashboardQCM = () => {
                     </div>
                     {canStart && (
                       <Button disabled={isStarting}>
-                        {isStarting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Play className="w-4 h-4 mr-2" />Lancer</>}
+                        {isStarting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Play className="w-4 h-4 mr-2" />Lancer une série de 5 QCM</>}
                       </Button>
                     )}
                   </CardContent>
