@@ -517,7 +517,7 @@ const TutorQuizzes = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleOpenDialog(quiz)}
+                            onClick={() => handleOpenEditDialog(quiz)}
                           >
                             <Pencil className="w-4 h-4" />
                           </Button>
