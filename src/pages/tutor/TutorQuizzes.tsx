@@ -125,21 +125,45 @@ const TutorQuizzes = () => {
     setEditingQuiz(null);
   };
 
-  const handleOpenDialog = (quiz?: Quiz) => {
-    if (quiz) {
-      setEditingQuiz(quiz);
-      setFormData({
-        title: quiz.title,
-        description: quiz.description || "",
-        course_id: quiz.course_id || "",
-        time_limit_minutes: quiz.time_limit_minutes || 30,
-        is_free: quiz.is_free || false,
-        target_audience: (quiz as any).target_audience || "all",
-      });
-    } else {
-      resetForm();
-    }
+  const handleOpenEditDialog = (quiz: Quiz) => {
+    setEditingQuiz(quiz);
+    setFormData({
+      title: quiz.title,
+      description: quiz.description || "",
+      course_id: quiz.course_id || "",
+      time_limit_minutes: quiz.time_limit_minutes || 30,
+      is_free: quiz.is_free || false,
+      target_audience: (quiz as any).target_audience || "all",
+    });
     setIsDialogOpen(true);
+  };
+
+  const handleCreateNewQuiz = async () => {
+    if (!selectedCourseId || !user) return;
+    setCreatingQuiz(true);
+
+    try {
+      const courseName = courses.find(c => c.id === selectedCourseId)?.title || "Quiz";
+      const existingCount = quizzes.filter(q => q.course_id === selectedCourseId).length;
+      const autoTitle = `${courseName} - QCM ${existingCount + 1}`;
+
+      const { data, error } = await supabase.from("quizzes").insert({
+        title: autoTitle,
+        course_id: selectedCourseId,
+        target_audience: newTargetAudience,
+        created_by: user.id,
+      }).select().single();
+
+      if (error) throw error;
+
+      toast.success("QCM créé, ajoutez vos questions");
+      navigate(`/tutor/quiz/${data.id}`);
+    } catch (error) {
+      console.error("Error creating quiz:", error);
+      toast.error("Erreur lors de la création");
+    } finally {
+      setCreatingQuiz(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
