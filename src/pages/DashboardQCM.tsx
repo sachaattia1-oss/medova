@@ -202,7 +202,7 @@ const DashboardQCM = () => {
                   </div>
                   <h3 className="text-xl font-bold mb-1">{category.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {seriesCount} série{seriesCount > 1 ? "s" : ""} disponible{seriesCount > 1 ? "s" : ""}
+                    {qcmCount} QCM disponible{qcmCount > 1 ? "s" : ""}
                   </p>
                 </button>
               );
