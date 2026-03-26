@@ -478,7 +478,7 @@ const TutorQuizzes = () => {
                 <p className="text-muted-foreground text-center mb-4">
                   Créez votre premier QCM pour ce cours
                 </p>
-                <Button onClick={() => handleOpenDialog()}>
+                <Button onClick={() => setIsDialogOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
                   Créer un QCM
                 </Button>
