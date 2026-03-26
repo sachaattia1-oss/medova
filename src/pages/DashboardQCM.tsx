@@ -241,7 +241,7 @@ const DashboardQCM = () => {
                       <div>
                         <h3 className="font-medium">{course.title}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {seriesCount} série{seriesCount > 1 ? "s" : ""} disponible{seriesCount > 1 ? "s" : ""}
+                          {qcmCount} QCM disponible{qcmCount > 1 ? "s" : ""}
                         </p>
                       </div>
                     </div>
