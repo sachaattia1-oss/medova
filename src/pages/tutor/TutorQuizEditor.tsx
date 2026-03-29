@@ -195,6 +195,8 @@ const TutorQuizEditor = () => {
           .update({
             question_text: newQuestion.question_text,
             explanation: newQuestion.explanation || null,
+            is_annale: newQuestion.is_annale,
+            annale_year: newQuestion.is_annale ? newQuestion.annale_year : null,
           })
           .eq("id", editingQuestion.id);
 
