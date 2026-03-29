@@ -487,7 +487,7 @@ const TutorAnnales = () => {
                     <TableCell className="text-sm">{getQuizTitle(annale.quiz_id)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{format(new Date(annale.created_at), "d MMM yyyy", { locale: fr })}</TableCell>
                     <TableCell>
-                      {annale.created_by === user?.id && (
+                      {(isAdmin || annale.created_by === user?.id) && (
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(annale.id)}>
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
