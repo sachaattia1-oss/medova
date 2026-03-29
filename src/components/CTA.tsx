@@ -6,7 +6,7 @@ const CTA = () => {
     <section className="py-24 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-background" />
-      <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
+      
 
       <div className="container relative z-10 px-4 md:px-6">
         <div className="max-w-3xl mx-auto text-center">
