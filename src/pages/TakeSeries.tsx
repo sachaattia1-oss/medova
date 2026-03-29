@@ -369,7 +369,14 @@ const TakeSeries = () => {
                   <Card key={question.id}>
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
-                        <Badge variant="secondary">QCM {index + 1}</Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary">QCM {index + 1}</Badge>
+                          {question.is_annale && (
+                            <Badge variant="default" className="text-xs">
+                              📝 Annale {question.annale_year}
+                            </Badge>
+                          )}
+                        </div>
                         {scoreInfo && (
                           <Badge variant={scoreInfo.variant}>{scoreInfo.text}</Badge>
                         )}
