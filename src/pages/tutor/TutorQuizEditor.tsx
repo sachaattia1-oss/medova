@@ -39,6 +39,8 @@ interface Question {
   question_text: string;
   explanation: string | null;
   order_index: number | null;
+  is_annale: boolean;
+  annale_year: number | null;
 }
 
 interface Answer {
