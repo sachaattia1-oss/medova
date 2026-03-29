@@ -55,7 +55,7 @@ const Header = () => {
                   <Link to="/auth">Se connecter</Link>
                 </Button>
                 <Button variant="hero" size="sm" asChild>
-                  <Link to="/auth">S'inscrire</Link>
+                  <Link to="/auth?mode=signup">S'inscrire</Link>
                 </Button>
               </>
             }
