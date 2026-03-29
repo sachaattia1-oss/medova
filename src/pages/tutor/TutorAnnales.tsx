@@ -66,6 +66,7 @@ const emptyQuestion = (): InlineQuestion => ({
 
 const TutorAnnales = () => {
   const { user } = useAuth();
+  const { isAdmin } = useUserRole();
   const [annales, setAnnales] = useState<Annale[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
