@@ -305,6 +305,12 @@ const TutorQuizzes = () => {
     setNewQuestion({ ...newQuestion, answers: updated });
   };
 
+  const updateAnswerExplanation = (index: number, explanation: string) => {
+    const updated = [...newQuestion.answers];
+    updated[index].explanation = explanation;
+    setNewQuestion({ ...newQuestion, answers: updated });
+  };
+
   const toggleCorrectAnswer = (index: number) => {
     const updated = [...newQuestion.answers];
     updated[index].is_correct = !updated[index].is_correct;
