@@ -380,26 +380,35 @@ const TakeSeries = () => {
                           const correctIds = result?.correctAnswerIds || [];
                           const isCorrect = correctIds.includes(answer.id);
                           const isSelected = userAnswer?.selectedAnswerIds.includes(answer.id);
+                          const answerExplanation = result?.answerExplanations?.[answer.id];
 
                           return (
-                            <div
-                              key={answer.id}
-                              className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 ${
-                                isCorrect
-                                  ? "bg-green-500/10 border border-green-500/30"
-                                  : isSelected
-                                    ? "bg-red-500/10 border border-red-500/30"
-                                    : "bg-muted"
-                              }`}
-                            >
-                              {isCorrect ? (
-                                <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                              ) : isSelected ? (
-                                <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                              ) : (
-                                <div className="w-4 h-4" />
+                            <div key={answer.id} className="space-y-1">
+                              <div
+                                className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 ${
+                                  isCorrect
+                                    ? "bg-green-500/10 border border-green-500/30"
+                                    : isSelected
+                                      ? "bg-red-500/10 border border-red-500/30"
+                                      : "bg-muted"
+                                }`}
+                              >
+                                {isCorrect ? (
+                                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                                ) : isSelected ? (
+                                  <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                                ) : (
+                                  <div className="w-4 h-4" />
+                                )}
+                                <span>{answer.answer_text}</span>
+                              </div>
+                              {answerExplanation && (
+                                <div className={`ml-6 p-2 rounded text-xs ${
+                                  isCorrect ? "bg-green-500/5 text-green-700 dark:text-green-400" : "bg-red-500/5 text-red-700 dark:text-red-400"
+                                }`}>
+                                  💡 {answerExplanation}
+                                </div>
                               )}
-                              <span>{answer.answer_text}</span>
                             </div>
                           );
                         })}
