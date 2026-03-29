@@ -407,6 +407,36 @@ const TutorQuizzes = () => {
               />
             </div>
 
+            {/* Annale toggle */}
+            <div className="flex items-center gap-4 p-3 rounded-lg border border-border/50 bg-muted/30">
+              <div className="flex items-center gap-2 flex-1">
+                <Checkbox
+                  id="is_annale_quiz"
+                  checked={newQuestion.is_annale}
+                  onCheckedChange={(checked) =>
+                    setNewQuestion({ ...newQuestion, is_annale: !!checked })
+                  }
+                />
+                <Label htmlFor="is_annale_quiz" className="cursor-pointer text-sm font-medium">
+                  📝 C'est une annale
+                </Label>
+              </div>
+              {newQuestion.is_annale && (
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm whitespace-nowrap">Année :</Label>
+                  <Input
+                    type="number"
+                    value={newQuestion.annale_year}
+                    onChange={(e) =>
+                      setNewQuestion({ ...newQuestion, annale_year: parseInt(e.target.value) || new Date().getFullYear() })
+                    }
+                    className="w-24"
+                    min={2000}
+                    max={2099}
+                  />
+                </div>
+              )}
+            </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label>5 Propositions (cochez les bonnes réponses)</Label>
