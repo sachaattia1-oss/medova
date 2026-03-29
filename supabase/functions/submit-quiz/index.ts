@@ -131,6 +131,14 @@ Deno.serve(async (req) => {
       const userAnswer = userAnswers.find(ua => ua.questionId === questionId)
       const selectedIds = userAnswer?.selectedAnswerIds || []
 
+      // Build answer explanations map
+      const answerExplanations: Record<string, string> = {}
+      questionAnswers.forEach(a => {
+        if (a.explanation) {
+          answerExplanations[a.id] = a.explanation
+        }
+      })
+
       // Calculate errors
       const missingCorrect = correctAnswerIds.filter(id => !selectedIds.includes(id)).length
       const extraIncorrect = selectedIds.filter(id => !correctAnswerIds.includes(id)).length
@@ -153,6 +161,7 @@ Deno.serve(async (req) => {
         errors,
         correctAnswerIds,
         selectedAnswerIds: selectedIds,
+        answerExplanations,
       })
     }
 
