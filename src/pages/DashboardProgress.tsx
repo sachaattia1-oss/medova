@@ -29,6 +29,7 @@ interface Quiz {
 
 interface Course {
   id: string;
+  title: string;
   category_id: string | null;
 }
 
