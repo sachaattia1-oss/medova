@@ -66,11 +66,11 @@ const TutorQuizEditor = () => {
     question_text: "",
     explanation: "",
     answers: [
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
     ],
   });
 
