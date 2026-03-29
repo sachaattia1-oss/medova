@@ -6,7 +6,7 @@ const plans = [
     name: "Terminale",
     description: "Prépare ta PASS dès le lycée",
     price: "149",
-    period: "/an",
+    period: "",
     features: [
       "Accès aux cours du premier semestre",
       "Accès aux QCM corrigés et détaillés",
