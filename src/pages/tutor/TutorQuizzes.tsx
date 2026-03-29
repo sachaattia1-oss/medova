@@ -49,6 +49,7 @@ interface Answer {
   answer_text: string;
   is_correct: boolean | null;
   order_index: number | null;
+  explanation: string | null;
 }
 
 const TutorQuizzes = () => {
