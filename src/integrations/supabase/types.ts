@@ -309,6 +309,7 @@ export type Database = {
       quiz_answers: {
         Row: {
           answer_text: string
+          explanation: string | null
           id: string
           is_correct: boolean | null
           order_index: number | null
@@ -316,6 +317,7 @@ export type Database = {
         }
         Insert: {
           answer_text: string
+          explanation?: string | null
           id?: string
           is_correct?: boolean | null
           order_index?: number | null
@@ -323,6 +325,7 @@ export type Database = {
         }
         Update: {
           answer_text?: string
+          explanation?: string | null
           id?: string
           is_correct?: boolean | null
           order_index?: number | null

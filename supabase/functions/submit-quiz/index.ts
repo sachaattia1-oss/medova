@@ -16,6 +16,7 @@ interface QuestionResult {
   errors: number
   correctAnswerIds: string[]
   selectedAnswerIds: string[]
+  answerExplanations: Record<string, string>
 }
 
 Deno.serve(async (req) => {
@@ -112,7 +113,7 @@ Deno.serve(async (req) => {
     // Fetch correct answers for all questions (server-side only!)
     const { data: answers, error: answersError } = await supabaseAdmin
       .from('quiz_answers')
-      .select('id, question_id, is_correct')
+      .select('id, question_id, is_correct, explanation')
       .in('question_id', questionIds)
 
     if (answersError) {
@@ -129,6 +130,14 @@ Deno.serve(async (req) => {
       const correctAnswerIds = questionAnswers.filter(a => a.is_correct).map(a => a.id)
       const userAnswer = userAnswers.find(ua => ua.questionId === questionId)
       const selectedIds = userAnswer?.selectedAnswerIds || []
+
+      // Build answer explanations map
+      const answerExplanations: Record<string, string> = {}
+      questionAnswers.forEach(a => {
+        if (a.explanation) {
+          answerExplanations[a.id] = a.explanation
+        }
+      })
 
       // Calculate errors
       const missingCorrect = correctAnswerIds.filter(id => !selectedIds.includes(id)).length
@@ -152,6 +161,7 @@ Deno.serve(async (req) => {
         errors,
         correctAnswerIds,
         selectedAnswerIds: selectedIds,
+        answerExplanations,
       })
     }
 
