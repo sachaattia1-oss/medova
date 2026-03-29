@@ -528,7 +528,14 @@ const TakeSeries = () => {
                   }
                 </div>
               )}
-              <CardTitle className="text-lg">{currentQuestion?.question_text}</CardTitle>
+              <CardTitle className="text-lg">
+                {currentQuestion?.is_annale && (
+                  <Badge variant="default" className="mb-2 text-xs">
+                    📝 Annale {currentQuestion.annale_year}
+                  </Badge>
+                )}
+                <div>{currentQuestion?.question_text}</div>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {!isQuestionValidated && (
