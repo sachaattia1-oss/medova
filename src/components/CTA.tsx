@@ -24,17 +24,13 @@ const CTA = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="#tarifs">
-              <Button size="lg" variant="hero" className="group">
-                Créer mon compte gratuit
-                <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </a>
-            <a href="#tarifs">
-              <Button size="lg" variant="outline">
-                Voir les offres
-              </Button>
-            </a>
+            <Button size="lg" variant="hero" className="group" onClick={() => document.getElementById('tarifs')?.scrollIntoView({ behavior: 'smooth' })}>
+              Créer mon compte gratuit
+              <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </Button>
+            <Button size="lg" variant="outline" onClick={() => document.getElementById('tarifs')?.scrollIntoView({ behavior: 'smooth' })}>
+              Voir les offres
+            </Button>
           </div>
 
           <p className="text-sm text-muted-foreground mt-6">
