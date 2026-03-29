@@ -52,6 +52,7 @@ interface QuestionResult {
   score: number;
   errors: number;
   correctAnswerIds: string[];
+  answerExplanations: Record<string, string>;
 }
 
 const TakeSeries = () => {
