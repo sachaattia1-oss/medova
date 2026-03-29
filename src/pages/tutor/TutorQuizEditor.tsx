@@ -158,6 +158,8 @@ const TutorQuizEditor = () => {
     setNewQuestion({
       question_text: "",
       explanation: "",
+      is_annale: false,
+      annale_year: new Date().getFullYear(),
       answers: [
         { text: "", is_correct: false, explanation: "" },
         { text: "", is_correct: false, explanation: "" },
