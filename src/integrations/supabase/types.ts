@@ -387,25 +387,31 @@ export type Database = {
       }
       quiz_questions: {
         Row: {
+          annale_year: number | null
           created_at: string
           explanation: string | null
           id: string
+          is_annale: boolean
           order_index: number | null
           question_text: string
           quiz_id: string
         }
         Insert: {
+          annale_year?: number | null
           created_at?: string
           explanation?: string | null
           id?: string
+          is_annale?: boolean
           order_index?: number | null
           question_text: string
           quiz_id: string
         }
         Update: {
+          annale_year?: number | null
           created_at?: string
           explanation?: string | null
           id?: string
+          is_annale?: boolean
           order_index?: number | null
           question_text?: string
           quiz_id?: string
