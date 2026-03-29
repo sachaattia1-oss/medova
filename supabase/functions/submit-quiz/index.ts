@@ -113,7 +113,7 @@ Deno.serve(async (req) => {
     // Fetch correct answers for all questions (server-side only!)
     const { data: answers, error: answersError } = await supabaseAdmin
       .from('quiz_answers')
-      .select('id, question_id, is_correct')
+      .select('id, question_id, is_correct, explanation')
       .in('question_id', questionIds)
 
     if (answersError) {
