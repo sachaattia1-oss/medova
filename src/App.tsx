@@ -18,7 +18,7 @@ import DashboardSchedule from "./pages/DashboardSchedule";
 import DashboardReminders from "./pages/DashboardReminders";
 import DashboardSettings from "./pages/DashboardSettings";
 import DashboardMyQuestions from "./pages/DashboardMyQuestions";
-import DashboardAnnales from "./pages/DashboardAnnales";
+
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
 import AdminTutors from "./pages/AdminTutors";
