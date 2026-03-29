@@ -534,44 +534,53 @@ const TakeSeries = () => {
                   // After validation, show correct/incorrect
                   const isCorrect = isQuestionValidated && currentResult?.correctAnswerIds.includes(answer.id);
                   const isWrong = isQuestionValidated && isSelected && !isCorrect;
+                  const answerExplanation = isQuestionValidated && currentResult?.answerExplanations?.[answer.id];
 
                   return (
-                    <button
-                      key={answer.id}
-                      onClick={() => toggleAnswer(currentQuestion.id, answer.id)}
-                      disabled={isQuestionValidated}
-                      className={`w-full flex items-center gap-3 p-4 rounded-lg border text-left transition-colors ${
-                        isQuestionValidated
-                          ? isCorrect
-                            ? "border-green-500 bg-green-500/10"
-                            : isWrong
-                              ? "border-red-500 bg-red-500/10"
-                              : "border-border bg-muted/50"
-                          : isSelected
-                            ? "border-accent bg-accent/10"
-                            : "border-border hover:border-accent/50"
-                      }`}
-                    >
-                      {isQuestionValidated ? (
-                        isCorrect ? (
-                          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        ) : isWrong ? (
-                          <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                    <div key={answer.id} className="space-y-1">
+                      <button
+                        onClick={() => toggleAnswer(currentQuestion.id, answer.id)}
+                        disabled={isQuestionValidated}
+                        className={`w-full flex items-center gap-3 p-4 rounded-lg border text-left transition-colors ${
+                          isQuestionValidated
+                            ? isCorrect
+                              ? "border-green-500 bg-green-500/10"
+                              : isWrong
+                                ? "border-red-500 bg-red-500/10"
+                                : "border-border bg-muted/50"
+                            : isSelected
+                              ? "border-accent bg-accent/10"
+                              : "border-border hover:border-accent/50"
+                        }`}
+                      >
+                        {isQuestionValidated ? (
+                          isCorrect ? (
+                            <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                          ) : isWrong ? (
+                            <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                          ) : (
+                            <div className="w-5 h-5" />
+                          )
                         ) : (
-                          <div className="w-5 h-5" />
-                        )
-                      ) : (
-                        <Checkbox 
-                          checked={isSelected}
-                          className="pointer-events-none"
-                        />
+                          <Checkbox 
+                            checked={isSelected}
+                            className="pointer-events-none"
+                          />
+                        )}
+                        <span className="font-medium text-muted-foreground">{letter}.</span>
+                        <span>{answer.answer_text}</span>
+                        {isWrong && (
+                          <span className="text-xs text-red-500 ml-auto">(votre réponse)</span>
+                        )}
+                      </button>
+                      {answerExplanation && (
+                        <div className={`ml-8 p-2 rounded text-sm ${
+                          isCorrect ? "bg-green-500/5 text-green-700 dark:text-green-400" : "bg-red-500/5 text-red-700 dark:text-red-400"
+                        }`}>
+                          💡 {answerExplanation}
+                        </div>
                       )}
-                      <span className="font-medium text-muted-foreground">{letter}.</span>
-                      <span>{answer.answer_text}</span>
-                      {isWrong && (
-                        <span className="text-xs text-red-500 ml-auto">(votre réponse)</span>
-                      )}
-                    </button>
+                    </div>
                   );
                 })}
               </div>
