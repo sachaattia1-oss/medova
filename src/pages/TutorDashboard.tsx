@@ -35,7 +35,7 @@ const TutorDashboard = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  if (isPendingTutor) {
+  if (isPendingTutor && !isAdmin) {
     return (
       <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
