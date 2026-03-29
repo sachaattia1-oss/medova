@@ -229,6 +229,8 @@ const TutorQuizEditor = () => {
             question_text: newQuestion.question_text,
             explanation: newQuestion.explanation || null,
             order_index: questions.length,
+            is_annale: newQuestion.is_annale,
+            annale_year: newQuestion.is_annale ? newQuestion.annale_year : null,
           })
           .select()
           .single();
