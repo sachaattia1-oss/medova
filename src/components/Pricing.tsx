@@ -93,12 +93,6 @@ const Pricing = () => {
                   <span className="text-4xl font-bold">{plan.price}€</span>
                   <span className="text-muted-foreground">{plan.period}</span>
                 </div>
-                {plan.originalPrice && (
-                  <div className="text-sm text-muted-foreground mt-1">
-                    <span className="line-through">{plan.originalPrice}€</span>
-                    <span className="text-accent ml-2 font-medium">-41%</span>
-                  </div>
-                )}
               </div>
 
               <ul className="space-y-3 mb-8">
