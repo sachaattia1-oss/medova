@@ -65,6 +65,7 @@ const TutorQuizzes = () => {
 
   // Quiz & questions state (when course is selected)
   const [currentQuizId, setCurrentQuizId] = useState<string | null>(null);
+  const [currentQuizCreatedBy, setCurrentQuizCreatedBy] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, Answer[]>>({});
   const [loadingQuestions, setLoadingQuestions] = useState(false);
