@@ -76,11 +76,11 @@ const TutorQuizzes = () => {
     explanation: "",
     target_audience: "all",
     answers: [
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
     ],
   });
 
