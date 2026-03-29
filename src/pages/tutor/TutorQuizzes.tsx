@@ -49,6 +49,7 @@ interface Answer {
   answer_text: string;
   is_correct: boolean | null;
   order_index: number | null;
+  explanation: string | null;
 }
 
 const TutorQuizzes = () => {
@@ -75,11 +76,11 @@ const TutorQuizzes = () => {
     explanation: "",
     target_audience: "all",
     answers: [
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
-      { text: "", is_correct: false },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
+      { text: "", is_correct: false, explanation: "" },
     ],
   });
 
@@ -190,11 +191,11 @@ const TutorQuizzes = () => {
       explanation: "",
       target_audience: "all",
       answers: [
-        { text: "", is_correct: false },
-        { text: "", is_correct: false },
-        { text: "", is_correct: false },
-        { text: "", is_correct: false },
-        { text: "", is_correct: false },
+        { text: "", is_correct: false, explanation: "" },
+        { text: "", is_correct: false, explanation: "" },
+        { text: "", is_correct: false, explanation: "" },
+        { text: "", is_correct: false, explanation: "" },
+        { text: "", is_correct: false, explanation: "" },
       ],
     });
   };
@@ -204,6 +205,7 @@ const TutorQuizzes = () => {
     const filledAnswers = Array.from({ length: 5 }, (_, i) => ({
       text: questionAnswers[i]?.answer_text || "",
       is_correct: questionAnswers[i]?.is_correct || false,
+      explanation: questionAnswers[i]?.explanation || "",
     }));
     setEditingQuestion(question);
     setNewQuestion({
@@ -245,6 +247,7 @@ const TutorQuizzes = () => {
           answer_text: a.text,
           is_correct: a.is_correct,
           order_index: index,
+          explanation: a.explanation || null,
         }));
         await supabase.from("quiz_answers").insert(answersToInsert);
         toast.success("Question modifiée");
@@ -267,6 +270,7 @@ const TutorQuizzes = () => {
           answer_text: a.text,
           is_correct: a.is_correct,
           order_index: index,
+          explanation: a.explanation || null,
         }));
         await supabase.from("quiz_answers").insert(answersToInsert);
         toast.success("Question ajoutée");
@@ -298,6 +302,12 @@ const TutorQuizzes = () => {
   const updateAnswerText = (index: number, text: string) => {
     const updated = [...newQuestion.answers];
     updated[index].text = text;
+    setNewQuestion({ ...newQuestion, answers: updated });
+  };
+
+  const updateAnswerExplanation = (index: number, explanation: string) => {
+    const updated = [...newQuestion.answers];
+    updated[index].explanation = explanation;
     setNewQuestion({ ...newQuestion, answers: updated });
   };
 
@@ -403,18 +413,27 @@ const TutorQuizzes = () => {
               {newQuestion.answers.map((answer, index) => {
                 const letter = String.fromCharCode(65 + index);
                 return (
-                  <div key={index} className="flex items-center gap-3">
-                    <Checkbox
-                      checked={answer.is_correct}
-                      onCheckedChange={() => toggleCorrectAnswer(index)}
-                      className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                    />
-                    <span className="font-medium text-muted-foreground w-6">{letter}.</span>
-                    <Input
-                      value={answer.text}
-                      onChange={(e) => updateAnswerText(index, e.target.value)}
-                      placeholder={`Proposition ${letter}`}
-                      className={answer.is_correct ? "border-green-500/50" : ""}
+                  <div key={index} className="space-y-2 p-3 rounded-lg border border-border/50">
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={answer.is_correct}
+                        onCheckedChange={() => toggleCorrectAnswer(index)}
+                        className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                      />
+                      <span className="font-medium text-muted-foreground w-6">{letter}.</span>
+                      <Input
+                        value={answer.text}
+                        onChange={(e) => updateAnswerText(index, e.target.value)}
+                        placeholder={`Proposition ${letter}`}
+                        className={answer.is_correct ? "border-green-500/50" : ""}
+                      />
+                    </div>
+                    <Textarea
+                      value={answer.explanation}
+                      onChange={(e) => updateAnswerExplanation(index, e.target.value)}
+                      placeholder={`Explication : pourquoi ${letter} est ${answer.is_correct ? "vrai" : "faux"}...`}
+                      rows={1}
+                      className="ml-9 text-sm"
                     />
                   </div>
                 );
