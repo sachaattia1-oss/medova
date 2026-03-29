@@ -86,7 +86,7 @@ const DashboardProgress = () => {
         // Fetch all courses
         const { data: coursesData } = await supabase
           .from("courses")
-          .select("id, category_id");
+          .select("id, title, category_id");
 
         if (coursesData) {
           const courseMap = coursesData.reduce((acc, c) => {
