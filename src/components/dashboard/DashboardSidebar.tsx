@@ -13,7 +13,6 @@ import {
   Wallet,
   Bell,
   HelpCircle,
-  FileText,
   FileQuestion
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,7 +24,6 @@ const navItems = [
   { icon: LayoutDashboard, label: "Tableau de bord", href: "/dashboard" },
   { icon: BookOpen, label: "Cours", href: "/dashboard/cours" },
   { icon: GraduationCap, label: "QCM", href: "/dashboard/qcm" },
-  { icon: FileText, label: "Annales", href: "/dashboard/annales" },
   { icon: Calendar, label: "Emploi du temps", href: "/dashboard/emploi-du-temps" },
   { icon: Bell, label: "Rappels", href: "/dashboard/rappels" },
   { icon: HelpCircle, label: "Mes questions", href: "/dashboard/mes-questions" },

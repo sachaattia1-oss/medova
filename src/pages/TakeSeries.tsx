@@ -33,6 +33,8 @@ interface Question {
   question_text: string;
   explanation: string | null;
   quiz_id: string;
+  is_annale: boolean;
+  annale_year: number | null;
 }
 
 interface Answer {
@@ -116,23 +118,7 @@ const TakeSeries = () => {
         .select("id")
         .eq("course_id", courseId);
 
-      // Also fetch annales quizzes for the same category
-      let annalesQuizIds: string[] = [];
-      if (courseData.category_id) {
-        const { data: annalesData } = await supabase
-          .from("annales")
-          .select("quiz_id")
-          .eq("category_id", courseData.category_id)
-          .not("quiz_id", "is", null);
-        if (annalesData) {
-          annalesQuizIds = annalesData.map(a => a.quiz_id!);
-        }
-      }
-
-      const allQuizIds = [
-        ...(quizzesData || []).map(q => q.id),
-        ...annalesQuizIds,
-      ];
+      const allQuizIds = (quizzesData || []).map(q => q.id);
 
       if (allQuizIds.length === 0) {
         toast.error("Aucun QCM disponible pour ce cours");
@@ -367,7 +353,14 @@ const TakeSeries = () => {
                   <Card key={question.id}>
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
-                        <Badge variant="secondary">QCM {index + 1}</Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary">QCM {index + 1}</Badge>
+                          {question.is_annale && (
+                            <Badge variant="default" className="text-xs">
+                              📝 Annale {question.annale_year}
+                            </Badge>
+                          )}
+                        </div>
                         {scoreInfo && (
                           <Badge variant={scoreInfo.variant}>{scoreInfo.text}</Badge>
                         )}
@@ -526,7 +519,14 @@ const TakeSeries = () => {
                   }
                 </div>
               )}
-              <CardTitle className="text-lg">{currentQuestion?.question_text}</CardTitle>
+              <CardTitle className="text-lg">
+                {currentQuestion?.is_annale && (
+                  <Badge variant="default" className="mb-2 text-xs">
+                    📝 Annale {currentQuestion.annale_year}
+                  </Badge>
+                )}
+                <div>{currentQuestion?.question_text}</div>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {!isQuestionValidated && (

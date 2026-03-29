@@ -39,6 +39,8 @@ interface Question {
   question_text: string;
   explanation: string | null;
   order_index: number | null;
+  is_annale: boolean;
+  annale_year: number | null;
 }
 
 interface Answer {
@@ -65,6 +67,8 @@ const TutorQuizEditor = () => {
   const [newQuestion, setNewQuestion] = useState({
     question_text: "",
     explanation: "",
+    is_annale: false,
+    annale_year: new Date().getFullYear(),
     answers: [
       { text: "", is_correct: false, explanation: "" },
       { text: "", is_correct: false, explanation: "" },
@@ -142,6 +146,8 @@ const TutorQuizEditor = () => {
     setNewQuestion({
       question_text: question.question_text,
       explanation: question.explanation || "",
+      is_annale: question.is_annale || false,
+      annale_year: question.annale_year || new Date().getFullYear(),
       answers: filledAnswers,
     });
     setIsQuestionDialogOpen(true);
@@ -152,6 +158,8 @@ const TutorQuizEditor = () => {
     setNewQuestion({
       question_text: "",
       explanation: "",
+      is_annale: false,
+      annale_year: new Date().getFullYear(),
       answers: [
         { text: "", is_correct: false, explanation: "" },
         { text: "", is_correct: false, explanation: "" },
@@ -187,6 +195,8 @@ const TutorQuizEditor = () => {
           .update({
             question_text: newQuestion.question_text,
             explanation: newQuestion.explanation || null,
+            is_annale: newQuestion.is_annale,
+            annale_year: newQuestion.is_annale ? newQuestion.annale_year : null,
           })
           .eq("id", editingQuestion.id);
 
@@ -219,6 +229,8 @@ const TutorQuizEditor = () => {
             question_text: newQuestion.question_text,
             explanation: newQuestion.explanation || null,
             order_index: questions.length,
+            is_annale: newQuestion.is_annale,
+            annale_year: newQuestion.is_annale ? newQuestion.annale_year : null,
           })
           .select()
           .single();
@@ -358,6 +370,36 @@ const TutorQuizEditor = () => {
                 />
               </div>
 
+              {/* Annale toggle */}
+              <div className="flex items-center gap-4 p-3 rounded-lg border border-border/50 bg-muted/30">
+                <div className="flex items-center gap-2 flex-1">
+                  <Checkbox
+                    id="is_annale"
+                    checked={newQuestion.is_annale}
+                    onCheckedChange={(checked) =>
+                      setNewQuestion({ ...newQuestion, is_annale: !!checked })
+                    }
+                  />
+                  <Label htmlFor="is_annale" className="cursor-pointer text-sm font-medium">
+                    📝 C'est une annale
+                  </Label>
+                </div>
+                {newQuestion.is_annale && (
+                  <div className="flex items-center gap-2">
+                    <Label className="text-sm whitespace-nowrap">Année :</Label>
+                    <Input
+                      type="number"
+                      value={newQuestion.annale_year}
+                      onChange={(e) =>
+                        setNewQuestion({ ...newQuestion, annale_year: parseInt(e.target.value) || new Date().getFullYear() })
+                      }
+                      className="w-24"
+                      min={2000}
+                      max={2099}
+                    />
+                  </div>
+                )}
+              </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <Label>5 Propositions (cochez les bonnes réponses)</Label>
@@ -472,10 +514,15 @@ const TutorQuizEditor = () => {
                       <CardTitle className="text-base font-medium">
                         {question.question_text}
                       </CardTitle>
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center gap-2 mt-2 flex-wrap">
                         <Badge variant="outline" className="text-xs">
                           {correctCount} bonne{correctCount > 1 ? "s" : ""} réponse{correctCount > 1 ? "s" : ""}
                         </Badge>
+                        {question.is_annale && (
+                          <Badge variant="default" className="text-xs">
+                            📝 Annale {question.annale_year}
+                          </Badge>
+                        )}
                         {question.explanation && (
                           <Badge variant="secondary" className="text-xs">
                             💡 Explication incluse
