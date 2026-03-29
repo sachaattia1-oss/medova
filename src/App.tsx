@@ -25,6 +25,7 @@ import AdminTutors from "./pages/AdminTutors";
 import AdminPayments from "./pages/AdminPayments";
 import AdminDashboard from "./pages/AdminDashboard";
 import TutorDashboard from "./pages/TutorDashboard";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
