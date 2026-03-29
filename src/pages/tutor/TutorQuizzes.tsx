@@ -55,6 +55,7 @@ interface Answer {
 
 const TutorQuizzes = () => {
   const { user } = useAuth();
+  const { isAdmin } = useUserRole();
   const [categories, setCategories] = useState<Category[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
