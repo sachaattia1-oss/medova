@@ -16,7 +16,7 @@ import TutorAnnales from "@/pages/tutor/TutorAnnales";
 
 const TutorDashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
-  const { isApprovedTutor, isPendingTutor, isTutor, loading: roleLoading } = useUserRole();
+  const { isApprovedTutor, isPendingTutor, isTutor, isAdmin, loading: roleLoading } = useUserRole();
 
   if (authLoading || roleLoading) {
     return (
@@ -30,7 +30,8 @@ const TutorDashboard = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  if (!isTutor) {
+  // Admins can access tutor dashboard too
+  if (!isTutor && !isAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 
