@@ -16,6 +16,7 @@ interface QuestionResult {
   errors: number
   correctAnswerIds: string[]
   selectedAnswerIds: string[]
+  answerExplanations: Record<string, string>
 }
 
 Deno.serve(async (req) => {
