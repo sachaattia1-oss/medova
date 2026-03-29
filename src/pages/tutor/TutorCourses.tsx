@@ -474,7 +474,7 @@ const TutorCourses = () => {
                           )}
                         </TableCell>
                         <TableCell>
-                          {course.created_by === user?.id && (
+                        {(isAdmin || course.created_by === user?.id) && (
                             <div className="flex gap-1">
                               <Button
                                 variant="ghost"
