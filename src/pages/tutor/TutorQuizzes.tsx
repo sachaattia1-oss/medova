@@ -124,18 +124,25 @@ const TutorQuizzes = () => {
     setLoadingQuestions(true);
 
     try {
-      // Find existing quiz by this tutor for this course
-      const { data: existingQuizzes } = await supabase
+      // Find existing quiz for this course
+      let quizQuery = supabase
         .from("quizzes")
-        .select("id")
-        .eq("course_id", selectedCourseId)
-        .eq("created_by", user.id)
-        .limit(1);
+        .select("id, created_by")
+        .eq("course_id", selectedCourseId);
+
+      // Tutors only see their own quiz, admins see all
+      if (!isAdmin) {
+        quizQuery = quizQuery.eq("created_by", user.id);
+      }
+
+      const { data: existingQuizzes } = await quizQuery.limit(1);
 
       let quizId: string;
+      let quizCreatedBy: string | null = null;
 
       if (existingQuizzes && existingQuizzes.length > 0) {
         quizId = existingQuizzes[0].id;
+        quizCreatedBy = existingQuizzes[0].created_by;
       } else {
         // Auto-create a quiz for this course
         const courseName = courses.find(c => c.id === selectedCourseId)?.title || "Quiz";
@@ -148,9 +155,11 @@ const TutorQuizzes = () => {
 
         if (error) throw error;
         quizId = data.id;
+        quizCreatedBy = user.id;
       }
 
       setCurrentQuizId(quizId);
+      setCurrentQuizCreatedBy(quizCreatedBy);
 
       // Fetch questions
       const { data: questionsData } = await supabase
