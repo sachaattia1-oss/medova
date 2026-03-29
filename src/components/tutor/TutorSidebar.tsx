@@ -9,9 +9,11 @@ import {
   GraduationCap,
   LogOut,
   Wallet,
-  FileText
+  FileText,
+  ArrowLeft
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -29,6 +31,7 @@ const navItems = [
 const TutorSidebar = () => {
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const { isAdmin } = useUserRole();
   const [newQuestionsCount, setNewQuestionsCount] = useState(0);
 
   useEffect(() => {
@@ -71,7 +74,7 @@ const TutorSidebar = () => {
           </div>
           <div>
             <h1 className="font-semibold text-foreground">MEDOVA</h1>
-            <p className="text-xs text-muted-foreground">Espace Tuteur</p>
+            <p className="text-xs text-muted-foreground">{isAdmin ? "Espace Admin" : "Espace Tuteur"}</p>
           </div>
         </Link>
       </div>
@@ -127,8 +130,17 @@ const TutorSidebar = () => {
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="p-4 border-t border-border">
+      {/* Back to dashboard for admins */}
+      <div className="p-4 border-t border-border space-y-1">
+        {isAdmin && (
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-medium">Retour au dashboard</span>
+          </Link>
+        )}
         <button
           onClick={signOut}
           className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
