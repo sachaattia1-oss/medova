@@ -75,6 +75,8 @@ const TutorQuizzes = () => {
     question_text: "",
     explanation: "",
     target_audience: "all",
+    is_annale: false,
+    annale_year: new Date().getFullYear(),
     answers: [
       { text: "", is_correct: false, explanation: "" },
       { text: "", is_correct: false, explanation: "" },
@@ -190,6 +192,8 @@ const TutorQuizzes = () => {
       question_text: "",
       explanation: "",
       target_audience: "all",
+      is_annale: false,
+      annale_year: new Date().getFullYear(),
       answers: [
         { text: "", is_correct: false, explanation: "" },
         { text: "", is_correct: false, explanation: "" },
@@ -212,6 +216,8 @@ const TutorQuizzes = () => {
       question_text: question.question_text,
       explanation: question.explanation || "",
       target_audience: "all",
+      is_annale: (question as any).is_annale || false,
+      annale_year: (question as any).annale_year || new Date().getFullYear(),
       answers: filledAnswers,
     });
     setIsQuestionDialogOpen(true);
@@ -238,6 +244,8 @@ const TutorQuizzes = () => {
         await supabase.from("quiz_questions").update({
           question_text: newQuestion.question_text,
           explanation: newQuestion.explanation || null,
+          is_annale: newQuestion.is_annale,
+          annale_year: newQuestion.is_annale ? newQuestion.annale_year : null,
         }).eq("id", editingQuestion.id);
 
         await supabase.from("quiz_answers").delete().eq("question_id", editingQuestion.id);
@@ -259,6 +267,8 @@ const TutorQuizzes = () => {
             question_text: newQuestion.question_text,
             explanation: newQuestion.explanation || null,
             order_index: questions.length,
+            is_annale: newQuestion.is_annale,
+            annale_year: newQuestion.is_annale ? newQuestion.annale_year : null,
           })
           .select()
           .single();
@@ -397,6 +407,36 @@ const TutorQuizzes = () => {
               />
             </div>
 
+            {/* Annale toggle */}
+            <div className="flex items-center gap-4 p-3 rounded-lg border border-border/50 bg-muted/30">
+              <div className="flex items-center gap-2 flex-1">
+                <Checkbox
+                  id="is_annale_quiz"
+                  checked={newQuestion.is_annale}
+                  onCheckedChange={(checked) =>
+                    setNewQuestion({ ...newQuestion, is_annale: !!checked })
+                  }
+                />
+                <Label htmlFor="is_annale_quiz" className="cursor-pointer text-sm font-medium">
+                  📝 C'est une annale
+                </Label>
+              </div>
+              {newQuestion.is_annale && (
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm whitespace-nowrap">Année :</Label>
+                  <Input
+                    type="number"
+                    value={newQuestion.annale_year}
+                    onChange={(e) =>
+                      setNewQuestion({ ...newQuestion, annale_year: parseInt(e.target.value) || new Date().getFullYear() })
+                    }
+                    className="w-24"
+                    min={2000}
+                    max={2099}
+                  />
+                </div>
+              )}
+            </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label>5 Propositions (cochez les bonnes réponses)</Label>
