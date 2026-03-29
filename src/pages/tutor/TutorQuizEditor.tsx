@@ -200,6 +200,7 @@ const TutorQuizEditor = () => {
           answer_text: a.text,
           is_correct: a.is_correct,
           order_index: index,
+          explanation: a.explanation || null,
         }));
 
         const { error: answersError } = await supabase
