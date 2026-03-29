@@ -205,6 +205,7 @@ const TutorQuizzes = () => {
     const filledAnswers = Array.from({ length: 5 }, (_, i) => ({
       text: questionAnswers[i]?.answer_text || "",
       is_correct: questionAnswers[i]?.is_correct || false,
+      explanation: questionAnswers[i]?.explanation || "",
     }));
     setEditingQuestion(question);
     setNewQuestion({
