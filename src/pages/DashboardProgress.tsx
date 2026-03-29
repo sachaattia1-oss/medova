@@ -332,7 +332,13 @@ const DashboardProgress = () => {
                         )}
                       </div>
                       <div>
-                        <p className="font-medium">{quiz?.title || "QCM"}</p>
+                        <p className="font-medium">
+                          {(() => {
+                            const quiz = quizzes[attempt.quiz_id];
+                            const course = quiz?.course_id ? courses[quiz.course_id] : null;
+                            return course ? `Série – ${course.title}` : (quiz?.title || "Série QCM");
+                          })()}
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           {format(new Date(attempt.created_at), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
                         </p>
