@@ -247,6 +247,7 @@ const TutorQuizzes = () => {
           answer_text: a.text,
           is_correct: a.is_correct,
           order_index: index,
+          explanation: a.explanation || null,
         }));
         await supabase.from("quiz_answers").insert(answersToInsert);
         toast.success("Question modifiée");
