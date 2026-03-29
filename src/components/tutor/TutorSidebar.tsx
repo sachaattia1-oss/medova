@@ -130,8 +130,17 @@ const TutorSidebar = () => {
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="p-4 border-t border-border">
+      {/* Back to dashboard for admins */}
+      <div className="p-4 border-t border-border space-y-1">
+        {isAdmin && (
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-medium">Retour au dashboard</span>
+          </Link>
+        )}
         <button
           onClick={signOut}
           className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
