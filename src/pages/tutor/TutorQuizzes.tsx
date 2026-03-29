@@ -413,18 +413,27 @@ const TutorQuizzes = () => {
               {newQuestion.answers.map((answer, index) => {
                 const letter = String.fromCharCode(65 + index);
                 return (
-                  <div key={index} className="flex items-center gap-3">
-                    <Checkbox
-                      checked={answer.is_correct}
-                      onCheckedChange={() => toggleCorrectAnswer(index)}
-                      className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                    />
-                    <span className="font-medium text-muted-foreground w-6">{letter}.</span>
-                    <Input
-                      value={answer.text}
-                      onChange={(e) => updateAnswerText(index, e.target.value)}
-                      placeholder={`Proposition ${letter}`}
-                      className={answer.is_correct ? "border-green-500/50" : ""}
+                  <div key={index} className="space-y-2 p-3 rounded-lg border border-border/50">
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={answer.is_correct}
+                        onCheckedChange={() => toggleCorrectAnswer(index)}
+                        className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                      />
+                      <span className="font-medium text-muted-foreground w-6">{letter}.</span>
+                      <Input
+                        value={answer.text}
+                        onChange={(e) => updateAnswerText(index, e.target.value)}
+                        placeholder={`Proposition ${letter}`}
+                        className={answer.is_correct ? "border-green-500/50" : ""}
+                      />
+                    </div>
+                    <Textarea
+                      value={answer.explanation}
+                      onChange={(e) => updateAnswerExplanation(index, e.target.value)}
+                      placeholder={`Explication : pourquoi ${letter} est ${answer.is_correct ? "vrai" : "faux"}...`}
+                      rows={1}
+                      className="ml-9 text-sm"
                     />
                   </div>
                 );
