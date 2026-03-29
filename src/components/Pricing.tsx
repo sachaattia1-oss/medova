@@ -1,5 +1,10 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, Zap } from "lucide-react";
+import { Check, Sparkles, Zap, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const plans = [
   {
@@ -7,6 +12,7 @@ const plans = [
     description: "Prépare ta PASS dès le lycée",
     price: "149",
     period: "",
+    priceId: "price_1TGQzCFT6CIUirCiSFhzf6YF",
     features: [
       "Accès aux cours du premier semestre",
       "Accès aux QCM corrigés et détaillés",
@@ -20,6 +26,7 @@ const plans = [
     description: "Tout pour réussir ton S1",
     price: "279",
     period: "",
+    priceId: "price_1TGR07FT6CIUirCiJsnR28tY",
     features: [
       "Accès à tous les cours mis à jour",
       "QCM illimités",
@@ -34,7 +41,7 @@ const plans = [
     description: "Le meilleur rapport qualité-prix",
     price: "500",
     period: "/an",
-    originalPrice: "558",
+    priceId: "price_1TGR19FT6CIUirCiGt843vEk",
     features: [
       "Économise 10%",
       "Accès aux cours de S1 et S2 mis à jour",
@@ -48,6 +55,43 @@ const plans = [
 ];
 
 const Pricing = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const handleCheckout = async (priceId: string, planName: string) => {
+    if (!user) {
+      toast({
+        title: "Connexion requise",
+        description: "Vous devez être connecté pour souscrire à un plan.",
+        variant: "destructive",
+      });
+      window.location.href = "/auth";
+      return;
+    }
+
+    setLoadingPlan(priceId);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceId },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de créer la session de paiement. Réessayez.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
   return (
     <section id="tarifs" className="py-24">
       <div className="container px-4 md:px-6">
@@ -110,8 +154,17 @@ const Pricing = () => {
                 className="w-full"
                 variant={plan.popular ? "hero" : "outline"}
                 size="lg"
+                disabled={loadingPlan === plan.priceId}
+                onClick={() => handleCheckout(plan.priceId, plan.name)}
               >
-                {plan.cta}
+                {loadingPlan === plan.priceId ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Chargement...
+                  </>
+                ) : (
+                  plan.cta
+                )}
               </Button>
             </div>
           ))}
