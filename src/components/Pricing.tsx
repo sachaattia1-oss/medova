@@ -66,7 +66,7 @@ const Pricing = () => {
         description: "Vous devez être connecté pour souscrire à un plan.",
         variant: "destructive",
       });
-      window.location.href = "/auth";
+      window.location.href = "/auth?mode=signup";
       return;
     }
 
