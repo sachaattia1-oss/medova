@@ -514,10 +514,15 @@ const TutorQuizEditor = () => {
                       <CardTitle className="text-base font-medium">
                         {question.question_text}
                       </CardTitle>
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center gap-2 mt-2 flex-wrap">
                         <Badge variant="outline" className="text-xs">
                           {correctCount} bonne{correctCount > 1 ? "s" : ""} réponse{correctCount > 1 ? "s" : ""}
                         </Badge>
+                        {question.is_annale && (
+                          <Badge variant="default" className="text-xs">
+                            📝 Annale {question.annale_year}
+                          </Badge>
+                        )}
                         {question.explanation && (
                           <Badge variant="secondary" className="text-xs">
                             💡 Explication incluse
