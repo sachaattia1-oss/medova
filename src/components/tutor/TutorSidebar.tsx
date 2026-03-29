@@ -74,7 +74,7 @@ const TutorSidebar = () => {
           </div>
           <div>
             <h1 className="font-semibold text-foreground">MEDOVA</h1>
-            <p className="text-xs text-muted-foreground">Espace Tuteur</p>
+            <p className="text-xs text-muted-foreground">{isAdmin ? "Espace Admin" : "Espace Tuteur"}</p>
           </div>
         </Link>
       </div>
