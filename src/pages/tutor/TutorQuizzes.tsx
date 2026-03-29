@@ -192,6 +192,8 @@ const TutorQuizzes = () => {
       question_text: "",
       explanation: "",
       target_audience: "all",
+      is_annale: false,
+      annale_year: new Date().getFullYear(),
       answers: [
         { text: "", is_correct: false, explanation: "" },
         { text: "", is_correct: false, explanation: "" },
