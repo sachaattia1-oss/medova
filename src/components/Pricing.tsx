@@ -5,13 +5,12 @@ const plans = [
   {
     name: "Terminale",
     description: "Prépare ta PASS dès le lycée",
-    price: "99",
+    price: "149",
     period: "/an",
     features: [
-      "Accès à tous les cours",
-      "QCM d'entraînement",
+      "Accès aux cours du premier semestre",
+      "Accès aux QCM corrigés et détaillés",
       "Suivi de progression",
-      "Support par email",
     ],
     cta: "S'abonner",
     popular: false,
