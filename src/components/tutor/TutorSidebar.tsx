@@ -21,7 +21,6 @@ const navItems = [
   { label: "Accueil", icon: Home, path: "/tutor" },
   { label: "Mes cours", icon: BookOpen, path: "/tutor/cours" },
   { label: "Mes quiz", icon: FileQuestion, path: "/tutor/quiz" },
-  { label: "Annales", icon: FileText, path: "/tutor/annales" },
   { label: "Questions QCM", icon: HelpCircle, path: "/tutor/discussions" },
   { label: "Messages", icon: MessageSquare, path: "/tutor/messages" },
   { label: "Rémunération", icon: Wallet, path: "/tutor/remuneration" },
