@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -54,6 +55,7 @@ interface Answer {
 
 const TutorQuizzes = () => {
   const { user } = useAuth();
+  const { isAdmin } = useUserRole();
   const [categories, setCategories] = useState<Category[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +65,7 @@ const TutorQuizzes = () => {
 
   // Quiz & questions state (when course is selected)
   const [currentQuizId, setCurrentQuizId] = useState<string | null>(null);
+  const [currentQuizCreatedBy, setCurrentQuizCreatedBy] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, Answer[]>>({});
   const [loadingQuestions, setLoadingQuestions] = useState(false);
@@ -121,18 +124,25 @@ const TutorQuizzes = () => {
     setLoadingQuestions(true);
 
     try {
-      // Find existing quiz by this tutor for this course
-      const { data: existingQuizzes } = await supabase
+      // Find existing quiz for this course
+      let quizQuery = supabase
         .from("quizzes")
-        .select("id")
-        .eq("course_id", selectedCourseId)
-        .eq("created_by", user.id)
-        .limit(1);
+        .select("id, created_by")
+        .eq("course_id", selectedCourseId);
+
+      // Tutors only see their own quiz, admins see all
+      if (!isAdmin) {
+        quizQuery = quizQuery.eq("created_by", user.id);
+      }
+
+      const { data: existingQuizzes } = await quizQuery.limit(1);
 
       let quizId: string;
+      let quizCreatedBy: string | null = null;
 
       if (existingQuizzes && existingQuizzes.length > 0) {
         quizId = existingQuizzes[0].id;
+        quizCreatedBy = existingQuizzes[0].created_by;
       } else {
         // Auto-create a quiz for this course
         const courseName = courses.find(c => c.id === selectedCourseId)?.title || "Quiz";
@@ -145,9 +155,11 @@ const TutorQuizzes = () => {
 
         if (error) throw error;
         quizId = data.id;
+        quizCreatedBy = user.id;
       }
 
       setCurrentQuizId(quizId);
+      setCurrentQuizCreatedBy(quizCreatedBy);
 
       // Fetch questions
       const { data: questionsData } = await supabase
@@ -611,14 +623,16 @@ const TutorQuizzes = () => {
                             )}
                           </div>
                         </div>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" onClick={() => openEditDialog(question)}>
-                            <Pencil className="w-4 h-4 text-muted-foreground" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleDeleteQuestion(question.id)}>
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                          </Button>
-                        </div>
+                        {(isAdmin || currentQuizCreatedBy === user?.id) && (
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="icon" onClick={() => openEditDialog(question)}>
+                              <Pencil className="w-4 h-4 text-muted-foreground" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDeleteQuestion(question.id)}>
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </CardHeader>
                     <CardContent>
