@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,7 @@ const emptyQuestion = (): InlineQuestion => ({
 
 const TutorAnnales = () => {
   const { user } = useAuth();
+  const { isAdmin } = useUserRole();
   const [annales, setAnnales] = useState<Annale[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -485,7 +487,7 @@ const TutorAnnales = () => {
                     <TableCell className="text-sm">{getQuizTitle(annale.quiz_id)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{format(new Date(annale.created_at), "d MMM yyyy", { locale: fr })}</TableCell>
                     <TableCell>
-                      {annale.created_by === user?.id && (
+                      {(isAdmin || annale.created_by === user?.id) && (
                         <Button variant="ghost" size="icon" onClick={() => handleDelete(annale.id)}>
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
