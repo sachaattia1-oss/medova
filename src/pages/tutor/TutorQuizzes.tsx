@@ -216,6 +216,8 @@ const TutorQuizzes = () => {
       question_text: question.question_text,
       explanation: question.explanation || "",
       target_audience: "all",
+      is_annale: (question as any).is_annale || false,
+      annale_year: (question as any).annale_year || new Date().getFullYear(),
       answers: filledAnswers,
     });
     setIsQuestionDialogOpen(true);
