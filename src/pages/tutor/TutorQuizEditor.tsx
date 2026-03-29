@@ -146,6 +146,8 @@ const TutorQuizEditor = () => {
     setNewQuestion({
       question_text: question.question_text,
       explanation: question.explanation || "",
+      is_annale: question.is_annale || false,
+      annale_year: question.annale_year || new Date().getFullYear(),
       answers: filledAnswers,
     });
     setIsQuestionDialogOpen(true);
