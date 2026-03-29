@@ -33,6 +33,8 @@ interface Question {
   question_text: string;
   explanation: string | null;
   quiz_id: string;
+  is_annale: boolean;
+  annale_year: number | null;
 }
 
 interface Answer {
