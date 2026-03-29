@@ -118,23 +118,7 @@ const TakeSeries = () => {
         .select("id")
         .eq("course_id", courseId);
 
-      // Also fetch annales quizzes for the same category
-      let annalesQuizIds: string[] = [];
-      if (courseData.category_id) {
-        const { data: annalesData } = await supabase
-          .from("annales")
-          .select("quiz_id")
-          .eq("category_id", courseData.category_id)
-          .not("quiz_id", "is", null);
-        if (annalesData) {
-          annalesQuizIds = annalesData.map(a => a.quiz_id!);
-        }
-      }
-
-      const allQuizIds = [
-        ...(quizzesData || []).map(q => q.id),
-        ...annalesQuizIds,
-      ];
+      const allQuizIds = (quizzesData || []).map(q => q.id);
 
       if (allQuizIds.length === 0) {
         toast.error("Aucun QCM disponible pour ce cours");
