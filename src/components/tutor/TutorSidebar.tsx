@@ -31,6 +31,7 @@ const navItems = [
 const TutorSidebar = () => {
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const { isAdmin } = useUserRole();
   const [newQuestionsCount, setNewQuestionsCount] = useState(0);
 
   useEffect(() => {
