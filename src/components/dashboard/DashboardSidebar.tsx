@@ -13,7 +13,6 @@ import {
   Wallet,
   Bell,
   HelpCircle,
-  FileText,
   FileQuestion
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
