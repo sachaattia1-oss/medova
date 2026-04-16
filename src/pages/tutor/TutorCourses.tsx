@@ -167,6 +167,7 @@ const TutorCourses = () => {
         description: course.description || "",
         category_id: course.category_id || "",
         pdf_url: course.pdf_url || "",
+        revision_pdf_url: (course as any).revision_pdf_url || "",
         is_free: course.is_free || false,
         target_audience: course.target_audience || "all",
       });
