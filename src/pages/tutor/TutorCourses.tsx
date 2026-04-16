@@ -68,6 +68,7 @@ const TutorCourses = () => {
     description: "",
     category_id: "",
     pdf_url: "",
+    revision_pdf_url: "",
     is_free: false,
     target_audience: "all",
   });
