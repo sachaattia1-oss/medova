@@ -114,11 +114,13 @@ const TutorCourses = () => {
       description: "",
       category_id: "",
       pdf_url: "",
+      revision_pdf_url: "",
       is_free: false,
       target_audience: "all",
     });
     setEditingCourse(null);
     setPdfFile(null);
+    setRevisionPdfFile(null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
