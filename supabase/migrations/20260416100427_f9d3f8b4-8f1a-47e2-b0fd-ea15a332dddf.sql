@@ -1,0 +1,1 @@
+ALTER TABLE public.courses ADD COLUMN revision_pdf_url text DEFAULT NULL;
