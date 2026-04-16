@@ -123,7 +123,7 @@ const TutorCourses = () => {
     setRevisionPdfFile(null);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "course" | "revision" = "course") => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.type !== "application/pdf") {
@@ -134,7 +134,11 @@ const TutorCourses = () => {
         toast.error("Le fichier ne doit pas dépasser 50 Mo");
         return;
       }
-      setPdfFile(file);
+      if (type === "revision") {
+        setRevisionPdfFile(file);
+      } else {
+        setPdfFile(file);
+      }
     }
   };
 
