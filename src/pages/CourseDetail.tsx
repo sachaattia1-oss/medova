@@ -3,11 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, FileText, ExternalLink } from "lucide-react";
+import { ArrowLeft, Download, FileText, ExternalLink, BookOpen } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Course {
   id: string;
@@ -17,6 +17,7 @@ interface Course {
   is_free: boolean | null;
   thumbnail_url: string | null;
   pdf_url: string | null;
+  revision_pdf_url: string | null;
 }
 
 const CourseDetail = () => {
@@ -66,6 +67,47 @@ const CourseDetail = () => {
 
   if (!user) return null;
 
+  const renderPdfViewer = (url: string | null, label: string) => {
+    if (!url) {
+      return (
+        <div className="text-center py-16 bg-card rounded-2xl border border-border/50">
+          <FileText className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
+          <h3 className="font-medium text-lg mb-2">Aucun contenu disponible</h3>
+          <p className="text-sm text-muted-foreground">
+            {label} n'a pas encore été ajouté(e).
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <Button asChild>
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Ouvrir le PDF
+            </a>
+          </Button>
+          <Button variant="outline" asChild>
+            <a href={url} download>
+              <Download className="w-4 h-4 mr-2" />
+              Télécharger
+            </a>
+          </Button>
+        </div>
+        
+        <div className="rounded-xl border border-border overflow-hidden bg-card">
+          <iframe
+            src={url}
+            className="w-full h-[700px]"
+            title={label}
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <DashboardSidebar />
@@ -112,40 +154,24 @@ const CourseDetail = () => {
               </div>
             </div>
 
-            {course.pdf_url ? (
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Button asChild>
-                    <a href={course.pdf_url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Ouvrir le PDF
-                    </a>
-                  </Button>
-                  <Button variant="outline" asChild>
-                    <a href={course.pdf_url} download>
-                      <Download className="w-4 h-4 mr-2" />
-                      Télécharger
-                    </a>
-                  </Button>
-                </div>
-                
-                <div className="rounded-xl border border-border overflow-hidden bg-card">
-                  <iframe
-                    src={course.pdf_url}
-                    className="w-full h-[700px]"
-                    title={`PDF - ${course.title}`}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-16 bg-card rounded-2xl border border-border/50">
-                <FileText className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="font-medium text-lg mb-2">Aucun contenu disponible</h3>
-                <p className="text-sm text-muted-foreground">
-                  Le PDF de ce cours n'a pas encore été ajouté.
-                </p>
-              </div>
-            )}
+            <Tabs defaultValue="cours" className="w-full">
+              <TabsList>
+                <TabsTrigger value="cours" className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  Cours
+                </TabsTrigger>
+                <TabsTrigger value="revision" className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Fiche de révision
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="cours">
+                {renderPdfViewer(course.pdf_url, "Le PDF de ce cours")}
+              </TabsContent>
+              <TabsContent value="revision">
+                {renderPdfViewer(course.revision_pdf_url, "La fiche de révision")}
+              </TabsContent>
+            </Tabs>
           </div>
         ) : null}
         

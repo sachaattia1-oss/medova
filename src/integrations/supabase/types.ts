@@ -130,6 +130,7 @@ export type Database = {
           is_free: boolean | null
           order_index: number | null
           pdf_url: string | null
+          revision_pdf_url: string | null
           target_audience: string
           thumbnail_url: string | null
           title: string
@@ -145,6 +146,7 @@ export type Database = {
           is_free?: boolean | null
           order_index?: number | null
           pdf_url?: string | null
+          revision_pdf_url?: string | null
           target_audience?: string
           thumbnail_url?: string | null
           title: string
@@ -160,6 +162,7 @@ export type Database = {
           is_free?: boolean | null
           order_index?: number | null
           pdf_url?: string | null
+          revision_pdf_url?: string | null
           target_audience?: string
           thumbnail_url?: string | null
           title?: string
