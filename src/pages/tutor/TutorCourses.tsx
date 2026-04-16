@@ -39,6 +39,7 @@ interface Course {
   category_id: string | null;
   is_free: boolean | null;
   pdf_url: string | null;
+  revision_pdf_url: string | null;
   order_index: number | null;
   target_audience: string;
   created_by: string | null;
