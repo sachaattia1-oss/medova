@@ -61,6 +61,7 @@ const TutorCourses = () => {
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [uploading, setUploading] = useState(false);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [revisionPdfFile, setRevisionPdfFile] = useState<File | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
