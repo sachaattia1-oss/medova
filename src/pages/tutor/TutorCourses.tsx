@@ -187,12 +187,16 @@ const TutorCourses = () => {
 
     try {
       let pdfUrl = formData.pdf_url;
+      let revisionPdfUrl = formData.revision_pdf_url;
 
       if (pdfFile) {
         const uploadedUrl = await uploadPdf(pdfFile);
-        if (uploadedUrl) {
-          pdfUrl = uploadedUrl;
-        }
+        if (uploadedUrl) pdfUrl = uploadedUrl;
+      }
+
+      if (revisionPdfFile) {
+        const uploadedUrl = await uploadPdf(revisionPdfFile);
+        if (uploadedUrl) revisionPdfUrl = uploadedUrl;
       }
 
       const courseData = {
@@ -200,6 +204,7 @@ const TutorCourses = () => {
         description: formData.description || null,
         category_id: formData.category_id || null,
         pdf_url: pdfUrl || null,
+        revision_pdf_url: revisionPdfUrl || null,
         is_free: formData.is_free,
         target_audience: formData.target_audience,
       };
