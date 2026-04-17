@@ -99,8 +99,8 @@ const Hero = () => {
               { icon: Trophy, value: 95, suffix: "%", label: "Taux de réussite" },
             ].map((stat, idx) => (
               <Reveal key={stat.label} delay={idx * 150}>
-                <div className="group h-full flex flex-col items-center text-center p-4 rounded-2xl bg-card/60 border border-border/40 backdrop-blur-sm lift-hover gradient-border">
-                  <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-3 transition-all group-hover:bg-accent/20 group-hover:scale-110 group-hover:rotate-6">
+                <div className="group icon-hover-bounce h-full flex flex-col items-center text-center p-4 rounded-2xl bg-card/60 border border-border/40 backdrop-blur-sm lift-hover gradient-border">
+                  <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-3 transition-all group-hover:bg-accent/20 group-hover:scale-110">
                     <stat.icon className="w-6 h-6 text-accent" />
                   </div>
                   <div className="text-3xl md:text-4xl font-bold text-gradient">
