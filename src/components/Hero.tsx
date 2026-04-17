@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Stethoscope } from "lucide-react";
+import { ArrowRight, BookOpen, Stethoscope, GraduationCap, FileQuestion, Trophy } from "lucide-react";
 const Hero = () => {
-  return <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
+  return <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-accent/5">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-accent/20 rounded-full blur-3xl animate-float" />
