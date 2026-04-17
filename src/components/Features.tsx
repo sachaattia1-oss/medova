@@ -32,7 +32,7 @@ const Features = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <Reveal key={feature.title} delay={index * 100}>
-              <div className="group icon-hover-bounce relative h-full p-6 rounded-2xl bg-card border border-border/50 lift-hover gradient-border overflow-hidden">
+              <div className="group icon-hover-bounce relative h-full p-6 rounded-2xl bg-card border border-border/50 lift-hover rotating-border overflow-hidden">
                 {/* Subtle radial glow on hover */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-accent/5 to-transparent pointer-events-none" />
 
