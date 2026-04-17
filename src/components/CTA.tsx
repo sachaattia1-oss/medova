@@ -7,10 +7,6 @@ const CTA = () => {
     <section className="relative py-24 overflow-hidden">
       {/* Background gradient + blobs */}
       <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-background" />
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-20 left-1/4 w-72 h-72 bg-accent/15 rounded-full blur-3xl animate-blob" />
-        <div className="absolute -bottom-20 right-1/4 w-80 h-80 bg-primary/15 rounded-full blur-3xl animate-blob" style={{ animationDelay: "4s" }} />
-      </div>
 
       <div className="container relative z-10 px-4 md:px-6">
         <Reveal className="max-w-3xl mx-auto text-center">
