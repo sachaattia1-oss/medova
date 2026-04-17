@@ -1,52 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, Stethoscope, GraduationCap, FileQuestion, Trophy } from "lucide-react";
-import { useMemo } from "react";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { Reveal } from "@/components/Reveal";
 
 const Hero = () => {
-  // Generate floating particles
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 18 }).map((_, i) => {
-        const size = 4 + Math.random() * 10;
-        return {
-          left: `${Math.random() * 100}%`,
-          width: `${size}px`,
-          height: `${size}px`,
-          duration: `${10 + Math.random() * 14}s`,
-          delay: `${Math.random() * 8}s`,
-          opacity: 0.2 + Math.random() * 0.4,
-          key: i,
-        };
-      }),
-    []
-  );
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-accent/5">
-      {/* Animated background blobs */}
       {/* Soft radial backdrop */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-accent/5 to-transparent rounded-full" />
-      </div>
-
-      {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {particles.map((p) => (
-          <span
-            key={p.key}
-            className="particle"
-            style={{
-              left: p.left,
-              width: p.width,
-              height: p.height,
-              opacity: p.opacity,
-              animationDuration: p.duration,
-              animationDelay: p.delay,
-            }}
-          />
-        ))}
       </div>
 
       <div className="container relative z-10 px-4 md:px-6">
