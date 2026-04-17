@@ -4,18 +4,22 @@ import Features from "@/components/Features";
 import Pricing from "@/components/Pricing";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
+import { ParticlesBackground } from "@/components/ParticlesBackground";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main>
-        <Hero />
-        <Features />
-        <Pricing />
-        <CTA />
-      </main>
-      <Footer />
+    <div className="relative min-h-screen bg-background">
+      <ParticlesBackground count={35} />
+      <div className="relative z-10">
+        <Header />
+        <main>
+          <Hero />
+          <Features />
+          <Pricing />
+          <CTA />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 };
