@@ -277,6 +277,25 @@
     font-weight: 300;
   }
 
+  /* Real typewriter effect: types out letters one by one */
+  @keyframes typewriter-type {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  .typewriter {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+    max-width: 100%;
+    border-right: 3px solid hsl(var(--accent));
+    width: 0;
+    animation:
+      typewriter-type 1.6s steps(8, end) 0.4s forwards,
+      blink-caret 0.8s step-end infinite;
+  }
+
   /* Shimmer overlay (use on a relative parent containing this absolute span) */
   .shimmer-overlay {
     background: linear-gradient(

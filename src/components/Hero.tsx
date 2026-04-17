@@ -62,7 +62,7 @@ const Hero = () => {
           {/* Main heading with typewriter effect on "concours" */}
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up">
             <span className="text-foreground">Réussis ton </span>
-            <span className="text-gradient typewriter-caret inline-block">concours</span>
+            <span className="text-gradient typewriter">concours</span>
             <br />
             <span className="text-foreground">avec </span>
             <span className="bg-[linear-gradient(110deg,hsl(var(--accent)),hsl(var(--accent-hover)),hsl(var(--primary)),hsl(var(--accent)))] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-shift drop-shadow-sm">
