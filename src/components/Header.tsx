@@ -22,8 +22,8 @@ const Header = () => {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         scrolled
-          ? "bg-background/60 backdrop-blur-xl border-b border-border/40 shadow-[0_4px_30px_-10px_hsl(var(--accent)/0.2)]"
-          : "bg-background/30 backdrop-blur-md border-b border-transparent"
+          ? "bg-background/40 backdrop-blur-2xl backdrop-saturate-150 border-b border-accent/20 shadow-[0_8px_32px_-12px_hsl(var(--accent)/0.25)]"
+          : "bg-transparent backdrop-blur-0 border-b border-transparent"
       )}
     >
       <div className="container px-4 md:px-6">
