@@ -20,11 +20,11 @@ const Hero = () => {
 
           {/* Main heading */}
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up">
-            <span className="text-foreground">Réussis ton </span>
+            <span className="text-foreground">Réussis ton </span>
             <span className="text-gradient">concours</span>
             <br />
             <span className="text-foreground">avec </span>
-            <span className="text-gradient">MEDOVA</span>
+            <span className="bg-gradient-to-r from-accent via-accent-hover to-primary bg-clip-text text-transparent drop-shadow-sm">MEDOVA</span>
           </h1>
 
           {/* Subheading */}
@@ -47,16 +47,25 @@ const Hero = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 mt-16 pt-16 border-t border-border/30 animate-fade-in-up animation-delay-600">
-            <div className="text-center">
+          <div className="grid grid-cols-3 gap-4 md:gap-8 mt-16 pt-16 border-t border-border/30 animate-fade-in-up animation-delay-600 w-full">
+            <div className="flex flex-col items-center text-center p-4 rounded-2xl bg-card/60 border border-border/40 backdrop-blur-sm hover:shadow-card-hover transition-all">
+              <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-3">
+                <GraduationCap className="w-6 h-6 text-accent" />
+              </div>
               <div className="text-3xl md:text-4xl font-bold text-gradient">250+</div>
               <div className="text-sm text-muted-foreground mt-1">Cours disponibles</div>
             </div>
-            <div className="text-center">
+            <div className="flex flex-col items-center text-center p-4 rounded-2xl bg-card/60 border border-border/40 backdrop-blur-sm hover:shadow-card-hover transition-all">
+              <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-3">
+                <FileQuestion className="w-6 h-6 text-accent" />
+              </div>
               <div className="text-3xl md:text-4xl font-bold text-gradient">1000+</div>
               <div className="text-sm text-muted-foreground mt-1">QCM corrigés</div>
             </div>
-            <div className="text-center">
+            <div className="flex flex-col items-center text-center p-4 rounded-2xl bg-card/60 border border-border/40 backdrop-blur-sm hover:shadow-card-hover transition-all">
+              <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-3">
+                <Trophy className="w-6 h-6 text-accent" />
+              </div>
               <div className="text-3xl md:text-4xl font-bold text-gradient">95%</div>
               <div className="text-sm text-muted-foreground mt-1">Taux de réussite</div>
             </div>
