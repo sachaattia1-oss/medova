@@ -1,22 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { Reveal } from "@/components/Reveal";
 
 const CTA = () => {
   return (
-    <section className="py-24 relative overflow-hidden">
-      {/* Background */}
+    <section className="relative py-24 overflow-hidden">
+      {/* Background gradient + blobs */}
       <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-background" />
-      
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-20 left-1/4 w-72 h-72 bg-accent/15 rounded-full blur-3xl animate-blob" />
+        <div className="absolute -bottom-20 right-1/4 w-80 h-80 bg-primary/15 rounded-full blur-3xl animate-blob" style={{ animationDelay: "4s" }} />
+      </div>
 
       <div className="container relative z-10 px-4 md:px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mb-6">
+        <Reveal className="max-w-3xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mb-6 backdrop-blur-sm">
             <Sparkles className="w-4 h-4" />
             <span>Prêt à réussir ?</span>
           </div>
 
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            Rejoins <span className="text-gradient">MEDOVA</span> aujourd'hui
+            Rejoins{" "}
+            <span className="bg-[linear-gradient(110deg,hsl(var(--accent)),hsl(var(--accent-hover)),hsl(var(--primary)),hsl(var(--accent)))] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-shift">
+              MEDOVA
+            </span>{" "}
+            aujourd'hui
           </h2>
 
           <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
@@ -24,11 +32,21 @@ const CTA = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="hero" className="group" onClick={() => document.getElementById('tarifs')?.scrollIntoView({ behavior: 'smooth' })}>
+            <Button
+              size="lg"
+              variant="hero"
+              className="group animate-pulse-glow"
+              onClick={() => document.getElementById("tarifs")?.scrollIntoView({ behavior: "smooth" })}
+            >
               Créer mon compte gratuit
               <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button size="lg" variant="outline" onClick={() => document.getElementById('tarifs')?.scrollIntoView({ behavior: 'smooth' })}>
+            <Button
+              size="lg"
+              variant="outline"
+              className="backdrop-blur-sm"
+              onClick={() => document.getElementById("tarifs")?.scrollIntoView({ behavior: "smooth" })}
+            >
               Voir les offres
             </Button>
           </div>
@@ -36,10 +54,10 @@ const CTA = () => {
           <p className="text-sm text-muted-foreground mt-6">
             Essai gratuit de 7 jours • Aucune carte bancaire requise
           </p>
-        </div>
+        </Reveal>
       </div>
-    </section>);
-
+    </section>
+  );
 };
 
 export default CTA;
