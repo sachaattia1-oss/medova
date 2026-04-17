@@ -122,7 +122,7 @@ const Pricing = () => {
                 className={cn(
                   "tilt-card relative h-full p-6 rounded-2xl border transition-colors duration-300",
                   plan.popular
-                    ? "bg-gradient-to-b from-accent/15 to-card border-accent/60 animate-glow-ring md:scale-[1.03]"
+                    ? "popular-rotating-border bg-gradient-to-b from-accent/15 to-card border-transparent animate-glow-ring md:scale-[1.05]"
                     : "bg-card border-border/50 hover:border-accent/30 lift-hover"
                 )}
               >
