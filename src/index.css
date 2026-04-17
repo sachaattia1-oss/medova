@@ -358,6 +358,57 @@
     opacity: 1;
   }
 
+  /* Rotating conic gradient border on hover */
+  @property --rotating-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes rotate-border {
+    to { --rotating-angle: 360deg; }
+  }
+
+  .rotating-border {
+    position: relative;
+    isolation: isolate;
+  }
+  .rotating-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(
+      from var(--rotating-angle, 0deg),
+      hsl(var(--accent)) 0deg,
+      hsl(var(--primary)) 90deg,
+      hsl(var(--accent-hover)) 180deg,
+      hsl(var(--accent) / 0.3) 270deg,
+      hsl(var(--accent)) 360deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .rotating-border:hover::before {
+    opacity: 1;
+    animation: rotate-border 4s linear infinite;
+  }
+  /* Fallback (Firefox doesn't support @property): rotate the pseudo-element */
+  @supports not (background: conic-gradient(from var(--rotating-angle, 0deg), red, blue)) {
+    .rotating-border:hover::before {
+      animation: spin-fallback 4s linear infinite;
+    }
+    @keyframes spin-fallback {
+      to { transform: rotate(360deg); }
+    }
+  }
+
   /* 3D tilt on hover */
   .tilt-card {
     transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease;
