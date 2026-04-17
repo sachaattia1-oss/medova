@@ -259,6 +259,56 @@
     }
   }
 
+  /* Sidebar nav icon micro-animations */
+  @keyframes nav-icon-pulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 hsl(var(--accent) / 0)); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 4px hsl(var(--accent) / 0.45)); }
+  }
+
+  @keyframes nav-icon-pulse-admin {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 hsl(262 70% 60% / 0)); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 4px hsl(262 70% 60% / 0.5)); }
+  }
+
+  @keyframes nav-icon-tap {
+    0% { transform: scale(1); }
+    40% { transform: scale(0.85); }
+    100% { transform: scale(1); }
+  }
+
+  /* Wrapper class applied on the nav <Link> */
+  .nav-icon {
+    transition: color 0.3s ease, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform;
+  }
+  .nav-link:hover .nav-icon {
+    transform: translateY(-2px) scale(1.15);
+    color: hsl(var(--accent));
+  }
+  .nav-link:active .nav-icon {
+    animation: nav-icon-tap 0.35s ease;
+  }
+  .nav-link-active .nav-icon {
+    color: hsl(var(--accent));
+    animation: nav-icon-pulse 2.4s ease-in-out infinite;
+  }
+
+  /* Admin variant — purple/indigo accent */
+  .nav-link-admin:hover .nav-icon {
+    color: hsl(262 70% 60%);
+  }
+  .nav-link-admin:hover {
+    background-color: hsl(262 70% 60% / 0.08) !important;
+  }
+  .nav-link-admin.nav-link-active .nav-icon {
+    color: hsl(262 70% 60%);
+    animation: nav-icon-pulse-admin 2.4s ease-in-out infinite;
+  }
+  .nav-link-admin.nav-link-active {
+    background-color: hsl(262 70% 60% / 0.1) !important;
+    color: hsl(262 70% 60%) !important;
+  }
+
   @keyframes shimmer {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
