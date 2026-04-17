@@ -26,10 +26,8 @@ const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-accent/5">
       {/* Animated background blobs */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-accent/25 rounded-full blur-3xl animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-blob" style={{ animationDelay: "3s" }} />
-        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-accent/15 rounded-full blur-3xl animate-blob" style={{ animationDelay: "6s" }} />
+      {/* Soft radial backdrop */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-accent/5 to-transparent rounded-full" />
       </div>
 
@@ -62,7 +60,7 @@ const Hero = () => {
           {/* Main heading with typewriter effect on "concours" */}
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up">
             <span className="text-foreground">Réussis ton </span>
-            <span className="text-gradient typewriter">concours</span>
+            <span className="text-gradient">concours</span>
             <br />
             <span className="text-foreground">avec </span>
             <span className="bg-[linear-gradient(110deg,hsl(var(--accent)),hsl(var(--accent-hover)),hsl(var(--primary)),hsl(var(--accent)))] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradient-shift drop-shadow-sm">
