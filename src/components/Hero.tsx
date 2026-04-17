@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, Stethoscope, GraduationCap, FileQuestion, Trophy } from "lucide-react";
 import { useMemo } from "react";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
+import { Reveal } from "@/components/Reveal";
 
 const Hero = () => {
   // Generate floating particles
@@ -90,25 +91,24 @@ const Hero = () => {
             </a>
           </div>
 
-          {/* Stats with animated counters */}
-          <div className="grid grid-cols-3 gap-4 md:gap-8 mt-16 pt-16 border-t border-border/30 animate-fade-in-up animation-delay-600 w-full">
+          {/* Stats with animated counters + staggered reveal */}
+          <div className="grid grid-cols-3 gap-4 md:gap-8 mt-16 pt-16 border-t border-border/30 w-full">
             {[
               { icon: GraduationCap, value: 250, suffix: "+", label: "Cours disponibles" },
               { icon: FileQuestion, value: 1000, suffix: "+", label: "QCM corrigés" },
               { icon: Trophy, value: 95, suffix: "%", label: "Taux de réussite" },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="group flex flex-col items-center text-center p-4 rounded-2xl bg-card/60 border border-border/40 backdrop-blur-sm lift-hover gradient-border"
-              >
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-3 transition-all group-hover:bg-accent/20 group-hover:scale-110 group-hover:rotate-6">
-                  <stat.icon className="w-6 h-6 text-accent" />
+            ].map((stat, idx) => (
+              <Reveal key={stat.label} delay={idx * 150}>
+                <div className="group h-full flex flex-col items-center text-center p-4 rounded-2xl bg-card/60 border border-border/40 backdrop-blur-sm lift-hover gradient-border">
+                  <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-3 transition-all group-hover:bg-accent/20 group-hover:scale-110 group-hover:rotate-6">
+                    <stat.icon className="w-6 h-6 text-accent" />
+                  </div>
+                  <div className="text-3xl md:text-4xl font-bold text-gradient">
+                    <AnimatedCounter end={stat.value} suffix={stat.suffix} />
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
                 </div>
-                <div className="text-3xl md:text-4xl font-bold text-gradient">
-                  <AnimatedCounter end={stat.value} suffix={stat.suffix} />
-                </div>
-                <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
