@@ -95,11 +95,6 @@ const Pricing = () => {
 
   return (
     <section id="tarifs" className="relative py-24 overflow-hidden">
-      {/* Background blobs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-32 -left-20 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-blob" />
-        <div className="absolute bottom-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-blob" style={{ animationDelay: "5s" }} />
-      </div>
 
       <div className="container relative z-10 px-4 md:px-6">
         <Reveal className="text-center max-w-3xl mx-auto mb-16">

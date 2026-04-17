@@ -14,11 +14,6 @@ const features = [
 const Features = () => {
   return (
     <section className="relative py-24 bg-muted/30 overflow-hidden">
-      {/* Background blobs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl animate-blob" />
-        <div className="absolute bottom-10 left-10 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-blob" style={{ animationDelay: "4s" }} />
-      </div>
 
       <div className="container relative z-10 px-4 md:px-6">
         <Reveal className="text-center max-w-3xl mx-auto mb-16">
