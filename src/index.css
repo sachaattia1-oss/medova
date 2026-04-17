@@ -232,7 +232,25 @@
 
   @keyframes icon-bounce {
     0%, 100% { transform: translateY(0) rotate(0); }
-    50% { transform: translateY(-4px) rotate(-6deg); }
+    25% { transform: translateY(-6px) rotate(-8deg); }
+    50% { transform: translateY(0) rotate(0); }
+    75% { transform: translateY(-3px) rotate(6deg); }
+  }
+
+  @keyframes icon-spin-once {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Trigger on parent hover: <parent class="icon-hover-bounce"><svg/></parent> */
+  .icon-hover-bounce:hover svg,
+  .icon-hover-bounce:hover .lucide {
+    animation: icon-bounce 0.7s ease-in-out;
+  }
+
+  .icon-hover-spin:hover svg,
+  .icon-hover-spin:hover .lucide {
+    animation: icon-spin-once 0.6s ease-in-out;
   }
 
   .animate-float {
