@@ -349,13 +349,16 @@
     transform: perspective(1000px) rotateX(4deg) rotateY(-6deg) translateY(-6px);
   }
 
-  /* Lift hover */
+  /* Lift hover — élévation prononcée + translation vers le haut */
   .lift-hover {
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease;
   }
   .lift-hover:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-10px);
+    box-shadow:
+      0 20px 50px -15px hsl(var(--accent) / 0.35),
+      0 12px 30px -12px hsl(215 25% 15% / 0.25);
+    border-color: hsl(var(--accent) / 0.5);
   }
 
   /* Floating particle */
