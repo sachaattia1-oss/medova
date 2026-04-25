@@ -49,10 +49,12 @@ const StatsCard = ({
   className,
   onClick,
   sparklineData,
+  paletteIndex = 0,
 }: StatsCardProps) => {
   const numericValue = typeof value === "number" ? value : Number(value) || 0;
   const animated = useAnimatedNumber(numericValue);
   const displayValue = typeof value === "number" ? animated : value;
+  const stop = getPaletteStop(paletteIndex);
 
   // Generate stable mock sparkline data based on value if none provided
   const data = useMemo(() => {
