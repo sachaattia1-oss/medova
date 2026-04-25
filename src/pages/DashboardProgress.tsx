@@ -470,14 +470,15 @@ const DashboardProgress = () => {
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          isPassed ? "bg-green-500/10" : "bg-red-500/10"
-                        }`}
+                        className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center",
+                          isPassed ? "bg-emerald-500/10" : "bg-rose-500/10",
+                        )}
                       >
                         {isPassed ? (
-                          <CheckCircle className="w-5 h-5 text-green-500" />
+                          <CheckCircle className="w-5 h-5 text-emerald-500" />
                         ) : (
-                          <XCircle className="w-5 h-5 text-red-500" />
+                          <XCircle className="w-5 h-5 text-rose-500" />
                         )}
                       </div>
                       <div>
