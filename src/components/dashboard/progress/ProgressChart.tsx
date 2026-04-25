@@ -50,16 +50,11 @@ const rankLabel = (score: number) => {
   return "À améliorer";
 };
 
-const rankColor = (score: number) => {
-  if (score >= 80) return "hsl(160 70% 45%)";
-  if (score >= 50) return "hsl(38 92% 55%)";
-  return "hsl(0 70% 55%)";
-};
-
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
-    const color = rankColor(data.score);
+    const stop = getScorePaletteStop(data.score);
+    const accentTint = stop.accent.replace("hsl(", "hsla(").replace(")", " / 0.15)");
     return (
       <div className="bg-popover/85 backdrop-blur-md border border-border/60 rounded-xl p-3 shadow-xl min-w-[180px]">
         <p className="font-semibold text-sm mb-1">{data.fullName}</p>
@@ -74,7 +69,7 @@ const CustomTooltip = ({ active, payload }: any) => {
             className="h-full rounded-full transition-all"
             style={{
               width: `${Math.min(100, Math.max(0, data.score))}%`,
-              background: `linear-gradient(90deg, ${color}, ${color}aa)`,
+              background: `linear-gradient(90deg, ${stop.accent} 0%, ${stop.mid} 55%, ${stop.tail} 100%)`,
             }}
           />
         </div>
@@ -84,7 +79,7 @@ const CustomTooltip = ({ active, payload }: any) => {
           </span>
           <span
             className="font-semibold px-1.5 py-0.5 rounded-md"
-            style={{ color, background: `${color}20` }}
+            style={{ color: stop.accent, background: accentTint }}
           >
             {rankLabel(data.score)}
           </span>
