@@ -1,7 +1,8 @@
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useMemo } from "react";
-import { LineChart, Line, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { ResponsiveContainer, Area, AreaChart } from "recharts";
+import { getPaletteStop } from "./progress/chartPalette";
 
 interface StatsCardProps {
   title: string;
