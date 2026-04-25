@@ -149,14 +149,15 @@ const StatsCard = ({
           <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="hsl(var(--accent))" stopOpacity={0.45} />
-                <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity={0} />
+                <stop offset="0%" stopColor={stop.accent} stopOpacity={0.55} />
+                <stop offset="55%" stopColor={stop.mid} stopOpacity={0.3} />
+                <stop offset="100%" stopColor={stop.tail} stopOpacity={0} />
               </linearGradient>
             </defs>
             <Area
               type="monotone"
               dataKey="v"
-              stroke="hsl(var(--accent))"
+              stroke={stop.accent}
               strokeWidth={2}
               fill={`url(#${gradientId})`}
               isAnimationActive
