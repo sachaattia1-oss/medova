@@ -17,6 +17,8 @@ interface StatsCardProps {
   onClick?: () => void;
   /** Optional sparkline data; when not provided, mock data is generated from value */
   sparklineData?: number[];
+  /** Index into the unified chart palette (defaults to 0 = teal accent). */
+  paletteIndex?: number;
 }
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
