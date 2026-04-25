@@ -110,7 +110,7 @@ const DashboardSidebar = () => {
 
     fetchUnreadReplies();
     fetchNewCourses();
-  }, [user]);
+  }, [user, location.pathname]);
 
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border/50 flex flex-col">
