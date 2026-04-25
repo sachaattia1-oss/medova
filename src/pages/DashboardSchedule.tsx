@@ -249,7 +249,7 @@ const DashboardSchedule = () => {
       <div className="flex-1 ml-64">
         <DashboardHeader title="Emploi du Temps" description="Organisez votre semaine de révisions" />
         <main className="p-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <ScheduleNavigation
               viewMode={viewMode}
               onViewModeChange={setViewMode}
@@ -259,7 +259,10 @@ const DashboardSchedule = () => {
               onNext={handleNext}
               onToday={handleToday}
             />
-            <Button onClick={handleAddEvent} className="gap-2">
+            <Button
+              onClick={handleAddEvent}
+              className="gap-2 h-10 px-5 rounded-full bg-gradient-to-r from-accent to-accent/80 text-accent-foreground font-semibold shadow-[0_4px_20px_-4px_hsl(var(--accent)/0.5)] hover:shadow-[0_8px_28px_-4px_hsl(var(--accent)/0.7)] hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 border-0"
+            >
               <Plus className="w-4 h-4" />
               Ajouter un événement
             </Button>
@@ -277,6 +280,7 @@ const DashboardSchedule = () => {
               onDeleteEvent={handleDeleteEvent}
               onDayClick={handleDayClick}
               onEventUpdate={handleEventUpdate}
+              weekStart={weekStart}
             />
           ) : (
             <DailySchedule
