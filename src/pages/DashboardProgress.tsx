@@ -37,16 +37,9 @@ interface Category {
   name: string;
 }
 
-const CHART_COLORS = [
-  "hsl(160, 70%, 45%)", // emerald
-  "hsl(180, 65%, 45%)", // teal
-  "hsl(200, 70%, 50%)", // sky
-  "hsl(265, 60%, 60%)", // purple
-  "hsl(45, 85%, 55%)", // amber
-  "hsl(330, 70%, 60%)", // pink
-  "hsl(15, 75%, 60%)", // orange
-  "hsl(220, 65%, 55%)", // blue
-];
+import { CHART_ACCENT_COLORS } from "@/components/dashboard/progress/chartPalette";
+
+const CHART_COLORS = CHART_ACCENT_COLORS;
 
 const DashboardProgress = () => {
   const { user, loading: authLoading } = useAuth();

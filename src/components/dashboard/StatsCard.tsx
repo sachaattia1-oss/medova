@@ -1,7 +1,8 @@
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useMemo } from "react";
-import { LineChart, Line, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { ResponsiveContainer, Area, AreaChart } from "recharts";
+import { getPaletteStop } from "./progress/chartPalette";
 
 interface StatsCardProps {
   title: string;
@@ -16,6 +17,8 @@ interface StatsCardProps {
   onClick?: () => void;
   /** Optional sparkline data; when not provided, mock data is generated from value */
   sparklineData?: number[];
+  /** Index into the unified chart palette (defaults to 0 = teal accent). */
+  paletteIndex?: number;
 }
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -46,10 +49,12 @@ const StatsCard = ({
   className,
   onClick,
   sparklineData,
+  paletteIndex = 0,
 }: StatsCardProps) => {
   const numericValue = typeof value === "number" ? value : Number(value) || 0;
   const animated = useAnimatedNumber(numericValue);
   const displayValue = typeof value === "number" ? animated : value;
+  const stop = getPaletteStop(paletteIndex);
 
   // Generate stable mock sparkline data based on value if none provided
   const data = useMemo(() => {
@@ -144,14 +149,15 @@ const StatsCard = ({
           <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="hsl(var(--accent))" stopOpacity={0.45} />
-                <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity={0} />
+                <stop offset="0%" stopColor={stop.accent} stopOpacity={0.55} />
+                <stop offset="55%" stopColor={stop.mid} stopOpacity={0.3} />
+                <stop offset="100%" stopColor={stop.tail} stopOpacity={0} />
               </linearGradient>
             </defs>
             <Area
               type="monotone"
               dataKey="v"
-              stroke="hsl(var(--accent))"
+              stroke={stop.accent}
               strokeWidth={2}
               fill={`url(#${gradientId})`}
               isAnimationActive
