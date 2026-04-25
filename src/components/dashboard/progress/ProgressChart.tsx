@@ -132,7 +132,7 @@ const ProgressChart = ({ data, loading, colors }: Props) => {
                 >
                   <defs>
                     {data.map((d, i) => {
-                      const c = colors[i % colors.length];
+                      const stop = getPaletteStop(i);
                       return (
                         <linearGradient
                           key={d.colorId}
@@ -142,9 +142,9 @@ const ProgressChart = ({ data, loading, colors }: Props) => {
                           x2="0"
                           y2="1"
                         >
-                          <stop offset="0%" stopColor={c} stopOpacity={1} />
-                          <stop offset="55%" stopColor={c} stopOpacity={0.65} />
-                          <stop offset="100%" stopColor={c} stopOpacity={0.1} />
+                          <stop offset="0%" stopColor={stop.accent} stopOpacity={1} />
+                          <stop offset="55%" stopColor={stop.mid} stopOpacity={0.85} />
+                          <stop offset="100%" stopColor={stop.tail} stopOpacity={0.15} />
                         </linearGradient>
                       );
                     })}
