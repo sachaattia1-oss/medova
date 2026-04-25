@@ -176,6 +176,7 @@ const Dashboard = () => {
             title="Cours disponibles"
             value={courses.length}
             icon={BookOpen}
+            paletteIndex={0}
             onClick={() => navigate("/dashboard/cours")}
           />
           <StatsCard
@@ -183,12 +184,14 @@ const Dashboard = () => {
             value={totalQuizzes}
             icon={GraduationCap}
             trend={totalQuizzes > 0 ? { value: 12, isPositive: true } : undefined}
+            paletteIndex={1}
             onClick={() => navigate("/dashboard/qcm")}
           />
           <StatsCard
             title="QCM disponibles"
             value={totalQuizCount}
             icon={BookOpen}
+            paletteIndex={2}
             onClick={() => navigate("/dashboard/qcm")}
           />
         </div>
