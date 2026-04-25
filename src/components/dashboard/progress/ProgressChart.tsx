@@ -14,6 +14,8 @@ import {
   ReferenceLine,
 } from "recharts";
 import { motion } from "framer-motion";
+import { getPaletteStop, getScorePaletteStop } from "./chartPalette";
+
 
 export interface ChartDatum {
   name: string;
