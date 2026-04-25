@@ -63,7 +63,14 @@ const DashboardSidebar = () => {
   useEffect(() => {
     const fetchUnreadReplies = async () => {
       if (!user) return;
-      
+
+      // Reset badge when user is currently on the questions page
+      if (location.pathname === "/dashboard/mes-questions") {
+        localStorage.setItem(`questions_last_seen_${user.id}`, new Date().toISOString());
+        setUnreadReplies(0);
+        return;
+      }
+
       // Get all questions posted by this user
       const { data: myQuestions } = await supabase
         .from("question_discussions")
@@ -78,12 +85,16 @@ const DashboardSidebar = () => {
 
       const questionIds = myQuestions.map(q => q.id);
 
-      // Count replies to those questions (not by the user themselves)
+      // Only count replies posted after the user's last visit to "Mes questions"
+      const lastSeen = localStorage.getItem(`questions_last_seen_${user.id}`) 
+        || new Date(0).toISOString();
+
       const { count } = await supabase
         .from("question_discussions")
         .select("id", { count: "exact", head: true })
         .in("parent_id", questionIds)
-        .neq("user_id", user.id);
+        .neq("user_id", user.id)
+        .gt("created_at", lastSeen);
 
       setUnreadReplies(count || 0);
     };
