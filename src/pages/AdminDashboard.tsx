@@ -192,7 +192,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-background flex">
       <DashboardSidebar />
-      <div className="flex-1 ml-64">
+      <div className="flex-1 lg:ml-64 pt-14 lg:pt-0">
         <DashboardHeader
           title="Tableau de bord Admin"
           description="Vue d'ensemble des étudiants et de l'activité sur la plateforme"

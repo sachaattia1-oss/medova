@@ -283,7 +283,7 @@ const TakeSeries = () => {
     return (
       <div className="min-h-screen bg-background">
         <DashboardSidebar />
-        <main className="ml-64 p-8">
+        <main className="lg:ml-64 pt-20 lg:pt-8 px-4 sm:px-6 lg:p-8">
           <div className="text-center py-12">
             <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-bold mb-2">Série non disponible</h2>
@@ -308,7 +308,7 @@ const TakeSeries = () => {
     return (
       <div className="min-h-screen bg-background">
         <DashboardSidebar />
-        <main className="ml-64 p-8">
+        <main className="lg:ml-64 pt-20 lg:pt-8 px-4 sm:px-6 lg:p-8">
           <div className="max-w-4xl mx-auto">
             <Card className="mb-8">
               <CardHeader className="text-center">
@@ -436,7 +436,7 @@ const TakeSeries = () => {
   return (
     <div className="min-h-screen bg-background">
       <DashboardSidebar />
-      <main className="ml-64 p-8">
+      <main className="lg:ml-64 pt-20 lg:pt-8 px-4 sm:px-6 lg:p-8">
         <div className="max-w-3xl mx-auto">
           {/* Series progress indicator */}
           <div className="flex items-center justify-center gap-2 mb-6">

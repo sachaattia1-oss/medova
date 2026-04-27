@@ -233,7 +233,7 @@ const AdminTutors = () => {
   return (
     <div className="min-h-screen bg-background flex">
       <DashboardSidebar />
-      <div className="flex-1 ml-64">
+      <div className="flex-1 lg:ml-64 pt-14 lg:pt-0">
         <DashboardHeader 
           title="Gestion des Tuteurs" 
           description="Validez les demandes de compte tuteur et gérez les accès" 
