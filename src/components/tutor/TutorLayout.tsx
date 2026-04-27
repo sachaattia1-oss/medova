@@ -9,7 +9,7 @@ const TutorLayout = ({ children }: TutorLayoutProps) => {
   return (
     <div className="min-h-screen bg-background">
       <TutorSidebar />
-      <main className="ml-64 p-8">
+      <main className="lg:ml-64 pt-20 lg:pt-8 px-4 sm:px-6 lg:p-8">
         {children}
       </main>
     </div>

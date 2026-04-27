@@ -281,7 +281,7 @@ const AdminCourses = () => {
     <div className="min-h-screen bg-background">
       <DashboardSidebar />
 
-      <main className="ml-64 p-8">
+      <main className="lg:ml-64 pt-20 lg:pt-8 px-4 sm:px-6 lg:p-8">
         <div className="flex items-center justify-between mb-8">
           <DashboardHeader
             title="Gestion des cours"

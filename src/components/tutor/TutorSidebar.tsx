@@ -9,13 +9,17 @@ import {
   GraduationCap,
   LogOut,
   Wallet,
-  ArrowLeft
+  ArrowLeft,
+  Menu
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { label: "Accueil", icon: Home, path: "/tutor" },
@@ -26,47 +30,21 @@ const navItems = [
   { label: "Rémunération", icon: Wallet, path: "/tutor/remuneration" },
 ];
 
-const TutorSidebar = () => {
+interface ContentProps {
+  user: ReturnType<typeof useAuth>["user"];
+  signOut: () => void;
+  isAdmin: boolean;
+  newQuestionsCount: number;
+  onNavigate?: () => void;
+}
+
+const SidebarInner = ({ user, signOut, isAdmin, newQuestionsCount, onNavigate }: ContentProps) => {
   const location = useLocation();
-  const { signOut, user } = useAuth();
-  const { isAdmin } = useUserRole();
-  const [newQuestionsCount, setNewQuestionsCount] = useState(0);
-
-  useEffect(() => {
-    const fetchNewQuestions = async () => {
-      if (!user) return;
-
-      // Count unanswered top-level questions (no reply from tutor/admin yet)
-      const { data: questions } = await supabase
-        .from("question_discussions")
-        .select("id")
-        .is("parent_id", null);
-
-      if (!questions || questions.length === 0) {
-        setNewQuestionsCount(0);
-        return;
-      }
-
-      // Get questions that have no replies yet
-      const questionIds = questions.map(q => q.id);
-      const { data: replies } = await supabase
-        .from("question_discussions")
-        .select("parent_id")
-        .in("parent_id", questionIds);
-
-      const answeredIds = new Set((replies || []).map(r => r.parent_id));
-      const unanswered = questionIds.filter(id => !answeredIds.has(id));
-      setNewQuestionsCount(unanswered.length);
-    };
-
-    fetchNewQuestions();
-  }, [user]);
-
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col">
+    <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="p-6 border-b border-border">
-        <Link to="/tutor" className="flex items-center gap-3">
+        <Link to="/tutor" onClick={onNavigate} className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center">
             <GraduationCap className="w-5 h-5 text-white" />
           </div>
@@ -99,7 +77,7 @@ const TutorSidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || 
             (item.path !== "/tutor" && location.pathname.startsWith(item.path));
@@ -109,6 +87,7 @@ const TutorSidebar = () => {
             <Link
               key={item.path}
               to={item.path}
+              onClick={onNavigate}
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-foreground",
                 isActive
@@ -128,11 +107,11 @@ const TutorSidebar = () => {
         })}
       </nav>
 
-      {/* Back to dashboard for admins */}
       <div className="p-4 border-t border-border space-y-1">
         {isAdmin && (
           <Link
             to="/dashboard"
+            onClick={onNavigate}
             className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -147,6 +126,83 @@ const TutorSidebar = () => {
           <span className="font-medium">Déconnexion</span>
         </button>
       </div>
+    </div>
+  );
+};
+
+const TutorSidebar = () => {
+  const { signOut, user } = useAuth();
+  const { isAdmin } = useUserRole();
+  const isMobile = useIsMobile();
+  const [newQuestionsCount, setNewQuestionsCount] = useState(0);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchNewQuestions = async () => {
+      if (!user) return;
+
+      const { data: questions } = await supabase
+        .from("question_discussions")
+        .select("id")
+        .is("parent_id", null);
+
+      if (!questions || questions.length === 0) {
+        setNewQuestionsCount(0);
+        return;
+      }
+
+      const questionIds = questions.map(q => q.id);
+      const { data: replies } = await supabase
+        .from("question_discussions")
+        .select("parent_id")
+        .in("parent_id", questionIds);
+
+      const answeredIds = new Set((replies || []).map(r => r.parent_id));
+      const unanswered = questionIds.filter(id => !answeredIds.has(id));
+      setNewQuestionsCount(unanswered.length);
+    };
+
+    fetchNewQuestions();
+  }, [user]);
+
+  if (isMobile) {
+    return (
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-card/95 backdrop-blur border-b border-border flex items-center justify-between px-4">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Ouvrir le menu">
+              <Menu className="w-5 h-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-72 bg-card">
+            <SidebarInner
+              user={user}
+              signOut={signOut}
+              isAdmin={isAdmin}
+              newQuestionsCount={newQuestionsCount}
+              onNavigate={() => setOpen(false)}
+            />
+          </SheetContent>
+        </Sheet>
+        <Link to="/tutor" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-accent/70 flex items-center justify-center">
+            <GraduationCap className="w-4 h-4 text-white" />
+          </div>
+          <span className="text-base font-bold tracking-tight">MEDOVA</span>
+        </Link>
+        <div className="w-9" />
+      </div>
+    );
+  }
+
+  return (
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col">
+      <SidebarInner
+        user={user}
+        signOut={signOut}
+        isAdmin={isAdmin}
+        newQuestionsCount={newQuestionsCount}
+      />
     </aside>
   );
 };
