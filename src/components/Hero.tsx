@@ -13,12 +13,6 @@ const Hero = () => {
 
       <div className="container relative z-10 px-4 md:px-6">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mb-8 animate-fade-in animate-pulse-soft backdrop-blur-sm">
-            <Stethoscope className="w-4 h-4" />
-            <span>Plateforme #1 pour les étudiants en médecine</span>
-          </div>
-
           {/* Main heading with typewriter effect on "concours" */}
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up">
             <span className="text-foreground">Réussis ton </span>
@@ -29,6 +23,12 @@ const Hero = () => {
               MEDOVA
             </span>
           </h1>
+
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mb-8 animate-fade-in animate-pulse-soft backdrop-blur-sm">
+            <Stethoscope className="w-4 h-4" />
+            <span>Plateforme #1 pour les étudiants en médecine</span>
+          </div>
 
           {/* Subheading */}
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 animate-fade-in-up animation-delay-200">
