@@ -24,6 +24,12 @@ const Hero = () => {
             </span>
           </h1>
 
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mb-8 animate-fade-in animate-pulse-soft backdrop-blur-sm">
+            <Stethoscope className="w-4 h-4" />
+            <span>Plateforme #1 pour les étudiants en médecine</span>
+          </div>
+
           {/* Subheading */}
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 animate-fade-in-up animation-delay-200">
             Accède à des cours complets, des QCM détaillés et des ressources pédagogiques conçues par des professionnels pour maximiser tes chances de succès.
