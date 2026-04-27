@@ -24,7 +24,7 @@ const CTA = () => {
           </h2>
 
           <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
-            Plus de 5 000 étudiants nous font déjà confiance. Commence dès maintenant et maximise tes chances de succès.
+             Commence dès maintenant et maximise tes chances de succès.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -48,7 +48,7 @@ const CTA = () => {
           </div>
 
           <p className="text-sm text-muted-foreground mt-6">
-            Essai gratuit de 7 jours • Aucune carte bancaire requise
+            {" "}
           </p>
         </Reveal>
       </div>
