@@ -14,7 +14,7 @@ const Hero = () => {
       <div className="container relative z-10 px-4 md:px-6">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
           {/* Main heading with typewriter effect on "concours" */}
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mt-12 md:mt-16 mb-6 animate-fade-in-up">
             <span className="text-foreground">Réussis ton </span>
             <span className="text-gradient">concours</span>
             <br />
