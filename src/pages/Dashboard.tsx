@@ -54,6 +54,7 @@ const Dashboard = () => {
   const { isApprovedTutor, isAdmin, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [totalCourseCount, setTotalCourseCount] = useState(0);
   const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[]>([]);
   const [scheduleEvents, setScheduleEvents] = useState<ScheduleEvent[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
@@ -88,6 +89,12 @@ const Dashboard = () => {
           .limit(6);
 
         if (coursesData) setCourses(coursesData);
+
+        // Total course count (for the stat card)
+        const { count: courseCount } = await supabase
+          .from("courses")
+          .select("id", { count: "exact", head: true });
+        setTotalCourseCount(courseCount || 0);
 
         // Fetch user's quiz attempts
         const { data: attemptsData } = await supabase
@@ -174,7 +181,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatsCard
             title="Cours disponibles"
-            value={courses.length}
+            value={totalCourseCount}
             icon={BookOpen}
             paletteIndex={0}
             onClick={() => navigate("/dashboard/cours")}
