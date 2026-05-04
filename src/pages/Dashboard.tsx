@@ -90,6 +90,12 @@ const Dashboard = () => {
 
         if (coursesData) setCourses(coursesData);
 
+        // Total course count (for the stat card)
+        const { count: courseCount } = await supabase
+          .from("courses")
+          .select("id", { count: "exact", head: true });
+        setTotalCourseCount(courseCount || 0);
+
         // Fetch user's quiz attempts
         const { data: attemptsData } = await supabase
           .from("quiz_attempts")
