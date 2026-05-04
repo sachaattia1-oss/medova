@@ -57,6 +57,7 @@ const App = () => (
             <Route path="/dashboard/mes-questions" element={<SubscribedRoute><DashboardMyQuestions /></SubscribedRoute>} />
             
             <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/mentions-legales" element={<MentionsLegales />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/cours" element={<AdminCourses />} />
             <Route path="/admin/qcm" element={<AdminQCM />} />
