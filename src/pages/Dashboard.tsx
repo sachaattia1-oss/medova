@@ -54,6 +54,7 @@ const Dashboard = () => {
   const { isApprovedTutor, isAdmin, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
+  const [totalCourseCount, setTotalCourseCount] = useState(0);
   const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[]>([]);
   const [scheduleEvents, setScheduleEvents] = useState<ScheduleEvent[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>([]);
