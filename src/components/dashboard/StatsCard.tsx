@@ -51,7 +51,10 @@ const StatsCard = ({
   sparklineData,
   paletteIndex = 0,
 }: StatsCardProps) => {
-  const numericValue = typeof value === "number" ? value : Number(value) || 0;
+  const numericValue =
+    typeof value === "number"
+      ? value
+      : Number(String(value).replace(/[^\d.-]/g, "")) || 0;
   const animated = useAnimatedNumber(numericValue);
   const displayValue = typeof value === "number" ? animated : value;
   const stop = getPaletteStop(paletteIndex);
