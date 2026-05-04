@@ -181,7 +181,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatsCard
             title="Cours disponibles"
-            value={courses.length}
+            value={totalCourseCount}
             icon={BookOpen}
             paletteIndex={0}
             onClick={() => navigate("/dashboard/cours")}
