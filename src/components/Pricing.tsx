@@ -13,7 +13,7 @@ const plans = [
     description: "Prépare ta PASS dès le lycée",
     price: "149",
     period: "",
-    priceId: "price_1TGQzCFT6CIUirCiSFhzf6YF",
+    priceId: "price_1TTOIoFUlmGFMx8wPwMFYXti",
     features: [
       "Accès aux cours du premier semestre",
       "Accès aux QCM corrigés et détaillés",
@@ -27,7 +27,7 @@ const plans = [
     description: "Tout pour réussir ton S1",
     price: "279",
     period: "",
-    priceId: "price_1TGR07FT6CIUirCiJsnR28tY",
+    priceId: "price_1TTOODFUlmGFMx8we3hgUwWN",
     features: [
       "Accès à tous les cours mis à jour",
       "QCM illimités",
@@ -42,7 +42,7 @@ const plans = [
     description: "Le meilleur rapport qualité-prix",
     price: "500",
     period: "/an",
-    priceId: "price_1TGR19FT6CIUirCiGt843vEk",
+    priceId: "price_1TTOOUFUlmGFMx8wwRC6dtMV",
     features: [
       "Économise 10%",
       "Accès aux cours de S1 et S2 mis à jour",
