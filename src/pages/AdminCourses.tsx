@@ -41,6 +41,7 @@ interface Course {
   category_id: string | null;
   is_free: boolean | null;
   pdf_url: string | null;
+  revision_pdf_url: string | null;
   order_index: number | null;
   target_audience: string;
 }
@@ -62,6 +63,7 @@ const AdminCourses = () => {
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [uploading, setUploading] = useState(false);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [revisionPdfFile, setRevisionPdfFile] = useState<File | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -69,6 +71,7 @@ const AdminCourses = () => {
     description: "",
     category_id: "",
     pdf_url: "",
+    revision_pdf_url: "",
     is_free: false,
     target_audience: "all",
   });
@@ -132,11 +135,28 @@ const AdminCourses = () => {
       description: "",
       category_id: "",
       pdf_url: "",
+      revision_pdf_url: "",
       is_free: false,
       target_audience: "all",
     });
     setEditingCourse(null);
     setPdfFile(null);
+    setRevisionPdfFile(null);
+  };
+
+  const handleRevisionFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type !== "application/pdf") {
+        toast.error("Seuls les fichiers PDF sont acceptés");
+        return;
+      }
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error("Le fichier ne doit pas dépasser 50 Mo");
+        return;
+      }
+      setRevisionPdfFile(file);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,6 +203,7 @@ const AdminCourses = () => {
         description: course.description || "",
         category_id: course.category_id || "",
         pdf_url: course.pdf_url || "",
+        revision_pdf_url: course.revision_pdf_url || "",
         is_free: course.is_free || false,
         target_audience: (course as any).target_audience || "all",
       });
@@ -198,6 +219,7 @@ const AdminCourses = () => {
 
     try {
       let pdfUrl = formData.pdf_url;
+      let revisionPdfUrl = formData.revision_pdf_url;
 
       // Upload new PDF if selected
       if (pdfFile) {
@@ -207,11 +229,19 @@ const AdminCourses = () => {
         }
       }
 
+      if (revisionPdfFile) {
+        const uploadedUrl = await uploadPdf(revisionPdfFile);
+        if (uploadedUrl) {
+          revisionPdfUrl = uploadedUrl;
+        }
+      }
+
       const courseData = {
         title: formData.title,
         description: formData.description || null,
         category_id: formData.category_id || null,
         pdf_url: pdfUrl || null,
+        revision_pdf_url: revisionPdfUrl || null,
         is_free: formData.is_free,
         target_audience: formData.target_audience,
       };
@@ -386,6 +416,52 @@ const AdminCourses = () => {
                         type="file"
                         accept=".pdf"
                         onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Fiche de révision (PDF)</Label>
+                  {formData.revision_pdf_url && !revisionPdfFile ? (
+                    <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                      <FileText className="w-4 h-4 text-accent" />
+                      <span className="text-sm flex-1 truncate">Fiche actuelle</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => setFormData({ ...formData, revision_pdf_url: "" })}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : revisionPdfFile ? (
+                    <div className="flex items-center gap-2 p-3 bg-accent/10 rounded-lg">
+                      <FileText className="w-4 h-4 text-accent" />
+                      <span className="text-sm flex-1 truncate">{revisionPdfFile.name}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => setRevisionPdfFile(null)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Upload className="w-6 h-6 text-muted-foreground mb-1" />
+                      <span className="text-sm text-muted-foreground">
+                        Cliquer pour ajouter une fiche de révision
+                      </span>
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleRevisionFileChange}
                         className="hidden"
                       />
                     </label>
