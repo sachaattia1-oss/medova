@@ -56,17 +56,18 @@ const StatsCard = ({
   const displayValue = typeof value === "number" ? animated : value;
   const stop = getPaletteStop(paletteIndex);
 
-  // Generate stable mock sparkline data based on value if none provided
+  // Generate a sparkline that ends at the actual value, growing progressively up to it
   const data = useMemo(() => {
     if (sparklineData && sparklineData.length) {
       return sparklineData.map((v, i) => ({ i, v }));
     }
-    const base = Math.max(numericValue, 4);
-    const seed = numericValue || 1;
-    return Array.from({ length: 7 }).map((_, i) => {
-      const wobble = Math.sin((i + seed) * 1.3) * (base * 0.25);
-      const drift = (i / 6) * base * 0.4;
-      return { i, v: Math.max(1, Math.round(base * 0.55 + drift + wobble)) };
+    const points = 7;
+    const target = Math.max(numericValue, 0);
+    return Array.from({ length: points }).map((_, i) => {
+      const t = i / (points - 1);
+      // ease-out growth so the last point equals the value
+      const eased = 1 - Math.pow(1 - t, 2.2);
+      return { i, v: Math.round(target * eased) };
     });
   }, [sparklineData, numericValue]);
 
