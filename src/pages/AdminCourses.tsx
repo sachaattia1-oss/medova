@@ -422,6 +422,52 @@ const AdminCourses = () => {
                   )}
                 </div>
 
+                <div className="space-y-2">
+                  <Label>Fiche de révision (PDF)</Label>
+                  {formData.revision_pdf_url && !revisionPdfFile ? (
+                    <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                      <FileText className="w-4 h-4 text-accent" />
+                      <span className="text-sm flex-1 truncate">Fiche actuelle</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => setFormData({ ...formData, revision_pdf_url: "" })}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : revisionPdfFile ? (
+                    <div className="flex items-center gap-2 p-3 bg-accent/10 rounded-lg">
+                      <FileText className="w-4 h-4 text-accent" />
+                      <span className="text-sm flex-1 truncate">{revisionPdfFile.name}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => setRevisionPdfFile(null)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Upload className="w-6 h-6 text-muted-foreground mb-1" />
+                      <span className="text-sm text-muted-foreground">
+                        Cliquer pour ajouter une fiche de révision
+                      </span>
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleRevisionFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
