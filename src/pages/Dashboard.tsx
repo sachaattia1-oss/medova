@@ -177,6 +177,10 @@ const Dashboard = () => {
           description="Bienvenue ! Voici un aperçu de ta progression."
         />
 
+        <p className="text-sm text-muted-foreground text-center mb-8 font-bold">
+          Les cours et QCM sont en cours de publication, ils apparaîtront au fur et à mesure.
+        </p>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatsCard
@@ -202,10 +206,6 @@ const Dashboard = () => {
           onClick={() => navigate("/dashboard/qcm")}
         />
       </div>
-
-      <p className="text-sm text-muted-foreground text-center mb-8">
-        Les cours et QCM sont en cours de publication, ils apparaîtront au fur et à mesure.
-      </p>
 
       {/* Schedule & Reminders Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
