@@ -199,11 +199,15 @@ const Dashboard = () => {
             value={totalQuizCount}
             icon={BookOpen}
             paletteIndex={2}
-            onClick={() => navigate("/dashboard/qcm")}
-          />
-        </div>
+          onClick={() => navigate("/dashboard/qcm")}
+        />
+      </div>
 
-        {/* Schedule & Reminders Grid */}
+      <p className="text-sm text-muted-foreground text-center mb-8">
+        Les cours et QCM sont en cours de publication, ils apparaîtront au fur et à mesure.
+      </p>
+
+      {/* Schedule & Reminders Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Today's Schedule */}
           <Card className="border-border/50">
