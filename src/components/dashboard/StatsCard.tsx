@@ -59,18 +59,30 @@ const StatsCard = ({
   const displayValue = typeof value === "number" ? animated : value;
   const stop = getPaletteStop(paletteIndex);
 
-  // Generate a sparkline that ends at the actual value, growing progressively up to it
+  // Generate a smooth, organic sparkline that ends at the actual value.
+  // Uses an ease-out base trend with small deterministic oscillations so
+  // the curve looks lively instead of a flat monotonic ramp.
   const data = useMemo(() => {
     if (sparklineData && sparklineData.length) {
       return sparklineData.map((v, i) => ({ i, v }));
     }
-    const points = 7;
+    const points = 16;
     const target = Math.max(numericValue, 0);
+    // Deterministic seed derived from the value so each card stays stable
+    const seed = (numericValue * 9301 + 49297) % 233280 || 1;
+    const rand = (i: number) => {
+      const x = Math.sin(seed + i * 12.9898) * 43758.5453;
+      return x - Math.floor(x);
+    };
     return Array.from({ length: points }).map((_, i) => {
       const t = i / (points - 1);
-      // ease-out growth so the last point equals the value
-      const eased = 1 - Math.pow(1 - t, 2.2);
-      return { i, v: Math.round(target * eased) };
+      const eased = 1 - Math.pow(1 - t, 2.4);
+      // Gentle wave + tiny noise, dampened near the end so we land on target
+      const wave = Math.sin(t * Math.PI * 2.2) * 0.08;
+      const noise = (rand(i) - 0.5) * 0.06;
+      const damp = 1 - Math.pow(t, 3);
+      const factor = i === points - 1 ? 1 : eased + (wave + noise) * damp;
+      return { i, v: Math.max(0, target * factor) };
     });
   }, [sparklineData, numericValue]);
 
