@@ -154,6 +154,12 @@ const Pricing = () => {
                     <span className="text-4xl font-bold">{plan.price}€</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
+                  {plan.expiresAt && (
+                    <div className="flex items-center gap-1.5 mt-2 text-xs text-accent font-medium">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>Accès jusqu'au {plan.expiresAt}</span>
+                    </div>
+                  )}
                 </div>
 
                 <ul className="relative space-y-3 mb-8">
