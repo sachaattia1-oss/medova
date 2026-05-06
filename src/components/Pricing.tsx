@@ -7,12 +7,15 @@ import { useToast } from "@/hooks/use-toast";
 import { Reveal } from "@/components/Reveal";
 import { cn } from "@/lib/utils";
 
+import { Calendar } from "lucide-react";
+
 const plans = [
   {
     name: "Terminale",
     description: "Prépare ta PASS dès le lycée",
     price: "149",
     period: "",
+    expiresAt: "10 septembre 2026",
     priceId: "price_1TTOIoFUlmGFMx8wPwMFYXti",
     features: [
       "Accès aux cours du premier semestre",
@@ -30,6 +33,7 @@ const plans = [
     description: "Tout pour réussir ton S1",
     price: "279",
     period: "",
+    expiresAt: "10 décembre 2026",
     priceId: "price_1TTOODFUlmGFMx8we3hgUwWN",
     features: [
       "Accès à tous les cours mis à jour",
@@ -47,6 +51,7 @@ const plans = [
     description: "Le meilleur rapport qualité-prix",
     price: "500",
     period: "/an",
+    expiresAt: "10 mai 2027",
     priceId: "price_1TTOOUFUlmGFMx8wwRC6dtMV",
     features: [
       "Économise 10%",
