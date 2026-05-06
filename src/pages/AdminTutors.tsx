@@ -119,6 +119,27 @@ const AdminTutors = () => {
 
       if (error) throw error;
 
+      // Send approval email
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (profile?.email) {
+        supabase.functions.invoke('send-transactional-email', {
+          body: {
+            templateName: 'tutor-approved',
+            recipientEmail: profile.email,
+            idempotencyKey: `tutor-approved-${userId}`,
+            templateData: {
+              name: profile.full_name,
+              dashboardUrl: `${window.location.origin}/tutor`,
+            },
+          },
+        }).catch((e) => console.error('tutor-approved email failed', e));
+      }
+
       toast({
         title: "Tuteur approuvé",
         description: "Le compte tuteur a été activé avec succès",
