@@ -64,6 +64,14 @@ const Auth = () => {
           }
           if (selectedChoice === "tutor") {
             toast.success("Compte tuteur créé ! Votre demande est en attente de validation par un administrateur.");
+            supabase.functions.invoke('send-transactional-email', {
+              body: {
+                templateName: 'tutor-signup',
+                recipientEmail: email,
+                idempotencyKey: `tutor-signup-${email}`,
+                templateData: { name: fullName },
+              },
+            }).catch((e) => console.error('tutor-signup email failed', e));
           } else {
             toast.success("Compte créé avec succès ! Bienvenue sur MEDOVA.");
           }
