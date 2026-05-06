@@ -160,25 +160,41 @@ const StatsCard = ({
       </div>
 
       {/* Sparkline */}
-      <div className="relative mt-4 h-12 -mx-2">
+      <div className="relative mt-4 h-16 -mx-2">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
+          <AreaChart data={data} margin={{ top: 6, right: 6, bottom: 2, left: 6 }}>
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={stop.accent} stopOpacity={0.55} />
-                <stop offset="55%" stopColor={stop.mid} stopOpacity={0.3} />
+                <stop offset="0%" stopColor={stop.accent} stopOpacity={0.5} />
+                <stop offset="55%" stopColor={stop.mid} stopOpacity={0.22} />
                 <stop offset="100%" stopColor={stop.tail} stopOpacity={0} />
               </linearGradient>
+              <linearGradient id={`${gradientId}-stroke`} x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor={stop.mid} stopOpacity={0.9} />
+                <stop offset="100%" stopColor={stop.accent} stopOpacity={1} />
+              </linearGradient>
+              <filter id={`${gradientId}-glow`} x="-20%" y="-50%" width="140%" height="200%">
+                <feGaussianBlur stdDeviation="2.2" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
             </defs>
             <Area
-              type="monotone"
+              type="basis"
               dataKey="v"
-              stroke={stop.accent}
-              strokeWidth={2}
+              stroke={`url(#${gradientId}-stroke)`}
+              strokeWidth={2.25}
+              strokeLinecap="round"
+              strokeLinejoin="round"
               fill={`url(#${gradientId})`}
+              filter={`url(#${gradientId}-glow)`}
               isAnimationActive
-              animationDuration={900}
+              animationDuration={1100}
+              animationEasing="ease-out"
               dot={false}
+              activeDot={false}
             />
           </AreaChart>
         </ResponsiveContainer>
