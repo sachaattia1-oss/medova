@@ -17,7 +17,10 @@ const plans = [
     features: [
       "Accès aux cours du premier semestre",
       "Accès aux QCM corrigés et détaillés",
+      "Annales corrigées et détaillées",
       "Suivi de progression",
+      "Emploi du temps personnalisé",
+      "Programmation de Rappels",
     ],
     cta: "S'abonner",
     popular: false,
