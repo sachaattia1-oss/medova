@@ -29,6 +29,7 @@ import TutorDashboard from "./pages/TutorDashboard";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import MentionsLegales from "./pages/MentionsLegales";
 import NotFound from "./pages/NotFound";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
