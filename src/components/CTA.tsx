@@ -34,7 +34,7 @@ const CTA = () => {
               size="lg"
               variant="hero"
               className="group animate-pulse-glow"
-              onClick={() => document.getElementById("tarifs")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => navigate("/auth?mode=signup")}
             >
               Créer mon compte gratuit
               <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
