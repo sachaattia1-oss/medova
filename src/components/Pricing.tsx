@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, Zap, Loader2 } from "lucide-react";
+import { Check, Sparkles, Zap, Loader2, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +13,7 @@ const plans = [
     description: "Prépare ta PASS dès le lycée",
     price: "149",
     period: "",
+    expiresAt: "10 septembre 2026",
     priceId: "price_1TTOIoFUlmGFMx8wPwMFYXti",
     features: [
       "Accès aux cours du premier semestre",
@@ -30,6 +31,7 @@ const plans = [
     description: "Tout pour réussir ton S1",
     price: "279",
     period: "",
+    expiresAt: "10 décembre 2026",
     priceId: "price_1TTOODFUlmGFMx8we3hgUwWN",
     features: [
       "Accès à tous les cours mis à jour",
@@ -47,6 +49,7 @@ const plans = [
     description: "Le meilleur rapport qualité-prix",
     price: "500",
     period: "/an",
+    expiresAt: "10 mai 2027",
     priceId: "price_1TTOOUFUlmGFMx8wwRC6dtMV",
     features: [
       "Économise 10%",
@@ -151,6 +154,12 @@ const Pricing = () => {
                     <span className="text-4xl font-bold">{plan.price}€</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
+                  {plan.expiresAt && (
+                    <div className="flex items-center gap-1.5 mt-2 text-xs text-accent font-medium">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>Accès jusqu'au {plan.expiresAt}</span>
+                    </div>
+                  )}
                 </div>
 
                 <ul className="relative space-y-3 mb-8">
