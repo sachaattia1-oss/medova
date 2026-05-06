@@ -18,11 +18,26 @@ serve(async (req) => {
   );
 
   try {
-    const authHeader = req.headers.get("Authorization")!;
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      throw new Error("Missing authorization header");
+    }
     const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+
+    // Try getClaims first (new signing-keys system), fall back to getUser
+    let userId: string | undefined;
+    let userEmail: string | undefined;
+    const { data: claimsData } = await supabaseClient.auth.getClaims(token);
+    if (claimsData?.claims) {
+      userId = claimsData.claims.sub as string;
+      userEmail = claimsData.claims.email as string;
+    } else {
+      const { data: userData } = await supabaseClient.auth.getUser(token);
+      userId = userData.user?.id;
+      userEmail = userData.user?.email;
+    }
+    if (!userEmail || !userId) throw new Error("User not authenticated or email not available");
+    const user = { id: userId, email: userEmail };
 
     const { priceId } = await req.json();
     if (!priceId) throw new Error("Price ID is required");
