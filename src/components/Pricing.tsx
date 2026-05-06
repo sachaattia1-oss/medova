@@ -7,8 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Reveal } from "@/components/Reveal";
 import { cn } from "@/lib/utils";
 
-import { Calendar } from "lucide-react";
-
 const plans = [
   {
     name: "Terminale",
