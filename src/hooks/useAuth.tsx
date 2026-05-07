@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
       });
       
-      if (error) return { error: error as Error };
+      if (error) return { error: error as Error, data };
       
       // If signup successful and user wants to be a tutor, update their role
       if (data.user && role === "tutor") {
@@ -80,9 +80,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
       
-      return { error: null };
+      return { error: null, data };
     } catch (error) {
-      return { error: error as Error };
+      return { error: error as Error, data: undefined };
     }
   };
 
