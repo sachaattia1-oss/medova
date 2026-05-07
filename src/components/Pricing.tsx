@@ -29,10 +29,10 @@ const plans = [
   {
     name: "Premier semestre",
     description: "Tout pour réussir ton S1",
-    price: "250",
+    price: "249",
     period: "",
     expiresAt: "10 décembre 2026",
-    priceId: "price_1TUQHuFUlmGFMx8wU0lDIPTJ",
+    priceId: "price_1TUQkEFUlmGFMx8wB49XPSzC",
     features: [
       "Accès à tous les cours mis à jour",
       "QCM illimités",
@@ -47,10 +47,10 @@ const plans = [
   {
     name: "Annuel (S1 et S2)",
     description: "Le meilleur rapport qualité-prix",
-    price: "500",
+    price: "449",
     period: "/an",
     expiresAt: "10 mai 2027",
-    priceId: "price_1TTOOUFUlmGFMx8wwRC6dtMV",
+    priceId: "price_1TUQkVFUlmGFMx8w38ob8kbi",
     features: [
       "Économise 10%",
       "Accès aux cours de S1 et S2 mis à jour",
