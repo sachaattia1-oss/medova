@@ -28,6 +28,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import TutorDashboard from "./pages/TutorDashboard";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import MentionsLegales from "./pages/MentionsLegales";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
             
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/cours" element={<AdminCourses />} />
             <Route path="/admin/qcm" element={<AdminQCM />} />
