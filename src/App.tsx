@@ -28,6 +28,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import TutorDashboard from "./pages/TutorDashboard";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import MentionsLegales from "./pages/MentionsLegales";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
