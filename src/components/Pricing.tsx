@@ -29,10 +29,10 @@ const plans = [
   {
     name: "Premier semestre",
     description: "Tout pour réussir ton S1",
-    price: "279",
+    price: "250",
     period: "",
     expiresAt: "10 décembre 2026",
-    priceId: "price_1TTOODFUlmGFMx8we3hgUwWN",
+    priceId: "price_1TUQHuFUlmGFMx8wU0lDIPTJ",
     features: [
       "Accès à tous les cours mis à jour",
       "QCM illimités",
