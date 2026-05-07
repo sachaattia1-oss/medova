@@ -51,23 +51,30 @@ const Auth = () => {
 
         const role = selectedChoice === "tutor" ? "tutor" : "user";
         const studentType = selectedChoice === "terminale" ? "terminale" : selectedChoice === "user" ? "pass" : null;
-        const { error } = await signUp(email, password, fullName, role);
+        const { error, data } = await signUp(email, password, fullName, role);
         if (error) {
           toast.error(error.message);
         } else {
           // Store student type in profile
-          if (studentType) {
-            const { data: { user: newUser } } = await supabase.auth.getUser();
-            if (newUser) {
-              await supabase.from("profiles").update({ student_type: studentType }).eq("user_id", newUser.id);
+          if (studentType && data?.user) {
+            await supabase.from("profiles").update({ student_type: studentType }).eq("user_id", data.user.id);
+          }
+
+          if (data?.session) {
+            // Email auto-confirmed or already confirmed → connected
+            if (selectedChoice === "tutor") {
+              toast.success("Compte tuteur créé ! Votre demande est en attente de validation par un administrateur.");
+              navigate("/tutor");
+            } else {
+              toast.success("Compte créé avec succès ! Bienvenue sur MEDOVA.");
+              navigate("/dashboard");
             }
-          }
-          if (selectedChoice === "tutor") {
-            toast.success("Compte tuteur créé ! Votre demande est en attente de validation par un administrateur.");
           } else {
-            toast.success("Compte créé avec succès ! Bienvenue sur MEDOVA.");
+            // Confirmation email required
+            toast.success("Un email de confirmation vous a été envoyé. Vérifiez votre boîte mail pour activer votre compte !");
+            setIsSignUp(false);
+            resetForm();
           }
-          navigate(selectedChoice === "tutor" ? "/tutor" : "/dashboard");
         }
       } else {
         const validation = signInSchema.safeParse({ email, password });
