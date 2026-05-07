@@ -1,0 +1,1 @@
+UPDATE public.profiles SET is_subscribed = true, subscription_type = 'premier_semestre', subscription_expires_at = '2027-02-01 00:00:00+00' WHERE user_id = '54bb368a-fee6-464b-9285-cc42b746360b';
