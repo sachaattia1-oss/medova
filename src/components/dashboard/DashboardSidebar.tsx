@@ -41,6 +41,7 @@ const adminItems = [
   { icon: BarChart3, label: "Dashboard Admin", href: "/admin" },
   { icon: Shield, label: "Gestion des cours", href: "/admin/cours" },
   { icon: FileQuestion, label: "Publier des QCM", href: "/admin/qcm" },
+  { icon: FileText, label: "Publier des annales", href: "/admin/annales" },
   { icon: Users, label: "Gestion des tuteurs", href: "/admin/tuteurs" },
   { icon: Wallet, label: "Paiements tuteurs", href: "/admin/paiements" },
 ];

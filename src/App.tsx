@@ -26,6 +26,7 @@ import DashboardAnnalesCategory from "./pages/DashboardAnnalesCategory";
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
 import AdminQCM from "./pages/AdminQCM";
+import AdminAnnales from "./pages/AdminAnnales";
 import AdminTutors from "./pages/AdminTutors";
 import AdminPayments from "./pages/AdminPayments";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -71,6 +72,7 @@ const App = () => (
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/cours" element={<AdminCourses />} />
             <Route path="/admin/qcm" element={<AdminQCM />} />
+            <Route path="/admin/annales" element={<AdminAnnales />} />
             <Route path="/admin/tuteurs" element={<AdminTutors />} />
             <Route path="/admin/paiements" element={<AdminPayments />} />
             <Route path="/tutor" element={<TutorDashboard />} />
