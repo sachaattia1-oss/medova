@@ -256,7 +256,7 @@ const DashboardSidebar = () => {
   }
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border/50 flex flex-col">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border/50 flex flex-col">
       <SidebarContent
         isAdmin={isAdmin}
         unreadReplies={unreadReplies}
