@@ -76,7 +76,7 @@ const TutorAnnales = () => {
   const [form, setForm] = useState({
     question_text: "",
     explanation: "",
-    annale_year: currentYear,
+    annale_year: currentYear - 1,
     answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
   });
 
@@ -157,7 +157,7 @@ const TutorAnnales = () => {
     setForm({
       question_text: "",
       explanation: "",
-      annale_year: currentYear,
+      annale_year: currentYear - 1,
       answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
     });
   };
@@ -168,7 +168,7 @@ const TutorAnnales = () => {
     setForm({
       question_text: q.question_text,
       explanation: q.explanation || "",
-      annale_year: q.annale_year || currentYear,
+      annale_year: q.annale_year || (currentYear - 1),
       answers: Array.from({ length: 5 }, (_, i) => ({
         text: qa[i]?.answer_text || "",
         is_correct: qa[i]?.is_correct || false,
