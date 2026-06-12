@@ -255,7 +255,8 @@ const TutorAnnales = () => {
   const selectedCategory = categories.find(c => c.id === selectedCategoryId);
   const selectedCourse = courses.find(c => c.id === selectedCourseId);
   const correctCount = form.answers.filter(a => a.is_correct).length;
-  const yearOptions = Array.from({ length: 20 }, (_, i) => currentYear - i);
+  const yearOptions = Array.from({ length: 20 }, (_, i) => currentYear - 1 - i);
+  const yearPair = (y: number) => `${y}-${y + 1}`;
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 animate-spin text-accent" /></div>;
@@ -310,13 +311,15 @@ const TutorAnnales = () => {
         filteredCourses.length === 0 ? (
           <p className="text-muted-foreground text-center py-12">Aucun cours dans cette matière</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {filteredCourses.map(co => (
               <Card key={co.id} className="cursor-pointer hover:border-accent/50 hover:shadow-lg transition-all" onClick={() => setSelectedCourseId(co.id)}>
-                <CardContent className="p-6 flex items-center gap-4">
-                  <div className="p-3 rounded-xl bg-accent/10"><FileText className="w-6 h-6 text-accent" /></div>
-                  <div className="flex-1 min-w-0"><h3 className="font-semibold truncate">{co.title}</h3></div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                <CardContent className="p-5 flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-accent/10 shrink-0"><FileText className="w-6 h-6 text-accent" /></div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold leading-snug break-words">{co.title}</h3>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 mt-1" />
                 </CardContent>
               </Card>
             ))}
@@ -345,7 +348,7 @@ const TutorAnnales = () => {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium line-clamp-2">{q.question_text}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      {q.annale_year && <Badge variant="outline" className="text-xs">📝 Annale {q.annale_year}</Badge>}
+                      {q.annale_year && <Badge variant="outline" className="text-xs">📝 Annale {yearPair(q.annale_year)}</Badge>}
                       <span className="text-xs text-muted-foreground">{(answers[q.id] || []).length} propositions</span>
                     </div>
                   </div>
