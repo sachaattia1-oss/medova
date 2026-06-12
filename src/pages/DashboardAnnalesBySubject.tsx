@@ -6,7 +6,7 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, FileText } from "lucide-react";
+import { ArrowLeft, BookOpen, ChevronRight, FileText } from "lucide-react";
 
 interface Category {
   id: string;
@@ -27,14 +27,18 @@ const DashboardAnnalesBySubject = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [{ data: cats }, { data: annales }] = await Promise.all([
+      const [{ data: cats }, { data: qs }] = await Promise.all([
         supabase.from("course_categories").select("id, name, description").order("order_index"),
-        supabase.from("annales").select("category_id"),
+        supabase
+          .from("quiz_questions")
+          .select("quizzes!inner(courses!inner(category_id))")
+          .eq("is_annale", true),
       ]);
       setCategories(cats || []);
       const c: Record<string, number> = {};
-      (annales || []).forEach((a) => {
-        if (a.category_id) c[a.category_id] = (c[a.category_id] || 0) + 1;
+      (qs || []).forEach((q: any) => {
+        const cid = q.quizzes?.courses?.category_id;
+        if (cid) c[cid] = (c[cid] || 0) + 1;
       });
       setCounts(c);
       setLoading(false);
@@ -51,7 +55,7 @@ const DashboardAnnalesBySubject = () => {
         <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard/annales")} className="mb-4">
           <ArrowLeft className="w-4 h-4 mr-1" /> Retour
         </Button>
-        <DashboardHeader title="Annales par matière" description="Choisissez une matière pour voir ses annales" />
+        <DashboardHeader title="Annales par matière" description="Choisissez une matière pour voir ses cours" />
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -62,29 +66,25 @@ const DashboardAnnalesBySubject = () => {
             <p className="text-sm text-muted-foreground">Aucune matière disponible</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {categories.map((cat) => (
               <Card
                 key={cat.id}
                 className="group cursor-pointer hover:border-accent/50 hover:shadow-lg transition-all"
                 onClick={() => navigate(`/dashboard/annales/par-matiere/${cat.id}`)}
               >
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-xl bg-accent/10 group-hover:scale-110 transition-transform">
-                      <BookOpen className="w-6 h-6 text-accent" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold">{cat.name}</h3>
-                      {cat.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{cat.description}</p>
-                      )}
-                      <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                        <FileText className="w-3 h-3" />
-                        {counts[cat.id] || 0} annale{(counts[cat.id] || 0) > 1 ? "s" : ""}
-                      </div>
+                <CardContent className="p-5 flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-accent/10 shrink-0">
+                    <BookOpen className="w-6 h-6 text-accent" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold leading-snug break-words">{cat.name}</h3>
+                    <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                      <FileText className="w-3 h-3" />
+                      {counts[cat.id] || 0} question{(counts[cat.id] || 0) > 1 ? "s" : ""} d'annale
                     </div>
                   </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 mt-1" />
                 </CardContent>
               </Card>
             ))}

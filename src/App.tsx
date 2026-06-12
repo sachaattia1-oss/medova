@@ -20,6 +20,7 @@ import DashboardSettings from "./pages/DashboardSettings";
 import DashboardMyQuestions from "./pages/DashboardMyQuestions";
 import DashboardAnnalesHome from "./pages/DashboardAnnalesHome";
 import DashboardAnnalesByYear from "./pages/DashboardAnnalesByYear";
+import DashboardAnnalesYearCourses from "./pages/DashboardAnnalesYearCourses";
 import DashboardAnnalesBySubject from "./pages/DashboardAnnalesBySubject";
 import DashboardAnnalesCategory from "./pages/DashboardAnnalesCategory";
 
