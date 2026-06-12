@@ -26,10 +26,6 @@ const DashboardHeader = ({ title, description }: DashboardHeaderProps) => {
       </div>
       
       <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-        <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
-          <Bell className="w-5 h-5" />
-        </Button>
-        
         <div className="flex items-center gap-3">
           <Avatar className="w-9 h-9 sm:w-10 sm:h-10 border-2 border-accent/20">
             <AvatarFallback className="bg-accent/10 text-accent font-medium text-sm">
