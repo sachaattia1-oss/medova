@@ -18,6 +18,10 @@ import DashboardSchedule from "./pages/DashboardSchedule";
 import DashboardReminders from "./pages/DashboardReminders";
 import DashboardSettings from "./pages/DashboardSettings";
 import DashboardMyQuestions from "./pages/DashboardMyQuestions";
+import DashboardAnnalesHome from "./pages/DashboardAnnalesHome";
+import DashboardAnnalesByYear from "./pages/DashboardAnnalesByYear";
+import DashboardAnnalesBySubject from "./pages/DashboardAnnalesBySubject";
+import DashboardAnnalesCategory from "./pages/DashboardAnnalesCategory";
 
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
@@ -56,6 +60,10 @@ const App = () => (
             <Route path="/dashboard/rappels" element={<SubscribedRoute><DashboardReminders /></SubscribedRoute>} />
             <Route path="/dashboard/parametres" element={<DashboardSettings />} />
             <Route path="/dashboard/mes-questions" element={<SubscribedRoute><DashboardMyQuestions /></SubscribedRoute>} />
+            <Route path="/dashboard/annales" element={<SubscribedRoute><DashboardAnnalesHome /></SubscribedRoute>} />
+            <Route path="/dashboard/annales/par-annee" element={<SubscribedRoute><DashboardAnnalesByYear /></SubscribedRoute>} />
+            <Route path="/dashboard/annales/par-matiere" element={<SubscribedRoute><DashboardAnnalesBySubject /></SubscribedRoute>} />
+            <Route path="/dashboard/annales/par-matiere/:categoryId" element={<SubscribedRoute><DashboardAnnalesCategory /></SubscribedRoute>} />
             
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
