@@ -384,8 +384,8 @@ const TutorAnnales = () => {
             <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/30">
               <Label className="text-sm">📝 Année de l'annale :</Label>
               <Select value={form.annale_year.toString()} onValueChange={(v) => setForm({ ...form, annale_year: parseInt(v) })}>
-                <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
-                <SelectContent>{yearOptions.map(y => <SelectItem key={y} value={y.toString()}>{y}</SelectItem>)}</SelectContent>
+                <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+                <SelectContent>{yearOptions.map(y => <SelectItem key={y} value={y.toString()}>{yearPair(y)}</SelectItem>)}</SelectContent>
               </Select>
             </div>
 
