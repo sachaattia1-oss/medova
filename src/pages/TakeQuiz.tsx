@@ -144,12 +144,17 @@ const TakeQuiz = () => {
       setQuiz(quizData);
       setTimeLeft((quizData.time_limit_minutes || 30) * 60);
 
-      // Fetch questions
-      const { data: questionsData, error: questionsError } = await supabase
+      // Fetch questions (optionally filtered to annales)
+      const annaleOnly = searchParams.get("annaleOnly") === "1";
+      const annaleYear = searchParams.get("annaleYear");
+      let qq = supabase
         .from("quiz_questions")
         .select("*")
         .eq("quiz_id", quizId)
         .order("order_index", { ascending: true });
+      if (annaleOnly) qq = qq.eq("is_annale", true);
+      if (annaleYear) qq = qq.eq("annale_year", parseInt(annaleYear));
+      const { data: questionsData, error: questionsError } = await qq;
 
       if (questionsError) throw questionsError;
       setQuestions(questionsData || []);
