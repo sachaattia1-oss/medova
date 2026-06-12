@@ -20,6 +20,7 @@ import DashboardSettings from "./pages/DashboardSettings";
 import DashboardMyQuestions from "./pages/DashboardMyQuestions";
 import DashboardAnnalesHome from "./pages/DashboardAnnalesHome";
 import DashboardAnnalesByYear from "./pages/DashboardAnnalesByYear";
+import DashboardAnnalesYearCourses from "./pages/DashboardAnnalesYearCourses";
 import DashboardAnnalesBySubject from "./pages/DashboardAnnalesBySubject";
 import DashboardAnnalesCategory from "./pages/DashboardAnnalesCategory";
 
@@ -63,6 +64,7 @@ const App = () => (
             <Route path="/dashboard/mes-questions" element={<SubscribedRoute><DashboardMyQuestions /></SubscribedRoute>} />
             <Route path="/dashboard/annales" element={<SubscribedRoute><DashboardAnnalesHome /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-annee" element={<SubscribedRoute><DashboardAnnalesByYear /></SubscribedRoute>} />
+            <Route path="/dashboard/annales/par-annee/:year" element={<SubscribedRoute><DashboardAnnalesYearCourses /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-matiere" element={<SubscribedRoute><DashboardAnnalesBySubject /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-matiere/:categoryId" element={<SubscribedRoute><DashboardAnnalesCategory /></SubscribedRoute>} />
             
