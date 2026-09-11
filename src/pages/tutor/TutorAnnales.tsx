@@ -221,11 +221,35 @@ const TutorAnnales = () => {
         })));
         toast.success("Question modifiée");
       } else {
+        let quizId = currentQuizId;
+        let createdCourseId: string | null = null;
+
+        if (newCourseMode) {
+          const { data: newCourse, error: courseErr } = await supabase.from("courses").insert({
+            title: form.new_course_title.trim(),
+            category_id: selectedCategoryId,
+            target_audience: "all",
+            created_by: user?.id,
+          }).select("id, title, category_id").single();
+          if (courseErr) throw courseErr;
+          createdCourseId = newCourse.id;
+          setCourses(prev => [...prev, newCourse as Course]);
+
+          const { data: newQuiz, error: quizErr } = await supabase.from("quizzes").insert({
+            title: `${newCourse.title} - QCM`,
+            course_id: newCourse.id,
+            target_audience: "all",
+            created_by: user?.id,
+          }).select("id").single();
+          if (quizErr) throw quizErr;
+          quizId = newQuiz.id;
+        }
+
         const { data: qd, error } = await supabase.from("quiz_questions").insert({
-          quiz_id: currentQuizId,
+          quiz_id: quizId,
           question_text: form.question_text,
           explanation: form.explanation || null,
-          order_index: questions.length,
+          order_index: newCourseMode ? 0 : questions.length,
           is_annale: true,
           annale_year: form.annale_year,
         }).select().single();
