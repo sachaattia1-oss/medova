@@ -156,10 +156,12 @@ const TutorAnnales = () => {
 
   const resetForm = () => {
     setEditingQuestion(null);
+    setNewCourseMode(false);
     setForm({
       question_text: "",
       explanation: "",
       annale_year: currentYear - 1,
+      new_course_title: "",
       answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
     });
   };
@@ -167,16 +169,24 @@ const TutorAnnales = () => {
   const openEdit = (q: Question) => {
     const qa = answers[q.id] || [];
     setEditingQuestion(q);
+    setNewCourseMode(false);
     setForm({
       question_text: q.question_text,
       explanation: q.explanation || "",
       annale_year: q.annale_year || (currentYear - 1),
+      new_course_title: "",
       answers: Array.from({ length: 5 }, (_, i) => ({
         text: qa[i]?.answer_text || "",
         is_correct: qa[i]?.is_correct || false,
         explanation: qa[i]?.explanation || "",
       })),
     });
+    setIsDialogOpen(true);
+  };
+
+  const openNewCourseQuestion = () => {
+    resetForm();
+    setNewCourseMode(true);
     setIsDialogOpen(true);
   };
 
