@@ -72,11 +72,13 @@ const TutorAnnales = () => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [newCourseMode, setNewCourseMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     question_text: "",
     explanation: "",
     annale_year: currentYear - 1,
+    new_course_title: "",
     answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
   });
 
