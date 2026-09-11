@@ -72,11 +72,13 @@ const TutorAnnales = () => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [newCourseMode, setNewCourseMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     question_text: "",
     explanation: "",
     annale_year: currentYear - 1,
+    new_course_title: "",
     answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
   });
 
@@ -154,10 +156,12 @@ const TutorAnnales = () => {
 
   const resetForm = () => {
     setEditingQuestion(null);
+    setNewCourseMode(false);
     setForm({
       question_text: "",
       explanation: "",
       annale_year: currentYear - 1,
+      new_course_title: "",
       answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
     });
   };
@@ -165,10 +169,12 @@ const TutorAnnales = () => {
   const openEdit = (q: Question) => {
     const qa = answers[q.id] || [];
     setEditingQuestion(q);
+    setNewCourseMode(false);
     setForm({
       question_text: q.question_text,
       explanation: q.explanation || "",
       annale_year: q.annale_year || (currentYear - 1),
+      new_course_title: "",
       answers: Array.from({ length: 5 }, (_, i) => ({
         text: qa[i]?.answer_text || "",
         is_correct: qa[i]?.is_correct || false,
@@ -178,9 +184,18 @@ const TutorAnnales = () => {
     setIsDialogOpen(true);
   };
 
+  const openNewCourseQuestion = () => {
+    resetForm();
+    setNewCourseMode(true);
+    setIsDialogOpen(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentQuizId) return;
+    if (!newCourseMode && !currentQuizId) return;
+    if (newCourseMode && !form.new_course_title.trim()) {
+      toast.error("Indiquez le nom du cours"); return;
+    }
     if (!form.answers.some(a => a.is_correct)) {
       toast.error("Sélectionnez au moins une bonne réponse"); return;
     }
@@ -206,11 +221,35 @@ const TutorAnnales = () => {
         })));
         toast.success("Question modifiée");
       } else {
+        let quizId = currentQuizId;
+        let createdCourseId: string | null = null;
+
+        if (newCourseMode) {
+          const { data: newCourse, error: courseErr } = await supabase.from("courses").insert({
+            title: form.new_course_title.trim(),
+            category_id: selectedCategoryId,
+            target_audience: "all",
+            created_by: user?.id,
+          }).select("id, title, category_id").single();
+          if (courseErr) throw courseErr;
+          createdCourseId = newCourse.id;
+          setCourses(prev => [...prev, newCourse as Course]);
+
+          const { data: newQuiz, error: quizErr } = await supabase.from("quizzes").insert({
+            title: `${newCourse.title} - QCM`,
+            course_id: newCourse.id,
+            target_audience: "all",
+            created_by: user?.id,
+          }).select("id").single();
+          if (quizErr) throw quizErr;
+          quizId = newQuiz.id;
+        }
+
         const { data: qd, error } = await supabase.from("quiz_questions").insert({
-          quiz_id: currentQuizId,
+          quiz_id: quizId,
           question_text: form.question_text,
           explanation: form.explanation || null,
-          order_index: questions.length,
+          order_index: newCourseMode ? 0 : questions.length,
           is_annale: true,
           annale_year: form.annale_year,
         }).select().single();
@@ -223,6 +262,12 @@ const TutorAnnales = () => {
           explanation: a.explanation || null,
         })));
         toast.success("Question d'annale ajoutée");
+        if (createdCourseId) {
+          setIsDialogOpen(false);
+          resetForm();
+          setSelectedCourseId(createdCourseId);
+          return;
+        }
       }
       setIsDialogOpen(false);
       resetForm();
