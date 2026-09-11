@@ -262,6 +262,12 @@ const TutorAnnales = () => {
           explanation: a.explanation || null,
         })));
         toast.success("Question d'annale ajoutée");
+        if (createdCourseId) {
+          setIsDialogOpen(false);
+          resetForm();
+          setSelectedCourseId(createdCourseId);
+          return;
+        }
       }
       setIsDialogOpen(false);
       resetForm();
