@@ -192,7 +192,10 @@ const TutorAnnales = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentQuizId) return;
+    if (!newCourseMode && !currentQuizId) return;
+    if (newCourseMode && !form.new_course_title.trim()) {
+      toast.error("Indiquez le nom du cours"); return;
+    }
     if (!form.answers.some(a => a.is_correct)) {
       toast.error("Sélectionnez au moins une bonne réponse"); return;
     }
