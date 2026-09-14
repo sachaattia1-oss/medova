@@ -319,6 +319,11 @@ const TutorAnnales = () => {
             <Plus className="w-4 h-4 mr-2" /> Ajouter une question
           </Button>
         )}
+        {selectedCategoryId && !selectedCourseId && (
+          <Button onClick={openNewCourseQuestion}>
+            <Plus className="w-4 h-4 mr-2" /> Ajouter une question
+          </Button>
+        )}
       </div>
 
       {/* Breadcrumb */}
