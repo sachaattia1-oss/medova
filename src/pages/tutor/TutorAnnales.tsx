@@ -432,6 +432,20 @@ const TutorAnnales = () => {
             <DialogTitle>{editingQuestion ? "Modifier la question" : "Nouvelle question d'annale"}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            {newCourseMode && (
+              <div className="space-y-2 p-3 rounded-lg border border-accent/40 bg-accent/5">
+                <Label>Nom du cours *</Label>
+                <Input
+                  value={form.new_course_title}
+                  onChange={(e) => setForm({ ...form, new_course_title: e.target.value })}
+                  placeholder="Ex : Biologie cellulaire - Chapitre 3"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Ce cours sera créé dans la matière « {selectedCategory?.name} » et la question y sera rangée.
+                </p>
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Énoncé de la question *</Label>
               <Textarea
