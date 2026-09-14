@@ -319,6 +319,11 @@ const TutorAnnales = () => {
             <Plus className="w-4 h-4 mr-2" /> Ajouter une question
           </Button>
         )}
+        {selectedCategoryId && !selectedCourseId && (
+          <Button onClick={openNewCourseQuestion}>
+            <Plus className="w-4 h-4 mr-2" /> Ajouter une question
+          </Button>
+        )}
       </div>
 
       {/* Breadcrumb */}
@@ -353,23 +358,35 @@ const TutorAnnales = () => {
 
       {/* Step 2: choose course */}
       {selectedCategoryId && !selectedCourseId && (
-        filteredCourses.length === 0 ? (
-          <p className="text-muted-foreground text-center py-12">Aucun cours dans cette matière</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {filteredCourses.map(co => (
-              <Card key={co.id} className="cursor-pointer hover:border-accent/50 hover:shadow-lg transition-all" onClick={() => setSelectedCourseId(co.id)}>
-                <CardContent className="p-5 flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-accent/10 shrink-0"><FileText className="w-6 h-6 text-accent" /></div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold leading-snug break-words">{co.title}</h3>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 mt-1" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )
+        <div className="space-y-4">
+          {filteredCourses.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">Aucun cours dans cette matière</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {filteredCourses.map(co => (
+                <Card key={co.id} className="cursor-pointer hover:border-accent/50 hover:shadow-lg transition-all" onClick={() => setSelectedCourseId(co.id)}>
+                  <CardContent className="p-5 flex items-start gap-4">
+                    <div className="p-3 rounded-xl bg-accent/10 shrink-0"><FileText className="w-6 h-6 text-accent" /></div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold leading-snug break-words">{co.title}</h3>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0 mt-1" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+          <Card className="cursor-pointer border-dashed hover:border-accent/50 transition-all" onClick={openNewCourseQuestion}>
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-accent/10 shrink-0"><Plus className="w-6 h-6 text-accent" /></div>
+              <div className="flex-1">
+                <h3 className="font-semibold">Ajouter une question</h3>
+                <p className="text-sm text-muted-foreground">Sans cours existant — vous indiquerez le nom du cours</p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Step 3: questions list */}
@@ -415,6 +432,20 @@ const TutorAnnales = () => {
             <DialogTitle>{editingQuestion ? "Modifier la question" : "Nouvelle question d'annale"}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            {newCourseMode && (
+              <div className="space-y-2 p-3 rounded-lg border border-accent/40 bg-accent/5">
+                <Label>Nom du cours *</Label>
+                <Input
+                  value={form.new_course_title}
+                  onChange={(e) => setForm({ ...form, new_course_title: e.target.value })}
+                  placeholder="Ex : Biologie cellulaire - Chapitre 3"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Ce cours sera créé dans la matière « {selectedCategory?.name} » et la question y sera rangée.
+                </p>
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Énoncé de la question *</Label>
               <Textarea
