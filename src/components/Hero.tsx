@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Stethoscope, GraduationCap, FileQuestion, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, GraduationCap, FileQuestion, Trophy } from "lucide-react";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { Reveal } from "@/components/Reveal";
 
