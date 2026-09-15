@@ -27,9 +27,11 @@ const Hero = () => {
 
           {/* Subheading */}
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 animate-fade-in-up animation-delay-200 font-semibold">
-             #1 des sites internets dédiés aux <span className="text-red-500">annales</span> de PASS Marseille  
+             #1 des sites internets dédiés aux <span className="text-red-500">annales</span> de PASS Marseille
+             <br />
              Accède à l'ensemble des <span className="text-red-500">annales</span> du concours de PASS, une correction certifiée et détaillée. 
              L'ensemble trié par année et par cours. 
+
 
 
           </p>
