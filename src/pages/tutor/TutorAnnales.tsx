@@ -31,8 +31,11 @@ import {
   AlertCircle,
   Pencil,
   FileText,
+  ImagePlus,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
+import QuestionImage from "@/components/QuestionImage";
 
 interface Category { id: string; name: string; }
 interface Course { id: string; title: string; category_id: string | null; }
@@ -43,6 +46,7 @@ interface Question {
   explanation: string | null;
   order_index: number | null;
   annale_year?: number | null;
+  image_url?: string | null;
 }
 interface Answer {
   id: string;
