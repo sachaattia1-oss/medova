@@ -27,10 +27,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 const navItems = [
   { icon: LayoutDashboard, label: "Tableau de bord", href: "/dashboard" },
   { icon: BookOpen, label: "Cours", href: "/dashboard/cours" },
-  { icon: GraduationCap, label: "QCM", href: "/dashboard/qcm" },
   { icon: FileText, label: "Annales", href: "/dashboard/annales" },
-  { icon: Calendar, label: "Emploi du temps", href: "/dashboard/emploi-du-temps" },
-  { icon: Bell, label: "Rappels", href: "/dashboard/rappels" },
   { icon: HelpCircle, label: "Mes questions", href: "/dashboard/mes-questions" },
   { icon: BarChart3, label: "Progression", href: "/dashboard/progression" },
   { icon: Settings, label: "Paramètres", href: "/dashboard/parametres" },
