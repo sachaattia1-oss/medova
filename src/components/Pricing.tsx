@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const plans = [
   {
-    name: "Accès Annales",
+    name: "Accès Annales S1",
     description: "Toutes les annales de PASS Marseille",
     price: "45",
     period: "",
