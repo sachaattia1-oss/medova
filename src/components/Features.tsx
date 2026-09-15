@@ -22,7 +22,7 @@ const Features = () => {
             Les annales du concours, enfin <span className="text-gradient">corrigées</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Annales triées par année et par cours, corrigées en détail, avec l'aide des tuteurs
+            Annales triées par année et par cours, corrigées en détail
           </p>
 
         </Reveal>
