@@ -19,11 +19,12 @@ const Features = () => {
       <div className="container relative z-10 px-4 md:px-6">
         <Reveal className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Tout ce qu'il te faut pour <span className="text-gradient">réussir</span>
+            Les annales du concours, enfin <span className="text-gradient">corrigées</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Une plateforme complète pensée par et pour les étudiants en médecine
+            Annales triées par année et par cours, corrigées en détail, avec l'aide des tuteurs
           </p>
+
         </Reveal>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
