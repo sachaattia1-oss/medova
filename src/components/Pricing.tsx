@@ -75,10 +75,11 @@ const Pricing = () => {
             <span>Tarifs transparents</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Choisis ton <span className="text-gradient">plan</span>
+            Le pack&nbsp;
+            <span className="text-gradient"></span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Des formules adaptées à ton parcours, sans engagement caché
+            Une formule adaptée à ton parcours, sans engagement caché
           </p>
         </Reveal>
 
