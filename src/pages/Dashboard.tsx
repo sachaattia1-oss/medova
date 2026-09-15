@@ -25,7 +25,6 @@ const Dashboard = () => {
   const [totalAnnales, setTotalAnnales] = useState(0);
   const [annalesDone, setAnnalesDone] = useState(0);
   const [avgScore, setAvgScore] = useState<number | null>(null);
-  const [recentAnnaleAttempts, setRecentAnnaleAttempts] = useState<Attempt[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
