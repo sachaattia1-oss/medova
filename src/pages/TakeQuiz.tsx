@@ -35,6 +35,7 @@ interface Question {
   id: string;
   question_text: string;
   explanation: string | null;
+  image_url?: string | null;
   order_index: number | null;
 }
 
