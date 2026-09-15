@@ -18,11 +18,13 @@ import {
   Trophy,
 } from "lucide-react";
 import { toast } from "sonner";
+import QuestionImage from "@/components/QuestionImage";
 
 interface Question {
   id: string;
   question_text: string;
   explanation: string | null;
+  image_url: string | null;
   courseTitle: string;
 }
 
