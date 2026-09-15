@@ -44,10 +44,9 @@ const Hero = () => {
           </div>
 
           {/* Stats with animated counters + staggered reveal */}
-          <div className="grid grid-cols-3 gap-4 md:gap-8 mt-16 pt-16 border-t border-border/30 w-full">
+          <div className="grid grid-cols-2 gap-4 md:gap-8 mt-16 pt-16 border-t border-border/30 w-full">
             {[
               { icon: GraduationCap, value: 200, suffix: "+", label: "Annales disponibles" },
-              { icon: FileQuestion, value: 500, suffix: "+", label: "QCM corrigés" },
               { icon: Trophy, value: 95, suffix: "%", label: "Taux de réussite" },
             ].map((stat, idx) => (
               <Reveal key={stat.label} delay={idx * 150}>
