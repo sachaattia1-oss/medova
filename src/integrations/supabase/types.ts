@@ -484,6 +484,7 @@ export type Database = {
           created_at: string
           explanation: string | null
           id: string
+          image_url: string | null
           is_annale: boolean
           order_index: number | null
           question_text: string
@@ -494,6 +495,7 @@ export type Database = {
           created_at?: string
           explanation?: string | null
           id?: string
+          image_url?: string | null
           is_annale?: boolean
           order_index?: number | null
           question_text: string
@@ -504,6 +506,7 @@ export type Database = {
           created_at?: string
           explanation?: string | null
           id?: string
+          image_url?: string | null
           is_annale?: boolean
           order_index?: number | null
           question_text?: string

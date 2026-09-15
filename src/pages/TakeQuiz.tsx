@@ -20,6 +20,7 @@ import {
   Play
 } from "lucide-react";
 import { toast } from "sonner";
+import QuestionImage from "@/components/QuestionImage";
 
 const SERIES_SIZE = 5;
 
@@ -35,6 +36,7 @@ interface Question {
   id: string;
   question_text: string;
   explanation: string | null;
+  image_url?: string | null;
   order_index: number | null;
 }
 
@@ -519,6 +521,7 @@ const TakeQuiz = () => {
                         </Badge>
                       </div>
                       <CardTitle className="text-base mt-2">{question.question_text}</CardTitle>
+                      <QuestionImage url={question.image_url} />
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
@@ -632,6 +635,7 @@ const TakeQuiz = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">{currentQuestion?.question_text}</CardTitle>
+              <QuestionImage url={currentQuestion?.image_url} />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">

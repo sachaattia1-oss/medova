@@ -18,11 +18,13 @@ import {
   Trophy,
 } from "lucide-react";
 import { toast } from "sonner";
+import QuestionImage from "@/components/QuestionImage";
 
 interface Question {
   id: string;
   question_text: string;
   explanation: string | null;
+  image_url: string | null;
   courseTitle: string;
 }
 
@@ -81,7 +83,7 @@ const TakeAnnaleSession = () => {
 
         const { data, error } = await supabase
           .from("quiz_questions")
-          .select("id, question_text, explanation, order_index, quizzes!inner(id, courses!inner(id, title, category_id))")
+          .select("id, question_text, explanation, image_url, order_index, quizzes!inner(id, courses!inner(id, title, category_id))")
           .eq("is_annale", true)
           .eq("annale_year", parseInt(year))
           .eq("quizzes.courses.category_id", categoryId)
@@ -92,6 +94,7 @@ const TakeAnnaleSession = () => {
           id: q.id,
           question_text: q.question_text,
           explanation: q.explanation,
+          image_url: q.image_url ?? null,
           courseTitle: q.quizzes?.courses?.title || "Cours",
         }));
         qs.sort((a, b) => a.courseTitle.localeCompare(b.courseTitle));
@@ -257,6 +260,7 @@ const TakeAnnaleSession = () => {
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">{question.courseTitle}</p>
                       <CardTitle className="text-base mt-1">{question.question_text}</CardTitle>
+                      <QuestionImage url={question.image_url} />
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
@@ -339,6 +343,7 @@ const TakeAnnaleSession = () => {
             <CardHeader>
               <p className="text-xs text-muted-foreground">{currentQuestion.courseTitle}</p>
               <CardTitle className="text-lg">{currentQuestion.question_text}</CardTitle>
+              <QuestionImage url={currentQuestion.image_url} />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">

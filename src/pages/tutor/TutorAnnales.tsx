@@ -31,8 +31,11 @@ import {
   AlertCircle,
   Pencil,
   FileText,
+  ImagePlus,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
+import QuestionImage from "@/components/QuestionImage";
 
 interface Category { id: string; name: string; }
 interface Course { id: string; title: string; category_id: string | null; }
@@ -43,6 +46,7 @@ interface Question {
   explanation: string | null;
   order_index: number | null;
   annale_year?: number | null;
+  image_url?: string | null;
 }
 interface Answer {
   id: string;
@@ -74,13 +78,43 @@ const TutorAnnales = () => {
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [newCourseMode, setNewCourseMode] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [form, setForm] = useState({
     question_text: "",
     explanation: "",
     annale_year: currentYear - 1,
     new_course_title: "",
+    image_url: "",
     answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
   });
+
+  const handleImageUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Choisissez une image (jpg, png…)"); return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image trop lourde (10 Mo maximum)"); return;
+    }
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split(".").pop() || "png";
+      const path = `question-images/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("annales-pdfs").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from("annales-pdfs").getPublicUrl(path);
+      setForm(f => ({ ...f, image_url: data.publicUrl }));
+      toast.success("Schéma ajouté");
+    } catch (e) {
+      console.error(e);
+      toast.error("Erreur lors de l'envoi de l'image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
 
   useEffect(() => { fetchData(); }, []);
   useEffect(() => { if (selectedCourseId && user) loadOrCreateQuiz(); }, [selectedCourseId, user]);
@@ -162,6 +196,7 @@ const TutorAnnales = () => {
       explanation: "",
       annale_year: currentYear - 1,
       new_course_title: "",
+      image_url: "",
       answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
     });
   };
@@ -175,6 +210,7 @@ const TutorAnnales = () => {
       explanation: q.explanation || "",
       annale_year: q.annale_year || (currentYear - 1),
       new_course_title: "",
+      image_url: q.image_url || "",
       answers: Array.from({ length: 5 }, (_, i) => ({
         text: qa[i]?.answer_text || "",
         is_correct: qa[i]?.is_correct || false,
@@ -210,6 +246,7 @@ const TutorAnnales = () => {
           explanation: form.explanation || null,
           is_annale: true,
           annale_year: form.annale_year,
+          image_url: form.image_url || null,
         }).eq("id", editingQuestion.id);
         await supabase.from("quiz_answers").delete().eq("question_id", editingQuestion.id);
         await supabase.from("quiz_answers").insert(form.answers.map((a, i) => ({
@@ -252,6 +289,7 @@ const TutorAnnales = () => {
           order_index: newCourseMode ? 0 : questions.length,
           is_annale: true,
           annale_year: form.annale_year,
+          image_url: form.image_url || null,
         }).select().single();
         if (error) throw error;
         await supabase.from("quiz_answers").insert(form.answers.map((a, i) => ({
@@ -456,6 +494,35 @@ const TutorAnnales = () => {
                 placeholder="Énoncé de la question d'annale..."
               />
             </div>
+
+            <div className="space-y-2 p-3 rounded-lg border border-border/50">
+              <Label className="text-sm">Schéma / photo (facultatif) — affiché sous l'énoncé</Label>
+              {form.image_url ? (
+                <div className="space-y-2">
+                  <QuestionImage url={form.image_url} className="mt-0" />
+                  <Button type="button" variant="outline" size="sm" onClick={() => setForm({ ...form, image_url: "" })}>
+                    <X className="w-4 h-4 mr-2" /> Retirer l'image
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    disabled={uploadingImage}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); e.target.value = ""; }}
+                    className="max-w-xs"
+                  />
+                  {uploadingImage ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                  ) : (
+                    <ImagePlus className="w-4 h-4 text-muted-foreground" />
+                  )}
+                </div>
+              )}
+            </div>
+
+
 
             <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/30">
               <Label className="text-sm">📝 Année de l'annale :</Label>
