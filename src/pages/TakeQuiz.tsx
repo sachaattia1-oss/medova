@@ -20,6 +20,7 @@ import {
   Play
 } from "lucide-react";
 import { toast } from "sonner";
+import QuestionImage from "@/components/QuestionImage";
 
 const SERIES_SIZE = 5;
 
