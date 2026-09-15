@@ -70,7 +70,9 @@ const App = () => (
             <Route path="/dashboard/annales/par-annee/:year" element={<SubscribedRoute><DashboardAnnalesYearCourses /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-annee/:year/:categoryId" element={<SubscribedRoute><TakeAnnaleSession /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-matiere" element={<SubscribedRoute><DashboardAnnalesBySubject /></SubscribedRoute>} />
-            <Route path="/dashboard/annales/par-matiere/:categoryId" element={<SubscribedRoute><DashboardAnnalesCategory /></SubscribedRoute>} />
+           <Route path="/dashboard/annales/par-matiere/:categoryId" element={<SubscribedRoute><DashboardAnnalesCategory /></SubscribedRoute>} />
+           <Route path="/dashboard/annales/par-matiere/:categoryId/:courseId" element={<SubscribedRoute><TakeAnnaleCourseSession /></SubscribedRoute>} />
+
             
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
