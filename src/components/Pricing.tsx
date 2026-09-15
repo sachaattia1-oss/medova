@@ -13,7 +13,7 @@ const plans = [
     description: "Toutes les annales de PASS Marseille",
     price: "45",
     period: "",
-    expiresAt: "10 mai 2027",
+    expiresAt: "15 décembre 2026",
     priceId: "price_1UFxuKFUlmGFMx8wUciwnrRR",
     features: [
       "Accès à l'ensemble des annales du concours",
