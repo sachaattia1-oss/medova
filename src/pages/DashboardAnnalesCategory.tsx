@@ -9,11 +9,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, FileText } from "lucide-react";
 
 interface Entry {
-  quizId: string;
+  courseId: string;
   courseTitle: string;
   count: number;
   years: number[];
 }
+
 
 const DashboardAnnalesCategory = () => {
   const { user, loading: authLoading } = useAuth();
@@ -44,9 +45,9 @@ const DashboardAnnalesCategory = () => {
         const quiz = q.quizzes;
         const course = quiz?.courses;
         if (!course || course.category_id !== categoryId) return;
-        const key = quiz.id;
+        const key = course.id;
         if (!map[key]) {
-          map[key] = { quizId: quiz.id, courseTitle: course.title, count: 0, years: [] };
+          map[key] = { courseId: course.id, courseTitle: course.title, count: 0, years: [] };
         }
         map[key].count++;
         if (q.annale_year && !map[key].years.includes(q.annale_year)) {
@@ -54,6 +55,7 @@ const DashboardAnnalesCategory = () => {
         }
       });
       setEntries(Object.values(map).sort((a, b) => a.courseTitle.localeCompare(b.courseTitle)));
+
       setLoading(false);
     };
     fetchData();
@@ -82,8 +84,9 @@ const DashboardAnnalesCategory = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {entries.map((e) => (
-              <Card key={e.quizId} className="cursor-pointer hover:border-accent/50 hover:shadow-lg transition-all"
-                onClick={() => navigate(`/dashboard/qcm/${e.quizId}?annaleOnly=1`)}>
+              <Card key={e.courseId} className="cursor-pointer hover:border-accent/50 hover:shadow-lg transition-all"
+                onClick={() => navigate(`/dashboard/annales/par-matiere/${categoryId}/${e.courseId}`)}>
+
                 <CardContent className="p-5 flex items-start gap-4">
                   <div className="p-3 rounded-xl bg-accent/10 shrink-0">
                     <BookOpen className="w-6 h-6 text-accent" />
