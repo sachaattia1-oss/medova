@@ -138,62 +138,25 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Recent annale attempts */}
-        <Card className="border-border/50">
-          <CardHeader className="flex flex-row items-center justify-between pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <FileText className="w-5 h-5 text-accent" />
-              Dernières annales réalisées
-            </CardTitle>
+        {/* Shortcut to annales */}
+        <Card className="border-border/50 bg-gradient-to-r from-accent/10 to-transparent">
+          <CardContent className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <FileText className="w-5 h-5 text-accent" />
+                Prêt à t'entraîner ?
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Accède aux annales par année ou par cours et mets-toi au travail.
+              </p>
+            </div>
             <button
               onClick={() => navigate("/dashboard/annales")}
-              className="text-sm text-accent hover:underline flex items-center gap-1"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-accent-foreground font-medium hover:bg-accent/90 transition-colors"
             >
-              Faire des annales <ChevronRight className="w-4 h-4" />
+              Faire des annales
+              <ArrowRight className="w-4 h-4" />
             </button>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="space-y-3">
-                {[...Array(3)].map((_, i) => (
-                  <Skeleton key={i} className="h-14 w-full rounded-lg" />
-                ))}
-              </div>
-            ) : recentAnnaleAttempts.length > 0 ? (
-              <div className="space-y-2">
-                {recentAnnaleAttempts.map((attempt) => (
-                  <div
-                    key={attempt.id}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/30"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm">
-                        {attempt.score ?? 0}/{attempt.total_questions ?? 0} bonnes réponses
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(attempt.created_at).toLocaleDateString("fr-FR", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </p>
-                    </div>
-                    {attempt.score !== null && attempt.total_questions ? (
-                      <span className="text-sm font-semibold text-accent px-3 py-1 bg-accent/10 rounded-full">
-                        {Math.round((attempt.score / attempt.total_questions) * 200) / 10}/20
-                      </span>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <FileText className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  Tu n'as pas encore fait d'annales. Lance-toi !
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
       </main>
