@@ -7,7 +7,7 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import StatsCard from "@/components/dashboard/StatsCard";
 import { FileText, CheckCircle2, Target, ArrowRight } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { Card, CardContent } from "@/components/ui/card";
 
 interface Attempt {
