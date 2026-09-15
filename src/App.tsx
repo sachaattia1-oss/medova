@@ -24,6 +24,8 @@ import DashboardAnnalesYearCourses from "./pages/DashboardAnnalesYearCourses";
 import DashboardAnnalesBySubject from "./pages/DashboardAnnalesBySubject";
 import DashboardAnnalesCategory from "./pages/DashboardAnnalesCategory";
 import TakeAnnaleSession from "./pages/TakeAnnaleSession";
+import TakeAnnaleCourseSession from "./pages/TakeAnnaleCourseSession";
+
 
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
