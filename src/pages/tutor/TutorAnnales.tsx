@@ -196,6 +196,7 @@ const TutorAnnales = () => {
       explanation: "",
       annale_year: currentYear - 1,
       new_course_title: "",
+      image_url: "",
       answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
     });
   };
@@ -209,6 +210,7 @@ const TutorAnnales = () => {
       explanation: q.explanation || "",
       annale_year: q.annale_year || (currentYear - 1),
       new_course_title: "",
+      image_url: q.image_url || "",
       answers: Array.from({ length: 5 }, (_, i) => ({
         text: qa[i]?.answer_text || "",
         is_correct: qa[i]?.is_correct || false,
