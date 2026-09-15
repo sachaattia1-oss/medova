@@ -27,7 +27,9 @@ const Hero = () => {
 
           {/* Subheading */}
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 animate-fade-in-up animation-delay-200">
-            Accède à des cours complets, des QCM détaillés et des ressources pédagogiques conçues par des professionnels pour maximiser tes chances de succès.
+             #1 des sites internets dédiés aux annales de PASS Marseille 
+             Accède à l'ensemble des annales du concours de PASS, une correction certifiée et détaillée. 
+             L'ensemble trié par année et par cours. 
           </p>
 
           {/* CTA Buttons */}
