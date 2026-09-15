@@ -1,15 +1,16 @@
-import { BookOpen, Brain, FileText, GraduationCap, Target, Users } from "lucide-react";
+import { Archive, CalendarRange, CheckCircle2, MessagesSquare, Target, Layers } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { TiltCard } from "@/components/TiltCard";
 
 const features = [
-  { icon: BookOpen, title: "Cours Structurés", description: "Des cours complets couvrant tout le programme médical, organisés par modules et niveaux." },
-  { icon: FileText, title: "QCM Commentés", description: "Des questions à choix multiples avec corrections détaillées pour maîtriser le raisonnement clinique." },
-  { icon: Brain, title: "QCM Interactifs", description: "Des milliers de questions pour tester tes connaissances avec explications approfondies." },
-  { icon: Target, title: "Suivi de Progression", description: "Visualise ton avancement et identifie tes points forts et axes d'amélioration." },
-  { icon: Users, title: "Communauté Active", description: "Rejoins une communauté d'étudiants motivés et partage tes expériences." },
-  { icon: GraduationCap, title: "Préparation Concours", description: "Des ressources ciblées pour te préparer efficacement aux concours et examens." },
+  { icon: Archive, title: "Toutes les annales", description: "L'ensemble des annales du concours de PASS Marseille, réunies en un seul endroit." },
+  { icon: CheckCircle2, title: "Corrections certifiées", description: "Chaque question corrigée et justifiée en détail, proposition par proposition." },
+  { icon: CalendarRange, title: "Triées par année", description: "Retrouve les annales année par année et entraîne-toi comme le jour du concours." },
+  { icon: Layers, title: "Triées par cours", description: "Travaille une matière ou un cours précis avec les annales qui s'y rapportent." },
+  { icon: MessagesSquare, title: "Explications avec les tuteurs", description: "Pose tes questions sous chaque annale : les tuteurs te répondent directement." },
+  { icon: Target, title: "Suivi de Progression", description: "Visualise ton score moyen sur 20 et identifie les cours à retravailler." },
 ];
+
 
 const Features = () => {
   return (
