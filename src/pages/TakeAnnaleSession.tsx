@@ -260,6 +260,7 @@ const TakeAnnaleSession = () => {
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">{question.courseTitle}</p>
                       <CardTitle className="text-base mt-1">{question.question_text}</CardTitle>
+                      <QuestionImage url={question.image_url} />
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
@@ -342,6 +343,7 @@ const TakeAnnaleSession = () => {
             <CardHeader>
               <p className="text-xs text-muted-foreground">{currentQuestion.courseTitle}</p>
               <CardTitle className="text-lg">{currentQuestion.question_text}</CardTitle>
+              <QuestionImage url={currentQuestion.image_url} />
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">
