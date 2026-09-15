@@ -23,6 +23,7 @@ import DashboardAnnalesByYear from "./pages/DashboardAnnalesByYear";
 import DashboardAnnalesYearCourses from "./pages/DashboardAnnalesYearCourses";
 import DashboardAnnalesBySubject from "./pages/DashboardAnnalesBySubject";
 import DashboardAnnalesCategory from "./pages/DashboardAnnalesCategory";
+import TakeAnnaleSession from "./pages/TakeAnnaleSession";
 
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
