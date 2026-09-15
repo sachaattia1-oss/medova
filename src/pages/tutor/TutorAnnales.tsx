@@ -246,6 +246,7 @@ const TutorAnnales = () => {
           explanation: form.explanation || null,
           is_annale: true,
           annale_year: form.annale_year,
+          image_url: form.image_url || null,
         }).eq("id", editingQuestion.id);
         await supabase.from("quiz_answers").delete().eq("question_id", editingQuestion.id);
         await supabase.from("quiz_answers").insert(form.answers.map((a, i) => ({
@@ -288,6 +289,7 @@ const TutorAnnales = () => {
           order_index: newCourseMode ? 0 : questions.length,
           is_annale: true,
           annale_year: form.annale_year,
+          image_url: form.image_url || null,
         }).select().single();
         if (error) throw error;
         await supabase.from("quiz_answers").insert(form.answers.map((a, i) => ({
