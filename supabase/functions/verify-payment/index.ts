@@ -11,6 +11,7 @@ const PRODUCT_PLANS: Record<string, { type: string; durationMonths: number }> = 
   "prod_USIuacdkaV7AAi": { type: "terminale", durationMonths: 12 },
   "prod_USJ0oegKXI36eH": { type: "premier_semestre", durationMonths: 6 },
   "prod_USJ0NwCX5QYGQE": { type: "annuel", durationMonths: 12 },
+  "prod_VGUuAlkb7WilLj": { type: "annales", durationMonths: 12 },
 };
 
 serve(async (req) => {
