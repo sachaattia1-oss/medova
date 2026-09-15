@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, GraduationCap, FileQuestion, Trophy } from "lucide-react";
+import { ArrowRight, GraduationCap, FileQuestion, Trophy } from "lucide-react";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { Reveal } from "@/components/Reveal";
 
@@ -39,12 +39,6 @@ const Hero = () => {
               <Button size="lg" variant="hero" className="group animate-pulse-glow">
                 Commencer maintenant
                 <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </a>
-            <a href="#tarifs">
-              <Button size="lg" variant="outline" className="border-border/50 hover:bg-muted/50 backdrop-blur-sm">
-                <BookOpen className="mr-2 w-4 h-4" />
-                Voir les cours
               </Button>
             </a>
           </div>
