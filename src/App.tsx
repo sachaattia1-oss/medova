@@ -24,6 +24,8 @@ import DashboardAnnalesYearCourses from "./pages/DashboardAnnalesYearCourses";
 import DashboardAnnalesBySubject from "./pages/DashboardAnnalesBySubject";
 import DashboardAnnalesCategory from "./pages/DashboardAnnalesCategory";
 import TakeAnnaleSession from "./pages/TakeAnnaleSession";
+import TakeAnnaleCourseSession from "./pages/TakeAnnaleCourseSession";
+
 
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
@@ -68,7 +70,9 @@ const App = () => (
             <Route path="/dashboard/annales/par-annee/:year" element={<SubscribedRoute><DashboardAnnalesYearCourses /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-annee/:year/:categoryId" element={<SubscribedRoute><TakeAnnaleSession /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-matiere" element={<SubscribedRoute><DashboardAnnalesBySubject /></SubscribedRoute>} />
-            <Route path="/dashboard/annales/par-matiere/:categoryId" element={<SubscribedRoute><DashboardAnnalesCategory /></SubscribedRoute>} />
+           <Route path="/dashboard/annales/par-matiere/:categoryId" element={<SubscribedRoute><DashboardAnnalesCategory /></SubscribedRoute>} />
+           <Route path="/dashboard/annales/par-matiere/:categoryId/:courseId" element={<SubscribedRoute><TakeAnnaleCourseSession /></SubscribedRoute>} />
+
             
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/mentions-legales" element={<MentionsLegales />} />
