@@ -82,7 +82,7 @@ const Pricing = () => {
           </p>
         </Reveal>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid gap-6 max-w-md mx-auto">
           {plans.map((plan, idx) => (
             <Reveal key={plan.name} delay={idx * 120}>
               <div
