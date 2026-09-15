@@ -78,13 +78,43 @@ const TutorAnnales = () => {
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [newCourseMode, setNewCourseMode] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [form, setForm] = useState({
     question_text: "",
     explanation: "",
     annale_year: currentYear - 1,
     new_course_title: "",
+    image_url: "",
     answers: Array.from({ length: 5 }, () => ({ text: "", is_correct: false, explanation: "" })),
   });
+
+  const handleImageUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Choisissez une image (jpg, png…)"); return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image trop lourde (10 Mo maximum)"); return;
+    }
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split(".").pop() || "png";
+      const path = `question-images/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("annales-pdfs").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from("annales-pdfs").getPublicUrl(path);
+      setForm(f => ({ ...f, image_url: data.publicUrl }));
+      toast.success("Schéma ajouté");
+    } catch (e) {
+      console.error(e);
+      toast.error("Erreur lors de l'envoi de l'image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
 
   useEffect(() => { fetchData(); }, []);
   useEffect(() => { if (selectedCourseId && user) loadOrCreateQuiz(); }, [selectedCourseId, user]);
