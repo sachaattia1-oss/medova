@@ -495,6 +495,35 @@ const TutorAnnales = () => {
               />
             </div>
 
+            <div className="space-y-2 p-3 rounded-lg border border-border/50">
+              <Label className="text-sm">Schéma / photo (facultatif) — affiché sous l'énoncé</Label>
+              {form.image_url ? (
+                <div className="space-y-2">
+                  <QuestionImage url={form.image_url} className="mt-0" />
+                  <Button type="button" variant="outline" size="sm" onClick={() => setForm({ ...form, image_url: "" })}>
+                    <X className="w-4 h-4 mr-2" /> Retirer l'image
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    disabled={uploadingImage}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); e.target.value = ""; }}
+                    className="max-w-xs"
+                  />
+                  {uploadingImage ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-accent" />
+                  ) : (
+                    <ImagePlus className="w-4 h-4 text-muted-foreground" />
+                  )}
+                </div>
+              )}
+            </div>
+
+
+
             <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-muted/30">
               <Label className="text-sm">📝 Année de l'annale :</Label>
               <Select value={form.annale_year.toString()} onValueChange={(v) => setForm({ ...form, annale_year: parseInt(v) })}>
