@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, Zap, Loader2, Calendar } from "lucide-react";
+import { Check, Sparkles, Loader2, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -95,12 +95,6 @@ const Pricing = () => {
               >
                 {plan.popular && (
                   <>
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                      <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-semibold shadow-glow">
-                        <Zap className="w-3 h-3" />
-                        Plus populaire
-                      </div>
-                    </div>
                     {/* Shimmer overlay */}
                     <span className="shimmer-overlay absolute inset-0 rounded-2xl overflow-hidden" />
                   </>
