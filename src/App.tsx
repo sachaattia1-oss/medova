@@ -23,6 +23,7 @@ import DashboardAnnalesByYear from "./pages/DashboardAnnalesByYear";
 import DashboardAnnalesYearCourses from "./pages/DashboardAnnalesYearCourses";
 import DashboardAnnalesBySubject from "./pages/DashboardAnnalesBySubject";
 import DashboardAnnalesCategory from "./pages/DashboardAnnalesCategory";
+import TakeAnnaleSession from "./pages/TakeAnnaleSession";
 
 import CourseDetail from "./pages/CourseDetail";
 import AdminCourses from "./pages/AdminCourses";
@@ -65,6 +66,7 @@ const App = () => (
             <Route path="/dashboard/annales" element={<SubscribedRoute><DashboardAnnalesHome /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-annee" element={<SubscribedRoute><DashboardAnnalesByYear /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-annee/:year" element={<SubscribedRoute><DashboardAnnalesYearCourses /></SubscribedRoute>} />
+            <Route path="/dashboard/annales/par-annee/:year/:categoryId" element={<SubscribedRoute><TakeAnnaleSession /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-matiere" element={<SubscribedRoute><DashboardAnnalesBySubject /></SubscribedRoute>} />
             <Route path="/dashboard/annales/par-matiere/:categoryId" element={<SubscribedRoute><DashboardAnnalesCategory /></SubscribedRoute>} />
             
