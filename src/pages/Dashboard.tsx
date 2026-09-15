@@ -73,7 +73,6 @@ const Dashboard = () => {
         });
 
         setAnnalesDone(annaleAttempts.length);
-        setRecentAnnaleAttempts(annaleAttempts.slice(0, 5));
 
         const scored = annaleAttempts.filter(
           (a) => a.score !== null && a.total_questions && a.total_questions > 0
