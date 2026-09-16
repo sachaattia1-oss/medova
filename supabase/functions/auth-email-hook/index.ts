@@ -15,7 +15,7 @@ const corsHeaders = {
 }
 
 // Configuration
-const SITE_NAME = "Hello There!"
+const SITE_NAME = "medova"
 const SENDER_DOMAIN = "notify.medova-med.fr"
 const ROOT_DOMAIN = "medova-med.fr"
 const FROM_DOMAIN = "notify.medova-med.fr"
