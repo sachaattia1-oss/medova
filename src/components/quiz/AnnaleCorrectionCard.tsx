@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, User, BookOpenCheck } from "lucide-react";
+import { User, BookOpenCheck } from "lucide-react";
 import QuestionImage from "@/components/QuestionImage";
 import QuestionDiscussion from "@/components/quiz/QuestionDiscussion";
 import { cn } from "@/lib/utils";
