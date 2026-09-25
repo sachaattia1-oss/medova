@@ -48,7 +48,11 @@ export const useSubscription = (): SubscriptionData => {
       }
     };
 
+    if (user) setLoading(true);
     fetchSubscription();
+    const onFocus = () => fetchSubscription();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
   }, [user]);
 
   return { isSubscribed, subscriptionType, expiresAt, loading };
