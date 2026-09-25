@@ -1,0 +1,3 @@
+ALTER TABLE public.profiles DROP CONSTRAINT profiles_subscription_type_check;
+ALTER TABLE public.profiles ADD CONSTRAINT profiles_subscription_type_check CHECK (subscription_type IS NULL OR subscription_type = ANY (ARRAY['terminale','premier_semestre','annuel','monthly','annual','lifetime','annales','unknown']));
+UPDATE public.profiles SET is_subscribed=true, subscription_type='annales', subscription_expires_at='2026-12-15 23:59:59+00' WHERE user_id='280e8962-0ae6-4f5c-8eed-ed50b047260c';
