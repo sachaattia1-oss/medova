@@ -157,7 +157,11 @@ const TutorDiscussions = () => {
         };
       });
 
-      setQuestions(grouped);
+      setQuestions(grouped.sort((a, b) => {
+        const replyDifference = Number(a.replies.length > 0) - Number(b.replies.length > 0);
+        if (replyDifference !== 0) return replyDifference;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }));
     } catch (error) {
       console.error("Error fetching discussions:", error);
       toast.error("Erreur lors du chargement");
