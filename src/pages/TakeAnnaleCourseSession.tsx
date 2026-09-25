@@ -18,6 +18,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { toast } from "sonner";
+import AnnaleCorrectionCard from "@/components/quiz/AnnaleCorrectionCard";
 import QuestionImage from "@/components/QuestionImage";
 
 interface Question {
@@ -218,9 +219,12 @@ const TakeAnnaleCourseSession = () => {
               </CardHeader>
               <CardContent className="text-center">
                 <div className="text-5xl font-bold text-accent mb-2">
-                  {totalScore.toFixed(1)} / {questions.length}
+                  {((totalScore / questions.length) * 20).toFixed(1).replace(".", ",")} / 20
                 </div>
-                <p className="text-muted-foreground mb-4">Score : {percentage.toFixed(0)}%</p>
+                <p className="text-muted-foreground mb-4">
+                  {percentage.toFixed(0)} / 100 · {totalScore.toFixed(1).replace(".", ",")} point(s) sur {questions.length} question(s)
+                </p>
+                <p className="text-xs text-muted-foreground mb-4">Barème : 1 pt sans erreur · 0,5 pt pour 1 erreur · 0,2 pt pour 2 erreurs · 0 au-delà</p>
                 <div className="flex justify-center gap-4 text-sm flex-wrap">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -241,65 +245,19 @@ const TakeAnnaleCourseSession = () => {
             <div className="space-y-4 mb-8">
               {questions.map((question, i) => {
                 const qResult = results.find((r) => r.questionId === question.id);
-                const qAnswers = answers[question.id] || [];
                 const ua = userAnswers.find((u) => u.questionId === question.id);
                 return (
-                  <Card key={question.id}>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <Badge variant="secondary">Question {i + 1}</Badge>
-                        <Badge
-                          variant={
-                            qResult?.errors === 0
-                              ? "default"
-                              : qResult?.errors && qResult.errors <= 2
-                                ? "secondary"
-                                : "destructive"
-                          }
-                        >
-                          {qResult?.score.toFixed(1)} pt
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">{yearLabel(question.year)}</p>
-                      <CardTitle className="text-base mt-1">{question.question_text}</CardTitle>
-                      <QuestionImage url={question.image_url} />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {qAnswers.map((answer) => {
-                          const correctIds = correctAnswersMap[question.id] || [];
-                          const isCorrect = correctIds.includes(answer.id);
-                          const isSelected = ua?.selectedAnswerIds.includes(answer.id);
-                          return (
-                            <div
-                              key={answer.id}
-                              className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 ${
-                                isCorrect
-                                  ? "bg-green-500/10 border border-green-500/30"
-                                  : isSelected
-                                    ? "bg-red-500/10 border border-red-500/30"
-                                    : "bg-muted"
-                              }`}
-                            >
-                              {isCorrect ? (
-                                <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                              ) : isSelected ? (
-                                <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                              ) : (
-                                <div className="w-4 h-4" />
-                              )}
-                              <span>{answer.answer_text}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      {question.explanation && (
-                        <div className="mt-4 p-3 bg-accent/10 rounded-lg">
-                          <p className="text-sm">💡 {question.explanation}</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <AnnaleCorrectionCard
+                    key={question.id}
+                    index={i}
+                    question={{ ...question, year: (question as any).year ?? (question as any).annale_year ?? null }}
+                    answers={answers[question.id] || []}
+                    selectedIds={ua?.selectedAnswerIds || []}
+                    correctIds={correctAnswersMap[question.id] || []}
+                    score={qResult?.score ?? 0}
+                    errors={qResult?.errors ?? 0}
+                    answerExplanations={(qResult as any)?.answerExplanations}
+                  />
                 );
               })}
             </div>
