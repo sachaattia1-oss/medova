@@ -67,7 +67,7 @@ const Auth = () => {
               navigate("/tutor");
             } else {
               toast.success("Compte créé avec succès ! Bienvenue sur MEDOVA.");
-              navigate("/dashboard");
+              navigate("/?offre=1");
             }
           } else {
             // Confirmation email required
@@ -104,6 +104,7 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
+      if (isSignUp && selectedChoice !== "tutor") localStorage.setItem("medova_go_offer", "1");
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
       });
