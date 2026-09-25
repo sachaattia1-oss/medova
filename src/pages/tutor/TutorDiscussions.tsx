@@ -99,8 +99,12 @@ const TutorDiscussions = () => {
       ];
       const { data: quizQuestions } = await supabase
         .from("quiz_questions")
-        .select("id, question_text, quiz_id, explanation")
+        .select("id, question_text, quiz_id, explanation, is_annale")
         .in("id", quizQuestionIds);
+
+      const annaleQuestionIds = new Set(
+        (quizQuestions || []).filter((q) => q.is_annale).map((q) => q.id)
+      );
 
       // Fetch quiz answers for full question view
       const { data: quizAnswers } = await supabase
@@ -129,19 +133,19 @@ const TutorDiscussions = () => {
         (quizzes || []).map((q) => [q.id, q.title])
       );
       const qqMap = new Map(
-        (quizQuestions || []).map((q) => [
+        (quizQuestions || []).filter((q) => q.is_annale).map((q) => [
           q.id,
-          { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "QCM", explanation: q.explanation },
+          { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "Annale", explanation: q.explanation },
         ])
       );
 
-      const grouped: DiscussionQuestion[] = discussions.map((d) => {
+      const grouped: DiscussionQuestion[] = discussions.filter((d) => annaleQuestionIds.has(d.quiz_question_id)).map((d) => {
         const qqInfo = qqMap.get(d.quiz_question_id);
         return {
           ...d,
           user_name: "Étudiant anonyme",
           question_text: qqInfo?.text || "Question supprimée",
-          quiz_title: qqInfo?.quizTitle || "QCM",
+          quiz_title: qqInfo?.quizTitle || "Annale",
           explanation: qqInfo?.explanation || undefined,
           answers: answersMap.get(d.quiz_question_id) || [],
           replies: (replies || [])
