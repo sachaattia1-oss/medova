@@ -93,30 +93,18 @@ const TutorDiscussions = () => {
         .in("parent_id", questionIds)
         .order("created_at", { ascending: true });
 
-      // Fetch user names
-      const allUserIds = [
-        ...new Set([
-          ...discussions.map((d) => d.user_id),
-          ...(replies || []).map((r) => r.user_id),
-        ]),
-      ];
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("user_id, full_name")
-        .in("user_id", allUserIds);
-
-      const nameMap = new Map(
-        (profiles || []).map((p) => [p.user_id, p.full_name || "Anonyme"])
-      );
-
       // Fetch quiz question texts
       const quizQuestionIds = [
         ...new Set(discussions.map((d) => d.quiz_question_id)),
       ];
       const { data: quizQuestions } = await supabase
         .from("quiz_questions")
-        .select("id, question_text, quiz_id, explanation")
+        .select("id, question_text, quiz_id, explanation, is_annale")
         .in("id", quizQuestionIds);
+
+      const annaleQuestionIds = new Set(
+        (quizQuestions || []).filter((q) => q.is_annale).map((q) => q.id)
+      );
 
       // Fetch quiz answers for full question view
       const { data: quizAnswers } = await supabase
@@ -145,26 +133,26 @@ const TutorDiscussions = () => {
         (quizzes || []).map((q) => [q.id, q.title])
       );
       const qqMap = new Map(
-        (quizQuestions || []).map((q) => [
+        (quizQuestions || []).filter((q) => q.is_annale).map((q) => [
           q.id,
-          { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "QCM", explanation: q.explanation },
+          { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "Annale", explanation: q.explanation },
         ])
       );
 
-      const grouped: DiscussionQuestion[] = discussions.map((d) => {
+      const grouped: DiscussionQuestion[] = discussions.filter((d) => annaleQuestionIds.has(d.quiz_question_id)).map((d) => {
         const qqInfo = qqMap.get(d.quiz_question_id);
         return {
           ...d,
-          user_name: nameMap.get(d.user_id) || "Anonyme",
+          user_name: "Étudiant anonyme",
           question_text: qqInfo?.text || "Question supprimée",
-          quiz_title: qqInfo?.quizTitle || "QCM",
+          quiz_title: qqInfo?.quizTitle || "Annale",
           explanation: qqInfo?.explanation || undefined,
           answers: answersMap.get(d.quiz_question_id) || [],
           replies: (replies || [])
             .filter((r) => r.parent_id === d.id)
             .map((r) => ({
               ...r,
-              user_name: nameMap.get(r.user_id) || "Anonyme",
+              user_name: "Tuteur MEDOVA",
             })),
         };
       });
@@ -229,7 +217,7 @@ const TutorDiscussions = () => {
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Questions des étudiants</h1>
         <p className="text-muted-foreground">
-          Répondez aux questions posées sur les QCM
+          Répondez aux questions posées sur les annales
         </p>
         {unrepliedCount > 0 && (
           <Badge variant="destructive" className="mt-2">

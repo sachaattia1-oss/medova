@@ -59,22 +59,19 @@ const AnnaleCorrectionCard = ({ index, question, answers, selectedIds, correctId
             const picked = selectedIds.includes(a.id);
             const ok = isTrue === picked;
             return (
-              <div key={a.id} className="rounded-lg border p-3">
+              <div key={a.id} className={cn("rounded-lg border p-3", ok ? "border-border" : "border-destructive/30 bg-destructive/5")}>
                 <div className="flex items-start gap-3">
                   <span className="w-7 h-7 rounded-md bg-muted flex items-center justify-center text-sm font-bold flex-shrink-0">{LETTERS[i]}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm">{a.answer_text}</p>
-                    <div className="flex flex-wrap gap-2 mt-2 text-xs">
-                      <span className={cn("px-2 py-0.5 rounded-full border font-medium", isTrue ? "text-green-600 border-green-500/40 bg-green-500/10" : "text-red-600 border-red-500/40 bg-red-500/10")}>
-                        {isTrue ? "VRAI" : "FAUX"}
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-sm">{a.answer_text}</p>
+                      <span className={cn("flex items-center gap-1 text-xs font-medium whitespace-nowrap", ok ? "text-green-600 dark:text-green-400" : "text-destructive")}>
+                        {ok ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                        {ok ? "Juste" : "À corriger"}
                       </span>
-                      <span className="px-2 py-0.5 rounded-full border text-muted-foreground">
-                        Toi : {picked ? "cochée" : "non cochée"}
-                      </span>
-                      {ok ? <CheckCircle2 className="w-4 h-4 text-green-500" /> : <XCircle className="w-4 h-4 text-red-500" />}
                     </div>
                     {answerExplanations[a.id] && (
-                      <p className="text-xs text-muted-foreground mt-2 border-l-2 border-accent/40 pl-2">{answerExplanations[a.id]}</p>
+                      <p className="text-xs text-muted-foreground mt-2">{answerExplanations[a.id]}</p>
                     )}
                   </div>
                 </div>
