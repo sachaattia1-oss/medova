@@ -51,17 +51,18 @@ const QuestionDiscussion = ({ quizQuestionId }: QuestionDiscussionProps) => {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const userIds = [...new Set(data.map((d) => d.user_id))];
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("user_id, full_name")
-          .in("user_id", userIds);
-
-        const nameMap = new Map((profiles || []).map((p) => [p.user_id, p.full_name]));
-
+        // Anonymous display: students are numbered, replies (tutors/admins only) are "Tuteur MEDOVA"
+        const studentNum = new Map<string, number>();
+        data.filter((d) => !d.parent_id).forEach((d) => {
+          if (!studentNum.has(d.user_id)) studentNum.set(d.user_id, studentNum.size + 1);
+        });
         const enriched = data.map((d) => ({
           ...d,
-          user_name: nameMap.get(d.user_id) || "Anonyme",
+          user_name: d.user_id === user?.id
+            ? "Toi"
+            : d.parent_id
+              ? (studentNum.has(d.user_id) ? `Étudiant anonyme ${studentNum.get(d.user_id)}` : "Tuteur MEDOVA")
+              : `Étudiant anonyme ${studentNum.get(d.user_id)}`,
         }));
 
         const topLevel = enriched.filter((d) => !d.parent_id);
@@ -133,7 +134,7 @@ const QuestionDiscussion = ({ quizQuestionId }: QuestionDiscussionProps) => {
       <div className="flex items-center gap-2 mb-4">
         <MessageSquare className="w-4 h-4 text-muted-foreground" />
         <h4 className="font-medium text-sm">
-          Discussion ({discussions.length})
+          Questions aux tuteurs ({discussions.length})
         </h4>
       </div>
 
@@ -142,7 +143,7 @@ const QuestionDiscussion = ({ quizQuestionId }: QuestionDiscussionProps) => {
         <Textarea
           value={newQuestion}
           onChange={(e) => setNewQuestion(e.target.value)}
-          placeholder="Poser une question sur ce QCM..."
+          placeholder="Tu ne comprends pas la correction ? Pose ta question (anonyme), un tuteur te répondra..."
           className="mb-2 min-h-[60px]"
         />
         <Button
