@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, User, BookOpenCheck } from "lucide-react";
+import { User, BookOpenCheck } from "lucide-react";
 import QuestionImage from "@/components/QuestionImage";
 import QuestionDiscussion from "@/components/quiz/QuestionDiscussion";
 import { cn } from "@/lib/utils";
@@ -57,19 +57,19 @@ const AnnaleCorrectionCard = ({ index, question, answers, selectedIds, correctId
           {answers.map((a, i) => {
             const isTrue = correctIds.includes(a.id);
             const picked = selectedIds.includes(a.id);
-            const ok = isTrue === picked;
+            const isWrong = picked && !isTrue;
             return (
-              <div key={a.id} className={cn("rounded-lg border p-3", ok ? "border-border" : "border-destructive/30 bg-destructive/5")}>
+              <div key={a.id} className={cn(
+                "rounded-lg border p-3",
+                isTrue ? "border-green-500/40 bg-green-500/5" : isWrong ? "border-destructive/40 bg-destructive/5" : "border-border"
+              )}>
                 <div className="flex items-start gap-3">
-                  <span className="w-7 h-7 rounded-md bg-muted flex items-center justify-center text-sm font-bold flex-shrink-0">{LETTERS[i]}</span>
+                  <span className={cn(
+                    "w-7 h-7 rounded-md flex items-center justify-center text-sm font-bold flex-shrink-0",
+                    isTrue ? "bg-green-500/15 text-green-700 dark:text-green-400" : isWrong ? "bg-destructive/15 text-destructive" : "bg-muted"
+                  )}>{LETTERS[i]}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="text-sm">{a.answer_text}</p>
-                      <span className={cn("flex items-center gap-1 text-xs font-medium whitespace-nowrap", ok ? "text-green-600 dark:text-green-400" : "text-destructive")}>
-                        {ok ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-                        {ok ? "Juste" : "À corriger"}
-                      </span>
-                    </div>
+                    <p className={cn("text-sm font-medium", isTrue ? "text-green-700 dark:text-green-400" : isWrong ? "text-destructive" : "")}>{a.answer_text}</p>
                     {answerExplanations[a.id] && (
                       <p className="text-xs text-muted-foreground mt-2">{answerExplanations[a.id]}</p>
                     )}
