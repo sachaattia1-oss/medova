@@ -39,6 +39,7 @@ const Pricing = () => {
         description: "Vous devez être connecté pour souscrire à un plan.",
         variant: "destructive",
       });
+      localStorage.setItem("medova_go_offer", "1");
       window.location.href = "/auth?mode=signup";
       return;
     }
