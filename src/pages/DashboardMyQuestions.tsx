@@ -52,21 +52,16 @@ const DashboardMyQuestions = () => {
         .in("parent_id", questionIds)
         .order("created_at", { ascending: true });
 
-      // Get reply author names
-      const replyUserIds = [...new Set((replies || []).map((r) => r.user_id))];
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("user_id, full_name")
-        .in("user_id", replyUserIds.length > 0 ? replyUserIds : ["none"]);
-
-      const nameMap = new Map((profiles || []).map((p) => [p.user_id, p.full_name || "Tuteur"]));
-
       // Get quiz question context
       const qqIds = [...new Set(myQuestions.map((q) => q.quiz_question_id))];
       const { data: quizQuestions } = await supabase
         .from("quiz_questions")
-        .select("id, question_text, quiz_id")
+        .select("id, question_text, quiz_id, is_annale")
         .in("id", qqIds);
+
+      const annaleQuestionIds = new Set(
+        (quizQuestions || []).filter((q) => q.is_annale).map((q) => q.id)
+      );
 
       const quizIds = [...new Set((quizQuestions || []).map((q) => q.quiz_id))];
       const { data: quizzes } = await supabase
@@ -76,22 +71,22 @@ const DashboardMyQuestions = () => {
 
       const quizTitleMap = new Map((quizzes || []).map((q) => [q.id, q.title]));
       const qqMap = new Map(
-        (quizQuestions || []).map((q) => [q.id, { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "QCM" }])
+        (quizQuestions || []).filter((q) => q.is_annale).map((q) => [q.id, { text: q.question_text, quizTitle: quizTitleMap.get(q.quiz_id) || "Annale" }])
       );
 
-      const result: MyQuestion[] = myQuestions.map((q) => {
+      const result: MyQuestion[] = myQuestions.filter((q) => annaleQuestionIds.has(q.quiz_question_id)).map((q) => {
         const info = qqMap.get(q.quiz_question_id);
         return {
           ...q,
           question_text: info?.text || "Question supprimée",
-          quiz_title: info?.quizTitle || "QCM",
+          quiz_title: info?.quizTitle || "Annale",
           replies: (replies || [])
             .filter((r) => r.parent_id === q.id)
             .map((r) => ({
               id: r.id,
               content: r.content,
               created_at: r.created_at,
-              user_name: nameMap.get(r.user_id) || "Tuteur",
+              user_name: "Tuteur MEDOVA",
             })),
         };
       });
@@ -111,7 +106,7 @@ const DashboardMyQuestions = () => {
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <h1 className="text-2xl font-bold">Mes questions</h1>
-            <p className="text-muted-foreground">Retrouvez vos questions posées sur les QCM et les réponses des tuteurs</p>
+            <p className="text-muted-foreground">Retrouvez vos questions posées sur les annales et les réponses des tuteurs</p>
           </div>
 
           {loading ? (
@@ -123,7 +118,7 @@ const DashboardMyQuestions = () => {
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <HelpCircle className="w-12 h-12 text-muted-foreground/50 mb-3" />
                 <p className="text-muted-foreground">Vous n'avez posé aucune question pour le moment</p>
-                <p className="text-sm text-muted-foreground mt-1">Posez vos questions après avoir validé un QCM !</p>
+                <p className="text-sm text-muted-foreground mt-1">Posez vos questions après avoir validé une annale.</p>
               </CardContent>
             </Card>
           ) : (
@@ -146,7 +141,7 @@ const DashboardMyQuestions = () => {
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground italic mt-1">
-                          Question QCM : {q.question_text}
+                          Question d'annale : {q.question_text}
                         </p>
                       </CardHeader>
                       <CardContent>

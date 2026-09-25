@@ -35,6 +35,7 @@ import AdminAnnales from "./pages/AdminAnnales";
 import AdminTutors from "./pages/AdminTutors";
 import AdminPayments from "./pages/AdminPayments";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminQuestions from "./pages/AdminQuestions";
 import TutorDashboard from "./pages/TutorDashboard";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import MentionsLegales from "./pages/MentionsLegales";
@@ -83,6 +84,7 @@ const App = () => (
             <Route path="/admin/cours" element={<AdminCourses />} />
             <Route path="/admin/qcm" element={<AdminQCM />} />
             <Route path="/admin/annales" element={<AdminAnnales />} />
+            <Route path="/admin/questions" element={<AdminQuestions />} />
             <Route path="/admin/tuteurs" element={<AdminTutors />} />
             <Route path="/admin/paiements" element={<AdminPayments />} />
             <Route path="/tutor" element={<TutorDashboard />} />

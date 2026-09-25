@@ -37,6 +37,7 @@ const adminItems = [
   { icon: BarChart3, label: "Dashboard Admin", href: "/admin" },
   { icon: Shield, label: "Gestion des cours", href: "/admin/cours" },
   { icon: FileText, label: "Publier des annales", href: "/admin/annales" },
+  { icon: HelpCircle, label: "Questions annales", href: "/admin/questions" },
   { icon: Users, label: "Gestion des tuteurs", href: "/admin/tuteurs" },
 ];
 
