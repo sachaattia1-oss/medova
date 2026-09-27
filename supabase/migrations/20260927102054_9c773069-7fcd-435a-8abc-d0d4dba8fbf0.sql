@@ -1,0 +1,1 @@
+DELETE FROM auth.users WHERE email = 'test-min-length-check2@example.com'; DELETE FROM auth.users WHERE email = 'test-min-length-check@example.com';
