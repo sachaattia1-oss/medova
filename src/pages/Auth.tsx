@@ -34,6 +34,7 @@ const Auth = () => {
   const [selectedChoice, setSelectedChoice] = useState<SignUpChoice>("user");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState<string | null>(null);
   const navigate = useNavigate();
   const { signUp, signIn, deviceBlocked } = useAuth();
 
@@ -72,7 +73,8 @@ const Auth = () => {
             }
           } else {
             // Confirmation email required
-            toast.success("Un email de confirmation vous a été envoyé. Vérifiez votre boîte mail pour activer votre compte !");
+            setConfirmationEmail(email);
+            toast.success("Un email de confirmation vous a été envoyé. Vérifiez votre boîte mail pour activer votre compte !", { duration: 10000 });
             setIsSignUp(false);
             resetForm();
           }
@@ -166,6 +168,21 @@ const Auth = () => {
       {/* Main content */}
       <main className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
+          {/* Confirmation email notice - persistent for non-Google signups */}
+          {confirmationEmail && !isSignUp && (
+            <div className="mb-6 rounded-2xl border border-accent/30 bg-accent/10 p-5 text-center">
+              <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-3">
+                <Mail className="w-6 h-6 text-accent" />
+              </div>
+              <h2 className="font-semibold mb-1">Email de vérification envoyé</h2>
+              <p className="text-sm text-muted-foreground">
+                Un email de confirmation a été envoyé à{" "}
+                <span className="font-medium text-foreground">{confirmationEmail}</span>.
+                Clique sur le lien qu'il contient pour activer ton compte, puis connecte-toi ici.
+                Pense à vérifier tes indésirables.
+              </p>
+            </div>
+          )}
           {isSignUp && selectedChoice !== "tutor" && <SignupSteps current={1} className="mb-8" />}
           {/* Logo/Brand */}
           <div className="text-center mb-8">
