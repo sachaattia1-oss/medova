@@ -1,7 +1,10 @@
+import SignupSteps from "@/components/SignupSteps";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles, Loader2, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Reveal } from "@/components/Reveal";
@@ -29,6 +32,9 @@ const plans = [
 
 const Pricing = () => {
   const { user } = useAuth();
+  const { isSubscribed } = useSubscription();
+  const { isAdmin, isTutor } = useUserRole();
+  const step = !user ? 1 : isSubscribed ? 4 : 2;
   const { toast } = useToast();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
@@ -70,6 +76,7 @@ const Pricing = () => {
     <section id="tarifs" className="relative py-24 overflow-hidden">
 
       <div className="container relative z-10 px-4 md:px-6">
+        {!isAdmin && !isTutor && <SignupSteps current={step} className="mb-12" />}
         <Reveal className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mb-6">
             <Sparkles className="w-4 h-4" />

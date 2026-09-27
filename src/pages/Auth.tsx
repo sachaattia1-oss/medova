@@ -1,3 +1,4 @@
+import SignupSteps from "@/components/SignupSteps";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -165,6 +166,7 @@ const Auth = () => {
       {/* Main content */}
       <main className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
+          {isSignUp && selectedChoice !== "tutor" && <SignupSteps current={1} className="mb-8" />}
           {/* Logo/Brand */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mb-4">

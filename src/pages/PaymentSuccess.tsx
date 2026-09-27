@@ -1,3 +1,4 @@
+import SignupSteps from "@/components/SignupSteps";
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,6 +53,7 @@ const PaymentSuccess = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center space-y-6 max-w-md mx-auto px-4">
+        <SignupSteps current={success ? 4 : 3} className="mb-6" />
         <CheckCircle className="w-20 h-20 text-green-500 mx-auto" />
         <h1 className="text-3xl font-bold">Paiement réussi !</h1>
         <p className="text-muted-foreground text-lg">
