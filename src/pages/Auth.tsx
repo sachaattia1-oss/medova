@@ -330,10 +330,31 @@ const Auth = () => {
                     )}
                   </button>
                 </div>
-                {isSignUp && (
+                {isSignUp ? (
                   <p className="text-xs text-muted-foreground">
                     Au moins 6 caractères
                   </p>
+                ) : (
+                  <div className="text-right">
+                    <button
+                      type="button"
+                      className="text-xs text-primary hover:underline"
+                      onClick={async () => {
+                        const parsed = z.string().trim().email().safeParse(email);
+                        if (!parsed.success) {
+                          toast.error("Entre d'abord ton adresse email ci-dessus");
+                          return;
+                        }
+                        const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+                          redirectTo: `${window.location.origin}/reset-password`,
+                        });
+                        if (error) toast.error("Impossible d'envoyer l'email, réessaie plus tard");
+                        else toast.success("Email envoyé ! Vérifie ta boîte mail (et les indésirables).", { duration: 10000 });
+                      }}
+                    >
+                      Mot de passe oublié ?
+                    </button>
+                  </div>
                 )}
               </div>
 
