@@ -8,6 +8,7 @@ import SubscribedRoute from "@/components/SubscribedRoute";
 import OfferRedirect from "@/components/OfferRedirect";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import DashboardCourses from "./pages/DashboardCourses";
 import DashboardQCM from "./pages/DashboardQCM";
@@ -56,6 +57,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/subscribed" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/cours" element={<SubscribedRoute><DashboardCourses /></SubscribedRoute>} />
