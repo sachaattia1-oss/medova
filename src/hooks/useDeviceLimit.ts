@@ -95,5 +95,52 @@ export function useDeviceLimit(userId: string | undefined) {
     return () => clearInterval(interval);
   }, [userId, blocked]);
 
+  // Single active session: a new login elsewhere disconnects this one
+  useEffect(() => {
+    if (!userId) return;
+    const KEY = "medova_session_key";
+    let cancelled = false;
+
+    const claim = async () => {
+      const key = crypto.randomUUID();
+      localStorage.setItem(KEY, key);
+      await supabase
+        .from("active_sessions" as any)
+        .upsert({ user_id: userId, session_key: key, updated_at: new Date().toISOString() } as any, { onConflict: "user_id" });
+    };
+
+    const check = async () => {
+      const mine = localStorage.getItem(KEY);
+      if (!mine) return claim();
+      const { data } = await supabase
+        .from("active_sessions" as any)
+        .select("session_key")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (cancelled) return;
+      const active = (data as any)?.session_key;
+      if (!active) return claim();
+      if (active !== mine) {
+        localStorage.removeItem(KEY);
+        alert("Ton compte vient d'être connecté sur un autre appareil. Tu as été déconnecté.");
+        await supabase.auth.signOut();
+      }
+    };
+
+    check();
+    const interval = setInterval(check, 60 * 1000);
+    const onFocus = () => check();
+    window.addEventListener("focus", onFocus);
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") localStorage.removeItem(KEY);
+    });
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+      sub.subscription.unsubscribe();
+    };
+  }, [userId]);
+
   return { blocked, checking };
 }
