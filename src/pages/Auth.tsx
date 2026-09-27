@@ -34,6 +34,7 @@ const Auth = () => {
   const [selectedChoice, setSelectedChoice] = useState<SignUpChoice>("user");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState<string | null>(null);
   const navigate = useNavigate();
   const { signUp, signIn, deviceBlocked } = useAuth();
 
