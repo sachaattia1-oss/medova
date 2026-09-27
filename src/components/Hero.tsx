@@ -38,7 +38,7 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up animation-delay-400">
-            <a href="#tarifs">
+            <a href="/auth?mode=signup">
               <Button size="lg" variant="hero" className="group animate-pulse-glow">
                 Commencer maintenant
                 <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
