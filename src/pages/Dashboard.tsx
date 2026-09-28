@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import StatsCard from "@/components/dashboard/StatsCard";
+import PublicationNotice from "@/components/dashboard/PublicationNotice";
 import { FileText, CheckCircle2, Target, ArrowRight } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -112,6 +113,7 @@ const Dashboard = () => {
           title="Tableau de bord"
           description="Bienvenue ! Voici un aperçu de ta progression sur les annales."
         />
+        <PublicationNotice />
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

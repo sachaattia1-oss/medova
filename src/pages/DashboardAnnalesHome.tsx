@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import PublicationNotice from "@/components/dashboard/PublicationNotice";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, BookOpen } from "lucide-react";
 
@@ -32,6 +33,7 @@ const DashboardAnnalesHome = () => {
           title="Annales"
           description="Choisissez un mode de consultation des annales"
         />
+        <PublicationNotice />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
           <Card
