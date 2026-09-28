@@ -95,10 +95,11 @@ export function useDeviceLimit(userId: string | undefined) {
     return () => clearInterval(interval);
   }, [userId, blocked]);
 
-  // Single active session: a new login elsewhere disconnects this one
+  // Max 2 simultaneous sessions: a 3rd login elsewhere disconnects the oldest one
   useEffect(() => {
     if (!userId) return;
     const KEY = "medova_session_key";
+    const MAX_SESSIONS = 2;
     let cancelled = false;
 
     const claim = async () => {
@@ -106,7 +107,7 @@ export function useDeviceLimit(userId: string | undefined) {
       localStorage.setItem(KEY, key);
       await supabase
         .from("active_sessions" as any)
-        .upsert({ user_id: userId, session_key: key, updated_at: new Date().toISOString() } as any, { onConflict: "user_id" });
+        .upsert({ user_id: userId, session_key: key, updated_at: new Date().toISOString() } as any, { onConflict: "user_id,session_key" });
     };
 
     const check = async () => {
@@ -114,16 +115,32 @@ export function useDeviceLimit(userId: string | undefined) {
       if (!mine) return claim();
       const { data } = await supabase
         .from("active_sessions" as any)
-        .select("session_key")
+        .select("session_key, updated_at")
         .eq("user_id", userId)
-        .maybeSingle();
+        .order("updated_at", { ascending: false });
       if (cancelled) return;
-      const active = (data as any)?.session_key;
-      if (!active) return claim();
-      if (active !== mine) {
+      const sessions = (data as any[]) ?? [];
+      if (sessions.length === 0) return claim();
+      const isAllowed = sessions.slice(0, MAX_SESSIONS).some((s) => s.session_key === mine);
+      if (!isAllowed) {
         localStorage.removeItem(KEY);
-        alert("Ton compte vient d'être connecté sur un autre appareil. Tu as été déconnecté.");
+        alert("Ton compte est connecté sur trop d'appareils en même temps. Tu as été déconnecté.");
         await supabase.auth.signOut();
+        return;
+      }
+      // Refresh my session timestamp and clean up sessions beyond the limit
+      await supabase
+        .from("active_sessions" as any)
+        .update({ updated_at: new Date().toISOString() } as any)
+        .eq("user_id", userId)
+        .eq("session_key", mine);
+      const toRemove = sessions.slice(MAX_SESSIONS).filter((s) => s.session_key !== mine);
+      if (toRemove.length > 0) {
+        await supabase
+          .from("active_sessions" as any)
+          .delete()
+          .eq("user_id", userId)
+          .in("session_key", toRemove.map((s) => s.session_key));
       }
     };
 
