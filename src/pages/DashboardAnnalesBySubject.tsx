@@ -41,6 +41,8 @@ const DashboardAnnalesBySubject = () => {
         if (cid) c[cid] = (c[cid] || 0) + 1;
       });
       setCounts(c);
+      // Ne garder que les matières qui ont au moins une question d'annale
+      setCategories((cats || []).filter((cat) => (c[cat.id] || 0) > 0));
       setLoading(false);
     };
     fetchData();
