@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import PublicationNotice from "@/components/dashboard/PublicationNotice";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, BookOpen } from "lucide-react";
 

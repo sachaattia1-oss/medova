@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import StatsCard from "@/components/dashboard/StatsCard";
+import PublicationNotice from "@/components/dashboard/PublicationNotice";
 import { FileText, CheckCircle2, Target, ArrowRight } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
