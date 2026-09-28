@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const MAX_DEVICES = 2;
+const MAX_DEVICES = 3;
 const DEVICE_ID_KEY = "medova_device_id";
 
 function getOrCreateDeviceId(): string {
@@ -95,11 +95,11 @@ export function useDeviceLimit(userId: string | undefined) {
     return () => clearInterval(interval);
   }, [userId, blocked]);
 
-  // Max 2 simultaneous sessions: a 3rd login elsewhere disconnects the oldest one
+  // Max 3 simultaneous sessions: a 4th login elsewhere disconnects the oldest one
   useEffect(() => {
     if (!userId) return;
     const KEY = "medova_session_key";
-    const MAX_SESSIONS = 2;
+    const MAX_SESSIONS = 3;
     let cancelled = false;
 
     const claim = async () => {
