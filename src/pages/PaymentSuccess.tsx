@@ -12,6 +12,23 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [verifying, setVerifying] = useState(true);
   const [success, setSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(4);
+
+  // Auto-redirect to the dashboard once verification is done
+  useEffect(() => {
+    if (verifying) return;
+    const timer = setInterval(() => {
+      setCountdown((c) => {
+        if (c <= 1) {
+          clearInterval(timer);
+          navigate("/dashboard", { replace: true });
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [verifying, navigate]);
 
   useEffect(() => {
     const verify = async () => {
@@ -60,6 +77,9 @@ const PaymentSuccess = () => {
           {success
             ? "Votre abonnement a été activé avec succès. Vous avez maintenant accès à tout le contenu premium."
             : "Votre paiement a été reçu. Votre accès sera activé sous peu."}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Redirection automatique vers le tableau de bord dans {countdown}...
         </p>
         <Button size="lg" onClick={() => navigate("/dashboard")} variant="hero">
           Accéder au tableau de bord
