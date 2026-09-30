@@ -78,6 +78,9 @@ const PaymentSuccess = () => {
             ? "Votre abonnement a été activé avec succès. Vous avez maintenant accès à tout le contenu premium."
             : "Votre paiement a été reçu. Votre accès sera activé sous peu."}
         </p>
+        <p className="text-sm text-muted-foreground">
+          Redirection automatique vers le tableau de bord dans {countdown}...
+        </p>
         <Button size="lg" onClick={() => navigate("/dashboard")} variant="hero">
           Accéder au tableau de bord
         </Button>
