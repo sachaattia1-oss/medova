@@ -12,6 +12,23 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [verifying, setVerifying] = useState(true);
   const [success, setSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(4);
+
+  // Auto-redirect to the dashboard once verification is done
+  useEffect(() => {
+    if (verifying) return;
+    const timer = setInterval(() => {
+      setCountdown((c) => {
+        if (c <= 1) {
+          clearInterval(timer);
+          navigate("/dashboard", { replace: true });
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [verifying, navigate]);
 
   useEffect(() => {
     const verify = async () => {
